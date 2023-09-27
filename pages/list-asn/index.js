@@ -55,8 +55,8 @@ function ListASN() {
         setLoanList({
           data: res?.data || [],
         });
-      }).catch((err) => {
-        message.error(err?.data);
+      }).catch(() => {
+        message.error('Belum Ada Data Borrower');
       }).finally(() => setLoading(false));
   };
 
@@ -68,8 +68,8 @@ function ListASN() {
           data: res?.data,
           total: res?.total || 0,
         });
-      }).catch((err) => {
-        message.error(err?.data);
+      }).catch(() => {
+        message.error('Belum ada Data Non Borrower');
       }).finally(() => setLoading(false));
   };
 
@@ -103,8 +103,8 @@ function ListASN() {
           data: res.data,
           total: res.total,
         });
-      }).catch((err) => {
-        message.error(err.data);
+      }).catch(() => {
+        message.error('Belum ada Data');
       }).finally(() => setLoading(false));
   };
 
@@ -205,7 +205,7 @@ function ListASN() {
       {user?.type !== 'borrower' ? (
         <>
           <Row>
-            <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#0fa5d9', color: 'white' }}>
+            <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
               <span style={{ fontSize: 18, fontWeight: 'bold' }}>List ASN</span>
             </Col>
             {/* <Col span={24} className='px-4 py-4'>
