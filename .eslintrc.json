@@ -1,0 +1,83 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "airbnb",
+    "airbnb/hooks",
+    "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:jsx-a11y/recommended"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "alias": [
+        ["components", "./components"],
+        ["configs", "./configs"],
+        ["constants", "./constants"],
+        ["containers", "./containers"],
+        ["layouts", "./layouts"],
+        ["locales", "./locales"],
+        ["sagas", "./sagas"],
+        ["services", "./services"],
+        ["stores", "./stores"],
+        ["utils", "./utils"]
+      ]
+    }
+  },
+  "plugins": ["react", "react-hooks"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/display-name": 1,
+    "jsx-quotes": ["error", "prefer-single"],
+    "import/prefer-default-export": "off",
+    "arrow-body-style": "off",
+    "object-curly-newline": 0,
+    "react/no-array-index-key": 0,
+    "import/no-extraneous-dependencies": 0,
+    "no-console": ["warn", { "allow": ["warn"] }],
+    "max-len": 0,
+    "linebreak-style": 0,
+    "react/jsx-props-no-spreading": [
+      "warn",
+      {
+        "html": "ignore",
+        "custom": "ignore",
+        "explicitSpread": "ignore",
+        "exceptions": [
+          "src"
+        ]
+      }
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "off",
+    "no-underscore-dangle": "off",
+    "import/no-anonymous-default-export": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "no-restricted-exports": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "no-promise-executor-return": "off",
+    "react/jsx-boolean-value": "off",
+    "react/forbid-prop-types": "off"
+  }
+}

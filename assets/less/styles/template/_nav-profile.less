@@ -1,0 +1,39 @@
+.header-profile {
+    display: flex;
+    font-size: 14px;
+    align-items: center;
+    line-height: 20px;
+    cursor: pointer;
+    padding: 0 1rem;
+}
+
+.nav-profile {
+    width: 13rem;
+
+    .nav-profile-header {
+        padding: 1rem;
+        border-bottom: 1px solid @border-color-base;
+    }
+
+    .nav-profile-body {
+        padding: 0.625rem 0;
+
+        .ant-dropdown-menu {
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+
+            &.ant-dropdown-menu-vertical > .ant-dropdown-menu-item {
+                height: 2.1875rem;
+                line-height: 2.1875rem;
+                display: flex;
+                align-items: center;
+            }
+
+            .ant-dropdown-menu-item-icon {
+                font-size: 15px;
+                margin-right: 10px;
+            }
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+  "enter": "Enter {{field}}",
+  "select": "Select {{field}}",
+  "approval-confirmation": "This action will cause you to be unable to edit this data permanently",
+  "search": "Search..",
+  "delete-confirmation": "Do you want to delete these items?",
+  "search-by": "Search by {{field}}",
+  "pagination": "{{start}}-{{end}} of {{total}} items",
+  "import-success": "{{rows}} Rows inserted",
+  "import-failed": "{{rows}} Rows failed to insert",
+  "create-success": "{{page}} has been created successfully",
+  "create-failed": "Failed to create {{page}}!",
+  "update-success": "{{page}} has been successfully updated",
+  "update-failed": "Failed to update {{page}}!",
+  "delete-success": "{{page}} deleted successfully",
+  "forgot-password-success": "Instruction for resetting your password sent to email.",
+  "sign-in": "Please Sign in into your account",
+  "forgot-password": "Type in your email and we send you a link",
+  "caption-upload": "Allowed JPG or PNG, Max size 1,5MB",
+  "reset-password": "Fill the form below to confirm your new password.",
+  "reset-password-success": "Password changed successfully!",
+  "confirm-logout": "Make sure your work here is done."
+}

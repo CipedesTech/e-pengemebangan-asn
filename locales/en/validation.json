@@ -1,0 +1,14 @@
+{
+  "required": "{{field}} is required!",
+  "invalid": "{{field}} is invalid!",
+  "min-char": "{{field}} min {{number}} character!",
+  "max-char": "{{field}} max {{number}} character!",
+  "not-match": "{{field}} not match!",
+  "not-found": "{{field}} not found!",
+  "is-exist": "{{field}} already used!",
+  "whitespace": "{{field}} can’t start or end with a blank space!",
+  "upload-success": "{{file}} uploaded successfully!",
+  "upload-failed": "{{file}} failed to upload!",
+  "download-success": "{{file}} download successfully!",
+  "download-failed": "{{file}} failed to download!"
+}

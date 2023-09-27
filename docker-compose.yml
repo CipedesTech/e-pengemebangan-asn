@@ -1,0 +1,16 @@
+version: "3.7"
+
+services:
+  app:
+    container_name: salescrow-fe
+    build:
+      context: .
+      args:
+        DEV: 1
+    restart: on-failure:5
+    environment:
+      - APP_ENVIRONMENT=${APP_ENVIRONMENT}
+      - APP_NAME=${APP_NAME}
+      - API_URL=${API_URL}
+    ports:
+      - 3000:80

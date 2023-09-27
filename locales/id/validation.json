@@ -1,0 +1,14 @@
+{
+  "required": "{{field}} harus diisi!",
+  "invalid": "{{field}} tidak valid!",
+  "min-char": "{{field}} minimal {{number}} karakter!",
+  "max-char": "{{field}} maksimal {{number}} karakter!",
+  "not-match": "{{field}} tidak sama!",
+  "not-found": "{{field}} tidak ditemukan!",
+  "is-exist": "{{field}} sudah digunakan!",
+  "whitespace": "{{field}} tidak boleh menggunakan spasi!",
+  "upload-success": "{{file}} berhasil diunggah!",
+  "upload-failed": "{{file}} gagal diunggah!",
+  "download-success": "{{file}} berhasil diunduh!",
+  "download-failed": "{{file}} gagal diunduh!"
+}

@@ -1,0 +1,15 @@
+each(@theme-colors, #(@value, @color) {
+	#bg-variant(~".bg-@{color}", @value, true);
+});
+
+each(@colors-palette, #(@value, @color) {
+	#bg-variant(~".bg-@{color}", @value, true);
+});
+
+.bg-white {
+	background-color: @white !important;
+}
+
+.bg-transparent {
+	background-color: transparent !important;
+}

@@ -1,0 +1,48 @@
+.ant-tabs-nav {
+    width: 100% !important;
+  }
+
+  .ant-tabs-nav-more {
+    display: none;
+  }
+  
+  .ant-tabs-tab {
+    display: block; /* centers text inside tabs */
+    flex: 1;
+    text-align: center;
+    border-radius: 20px 20px 0px 0px !important;
+}
+  
+  .ant-tabs-nav > div:nth-of-type(1) {
+    display: unset !important;
+    width: 100% !important;
+  }
+
+.ant-tabs-card {
+    &.ant-tabs-top {
+        > .ant-tabs-nav .ant-tabs-tab, 
+        > div > .ant-tabs-nav .ant-tabs-tab {
+            border-radius: 5px;
+        }
+
+        > .ant-tabs-nav .ant-tabs-tab-active, 
+        > div > .ant-tabs-nav .ant-tabs-tab-active {
+            border-bottom-color: @border-color-base;
+            background-color: @primary-color;
+
+            .ant-tabs-tab-btn {
+                color: @white;
+            }
+        }
+
+        > .ant-tabs-nav::before {
+            border-bottom: 0;
+        }
+    }
+}
+
+.ant-tabs-tab-btn {
+  margin: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
