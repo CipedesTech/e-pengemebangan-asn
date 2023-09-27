@@ -1,13 +1,13 @@
 {
-  "name": "salescore-iki",
+  "name": "e-pengembangan-asn",
   "version": "0.0.0",
-  "author": "Muhammad Rafli Naufal <muhamadraflinaufal@gmail.com>",
+  "author": "cheat (Cipedes House of Edge and Technology)",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 6050",
-    "prod": "next build && next start  -p 6050",
+    "dev": "next dev",
+    "prod": "next build && next start ",
     "build": "next build",
-    "start": "next start -p 6050",
+    "start": "next start",
     "lint": "next lint",
     "analyze": "cross-env ANALYZE=true yarn build",
     "serve": "serve .next/analyze"
