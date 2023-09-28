@@ -9,9 +9,6 @@ const nextConfig = {
     APP_ENVIRONMENT: process.env.APP_ENVIRONMENT,
     APP_NAME: process.env.APP_NAME,
     API_URL: process.env.API_URL,
-    API_URL_IKIMODAL: process.env.API_URL_IKIMODAL,
-    API_URL_IKISALES: process.env.API_URL_IKISALES,
-    API_URL_UTILITY: process.env.API_URL_UTILITY,
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if

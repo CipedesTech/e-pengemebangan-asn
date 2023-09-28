@@ -43,9 +43,6 @@ function App({ Component, pageProps }) {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <meta charSet='utf-8' />
         <link rel='icon' href='/favicon.png' />
-        <link rel='stylesheet' type='text/css' href='/css/light-theme.css' />
-        <link rel='stylesheet' type='text/css' href='/css/index.css' />
-        <link rel='stylesheet' type='text/css' href='/css/nprogress.css' />
       </Head>
 
       <PersistGate

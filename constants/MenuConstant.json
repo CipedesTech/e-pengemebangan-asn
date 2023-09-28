@@ -2,7 +2,7 @@
   {
     "id": 1,
     "url": "/",
-    "name": "Pinjaman",
+    "name": "Menu",
     "icon": null,
     "parent_id": null,
     "description": null,
@@ -10,7 +10,7 @@
     "sub_menu": [
       {
         "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
-        "url": "/perngajuan/1/1",
+        "url": "/pengembangan/jenis",
         "name": "Pengajuan",
         "icon": "UnorderedListOutlined",
         "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",

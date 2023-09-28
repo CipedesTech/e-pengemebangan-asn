@@ -48,37 +48,8 @@ function ListASN() {
     limit: 10,
   });
 
-  const fetchBorrowerLoanList = () => {
-    setLoading(true);
-    PinjamanService.getBorrowerPinjaman(params)
-      .then((res) => {
-        setLoanList({
-          data: res?.data || [],
-        });
-      }).catch(() => {
-        message.error('Belum Ada Data Borrower');
-      }).finally(() => setLoading(false));
-  };
-
-  const fetchNonBorrowerLoanList = () => {
-    setLoading(true);
-    PinjamanService.getAllPinjaman({ params })
-      .then((res) => {
-        setLoanList({
-          data: res?.data,
-          total: res?.total || 0,
-        });
-      }).catch(() => {
-        message.error('Belum ada Data Non Borrower');
-      }).finally(() => setLoading(false));
-  };
-
   useEffect(() => {
-    if (user?.type === 'borrower') {
-      fetchBorrowerLoanList();
-    } else {
-      fetchNonBorrowerLoanList();
-    }
+    console.log('LIST-ASN');
   }, [params]);
 
   const onDetail = (record) => {
@@ -92,48 +63,6 @@ function ListASN() {
 
     window.localStorage.setItem('pinjaman_id', userId);
     window.localStorage.setItem('pinjaman', JSON.stringify(record));
-  };
-
-  const fetchCari = () => {
-    PinjamanService.getCariPinjaman({
-      params: paramsCari,
-    })
-      .then((res) => {
-        setLoanList({
-          data: res.data,
-          total: res.total,
-        });
-      }).catch(() => {
-        message.error('Belum ada Data');
-      }).finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchCari();
-  }, [paramsCari]);
-
-  const onSubmit = (values) => {
-    setLoading(true);
-    setStatus(1);
-
-    setParamsCari({
-      ...paramsCari,
-      waktu: values.tanggal !== undefined ? dayjs(values.tanggal).format('YYYY-MM-DD').toString().split('T')[0] : null,
-      transaksi_id: values.transaksi_id !== undefined ? values.transaksi_id : null,
-      amount: values.nilai_pinjaman !== undefined ? values.nilai_pinjaman : null,
-      nama: values.nama !== undefined ? values.nama : null,
-      status: values.status !== undefined ? values.status : null,
-    });
-  };
-
-  const onReset = () => {
-    fetchNonBorrowerLoanList();
-    setStatus(0);
-    setParams({
-      page: 1,
-      limit: 10,
-    });
-    form.resetFields();
   };
 
   const onPageChange = (page, pageSize) => {

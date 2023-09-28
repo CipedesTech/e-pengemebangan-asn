@@ -42,33 +42,32 @@ function AppLayout({ title, children, extra, onTab }) {
   const items = [
     {
       label: t('Jenis Perencanaan'),
-      key: 1,
+      key: 'jenis',
     },
     {
       label: t('Tingkat Perancanaan'),
-      key: 2,
+      key: 'tingkat',
     },
     {
       label: t('Tahapan Perancanaan'),
-      key: 3,
+      key: 'tahapan',
     },
     {
       label: t('Pelaksanaan Pengembangan'),
-      key: 4,
+      key: 'pelaksanaan',
     },
     {
       label: t('Evaluasi Pengembangan'),
-      key: 5,
+      key: 'evaluasi',
     },
   ];
 
   const changeTab = (activeKey) => {
-    const pinjaman = JSON.parse(window.localStorage.getItem('pinjaman'));
-    // router.push(`/pengajuan/${pinjaman.pinjaman_id}/${activeKey}`);
-    router.push(`/perngajuan/1/${activeKey}`);
+    router.push(`/pengembangan/${activeKey}`);
   };
 
   useEffect(() => {
+    console.log('CONFIG...', Config);
     if (router?.isReady) {
       if (router?.pathname === '/') {
         setRouteInfo(getRouteInfo(menu, router.pathname));
@@ -117,7 +116,7 @@ function AppLayout({ title, children, extra, onTab }) {
 AppLayout.propTypes = {
   title: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
-  onTab: PropTypes.number.isRequired,
+  onTab: PropTypes.string.isRequired,
   extra: PropTypes.bool,
 };
 
