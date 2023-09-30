@@ -15,8 +15,10 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@next/bundle-analyzer": "^12.1.0",
+    "@prisma/client": "^5.3.1",
     "antd": "4.24.0",
     "axios": "^0.24.0",
+    "bcrypt": "^5.1.1",
     "concurrently": "^6.4.0",
     "cross-env": "^7.0.3",
     "dayjs": "^1.10.7",
@@ -58,11 +60,15 @@
     "gulp-less": "^4.0.1",
     "gulp-postcss": "^8.0.0",
     "less-plugin-npm-import": "^2.1.0",
+    "prisma": "^5.3.1",
     "serve": "^13.0.2"
   },
   "browser": {
     "fs": true,
     "path": false,
     "os": false
+  },
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
   }
 }

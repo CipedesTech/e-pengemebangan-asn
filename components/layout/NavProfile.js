@@ -94,16 +94,16 @@ function NavProfile() {
 
     return namaRole;
   };
-
+  console.log(user);
   return (
     <Dropdown placement='bottomRight' overlay={profileMenu} trigger={['click']}>
       <div className='header-profile'>
         <Avatar style={avatarStyle} className='mr-2'>
-          {initialName(user?.data?.userName ? user.data.userName : 'Nama ASN')}
+          {initialName(user?.name ? user?.name : 'Nama ASN')}
         </Avatar>
         <div className='mr-3'>
-          <Title style={{ fontSize: 14 }} className='font-weight-semibold mb-0'>{user?.data?.userName ? user.data.userName : 'Nama ASN'}</Title>
-          <span style={{ fontSize: 12 }}>{capital(role(user?.data?.userRole)).toString().replace(/,/g, ' - ')}</span>
+          <Title style={{ fontSize: 14 }} className='font-weight-semibold mb-0'>{user?.name ? user?.name : 'Nama ASN'}</Title>
+          <span style={{ fontSize: 12 }}>{user?.role}</span>
         </div>
         <DownOutlined />
       </div>

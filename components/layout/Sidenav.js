@@ -46,13 +46,13 @@ function SideNav({ routeInfo, navCollapsed }) {
       collapsedWidth={SIDE_NAV_COLLAPSED_WIDTH}
       collapsed={navCollapsed}
     >
-      {/* {!navCollapsed && (
+      {!navCollapsed && (
         <Row className='mt-3' style={{ backgroundColor: '#0fa5d9', borderRadius: '4px' }}>
           <Col span={24}>
-            <Title level={4} className='m-3' style={{ color: 'white' }}>{capital(role(user?.data?.userRole)).toString().replace(/,/g, ' - ')}</Title>
+            <Title level={4} className='m-3' style={{ color: 'white' }}>{user?.role}</Title>
           </Col>
         </Row>
-      )} */}
+      )}
       <MenuContent routeInfo={routeInfo} />
     </Sider>
   );

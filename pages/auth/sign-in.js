@@ -29,29 +29,32 @@ function SignIn() {
 
   const onSubmit = async (payload) => {
     setLoading(true);
-    message.success('Berhasil Login!');
-    setLoading(false);
-    router.push('/list-asn');
-
-    // try {
-    //   await AuthService.login({
-    //     data: payload,
-    //   }).then((result) => {
-    //     if (result?.status === 200) {
-    //       Cookies.setData('accessToken', result?.data?.accessToken);
-    //       Cookies.setData('refreshToken', result?.data?.refreshToken);
-    //       dispatch(AuthenticationActions.fetchUser());
-    //       message.success('Berhasil Login!');
-    //       setLoading(false);
-    //     }
-    //   });
-    // } catch (error) {
-    //   if (error?.status === 401) {
-    //     message.error(error?.data?.pesan || 'Login Terlebih Dahulu');
-    //   }
-    // }
-
+    message.success('login');
+    console.log(payload);
     // setLoading(false);
+    // router.push('/list-asn');
+
+    try {
+      const auth = await AuthService.login({ data: payload });
+      if (auth.status === 200) {
+        const { name, email } = auth.data.data;
+        const role = auth.data.data.Role.name;
+        Cookies.setData('name', name);
+        Cookies.setData('email', email);
+        Cookies.setData('role', role);
+        // alert('Berhasil Login');
+        dispatch(AuthenticationActions.fetchUser());
+        message.success('Berhasil Login!');
+        router.push('/pengembangan/jenis');
+        // setLoading(false);
+      }
+    } catch (error) {
+      if (error?.status === 401) {
+        // alert(error?.data?.message || 'Login Terlebih Dahulu');
+      }
+    }
+
+    setLoading(false);
   };
 
   return (

@@ -8,8 +8,11 @@ import AuthService from 'services/AuthService';
 
 function* fetchUser() {
   try {
-    const token = Cookies.getData('accessToken');
-    const user = parseJwt(token);
+    // const token = Cookies.getData('accessToken');
+    const name = Cookies.getData('name');
+    const email = Cookies.getData('email');
+    const role = Cookies.getData('role');
+    const user = { name, email, role };
 
     if (user) {
       yield put(AuthenticationActions.setAccountData(user));

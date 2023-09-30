@@ -1,6 +1,6 @@
 import ApiClient from 'utils/ApiClient';
 
-const login = (payload) => ApiClient.post('/auth/login', payload.data);
+const login = (payload) => ApiClient.post('/api/auth/login', payload.data);
 
 const logout = () => {
   return ApiClient.delete('/auth/logout').then((result) => result?.data);

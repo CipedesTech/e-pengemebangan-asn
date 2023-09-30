@@ -62,7 +62,7 @@ const Client = axios.create({
   /**
    * Import the config from the .env
    */
-  baseURL: Config.API_URL,
+  // baseURL: Config.API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
