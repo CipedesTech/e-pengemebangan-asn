@@ -10,21 +10,163 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model M_user {
   id        String   @id @default(uuid())
   name      String
-  email     String?  @unique
+  email     String   @unique
   password  String
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
-  Role      Role?    @relation(fields: [roleId], references: [id])
-  roleId    String?
+  Role      M_role   @relation(fields: [roleId], references: [id])
+  roleId    String
 }
 
-model Role {
+model M_role {
   id        String   @id @default(uuid())
-  name      String
-  user      User[]
+  name      String   @unique
+  user      M_user[]
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
+}
+
+model M_kompetensi {
+  id        String     @id @default(uuid())
+  nama      String
+  diklat    T_diklat[]
+  createdAt DateTime   @default(now()) @map(name: "created_at")
+  updatedAt DateTime   @updatedAt @map(name: "updated_at")
+}
+
+model T_diklat {
+  id             String       @id @default(uuid())
+  nama           String
+  createdAt      DateTime     @default(now()) @map(name: "created_at")
+  updatedAt      DateTime     @updatedAt @map(name: "updated_at")
+  M_kompetensi   M_kompetensi @relation(fields: [m_kompetensiId], references: [id])
+  m_kompetensiId String
+}
+
+// model m_unor___31_maret_2023 {
+//   id_unor             Int       @id @default(autoincrement())
+//   jenis               String?   @db.VarChar(255)
+//   nama_unor           String    @db.VarChar(255)
+//   kode_ese            String?   @db.VarChar(10)
+//   nama_ese            String?   @db.VarChar(100)
+//   id_masjab           Int?
+//   nomenklatur_jabatan String?   @db.VarChar(255)
+//   nomenklatur_pada    String?   @db.VarChar(255)
+//   nomenklatur_unor    String?   @db.VarChar(255)
+//   nomenklatur_cari    String?   @db.VarChar(255)
+//   tugas_tambahan      String    @db.VarChar(255)
+//   kode_unor           String?   @db.VarChar(100)
+//   tmt_berlaku         DateTime? @db.Date
+//   tst_berlaku         DateTime? @db.Date
+
+//   @@index([id_masjab], map: "id_masjab")
+//   @@index([tugas_tambahan], map: "tugas_tambahan")
+//   @@map("m_unor - 31 maret 2023")
+// }
+
+// model r_peg_diklat_struk {
+//   id_peg_diklat_struk Int      @id @default(autoincrement())
+//   id_diklat           Int
+//   id_rumpun           Int
+//   id_pegawai          Int
+//   jenis_diklat        String   @db.VarChar(120)
+//   jenjang_diklat      String   @db.VarChar(120)
+//   nama_diklat         String   @db.VarChar(120)
+//   tempat_diklat       String   @db.VarChar(50)
+//   penyelenggara       String   @db.VarChar(120)
+//   tahun               Int      @db.Year
+//   angkatan            String   @db.VarChar(20)
+//   tmt_diklat          DateTime @db.Date
+//   tst_diklat          DateTime @db.Date
+//   jam                 Decimal  @db.Decimal(5, 2)
+//   nomor_sttpl         String   @db.VarChar(30)
+//   tanggal_sttpl       DateTime @db.Date
+//   status              String   @db.VarChar(7)
+
+//   @@index([id_diklat], map: "id_diklat")
+//   @@index([id_pegawai], map: "id_pegawai")
+// }
+
+// model r_peg_kursus {
+//   id_peg_kursus      Int      @id @default(autoincrement())
+//   id_diklat          Int
+//   id_rumpun          Int
+//   id_pegawai         Int
+//   jenis_kursus       String   @db.VarChar(120)
+//   jenjang_kursus     String   @db.VarChar(120)
+//   nama_kursus        String   @db.VarChar(120)
+//   tempat_kursus      String   @db.VarChar(50)
+//   penyelenggara      String   @db.VarChar(120)
+//   tahun              Int      @db.Year
+//   angkatan           String   @db.VarChar(20)
+//   tmt_kursus         DateTime @db.Date
+//   tst_kursus         DateTime @db.Date
+//   jam                Decimal  @db.Decimal(5, 2)
+//   nomor_sertifikat   String   @db.VarChar(30)
+//   tanggal_sertifikat DateTime @db.Date
+//   status             String   @db.VarChar(7)
+
+//   @@index([id_pegawai], map: "id_pegawai")
+// }
+
+model r_pegawai_aktual {
+  id                   Int       @id @default(autoincrement())
+  id_pegawai           Int
+  nip                  String    @db.VarChar(20)
+  nip_baru             String    @db.VarChar(50)
+  nama_pegawai         String    @db.VarChar(50)
+  gelar_nonakademis    String?   @db.VarChar(25)
+  gelar_depan          String?   @db.VarChar(25)
+  gelar_belakang       String?   @db.VarChar(25)
+  gender               String?   @db.VarChar(2)
+  tempat_lahir         String?   @db.VarChar(50)
+  tanggal_lahir        DateTime? @db.Date
+  status_perkawinan    String?   @db.VarChar(20)
+  status_kepegawaian   String?   @db.VarChar(100)
+  tmt_cpns             DateTime? @db.Date
+  tmt_pns              DateTime? @db.Date
+  kode_golongan        Int?
+  nama_golongan        String?   @db.VarChar(100)
+  nama_pangkat         String?   @db.VarChar(100)
+  tmt_pangkat          DateTime? @db.Date
+  mk_gol_tahun         Int?
+  mk_gol_bulan         Int?
+  id_unor              Int?
+  kode_unor            String?   @db.VarChar(100)
+  nama_unor            String?   @db.VarChar(255)
+  jab_type             String?   @db.VarChar(100)
+  id_jenjang_jabatan   Int?
+  tingkat              String?   @db.VarChar(100)
+  nama_jenjang_jabatan String?   @db.VarChar(100)
+  nomenklatur_jabatan  String?   @db.VarChar(255)
+  nomenklatur_pada     String?   @db.VarChar(255)
+  tugas_tambahan       String?   @db.VarChar(255)
+  tmt_jabatan          DateTime? @db.Date
+  kode_ese             Int?
+  nama_ese             String?   @db.VarChar(100)
+  tmt_ese              DateTime? @db.Date
+  kelas_jabatan        String?   @db.VarChar(2)
+  nilai_jabatan        String?   @db.VarChar(4)
+  nama_jenjang         String?   @db.VarChar(100)
+  nama_jenjang_rumpun  String?   @db.VarChar(100)
+  tanggal_lulus        DateTime? @db.Date
+  last_updated         DateTime? @default(now()) @db.Timestamp(0)
+
+  @@index([gender], map: "gender")
+  @@index([id_pegawai], map: "id_pegawai")
+  @@index([id_unor], map: "id_unor")
+  @@index([jab_type], map: "jab_type")
+  @@index([kode_ese], map: "kode_ese")
+  @@index([kode_golongan], map: "kode_golongan")
+  @@index([kode_unor], map: "kode_unor")
+  @@index([nama_jenjang], map: "nama_jenjang")
+  @@index([nama_jenjang_rumpun], map: "nama_jenjang_rumpun")
+  @@index([nip_baru], map: "nip_baru")
+  @@index([nomenklatur_jabatan], map: "nomenklatur_jabatan")
+  @@index([status_kepegawaian], map: "status_kepegawaian")
+  @@index([status_perkawinan], map: "status_perkawinan")
+  @@index([tmt_pns], map: "tmt_pns")
 }

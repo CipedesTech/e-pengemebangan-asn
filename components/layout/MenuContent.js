@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +41,8 @@ const getRootSubMenu = (menu) => {
 };
 
 function MenuContent({ routeInfo }) {
+  const { user } = useSelector((state) => state.auth);
+  const { role } = user;
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { mobileNav } = useSelector((state) => state.theme);
@@ -54,6 +57,7 @@ function MenuContent({ routeInfo }) {
 
   const onOpenChange = (keys) => {
     const rootSubmenuKeys = getRootSubMenu(menu);
+    console.log('rootSubmenuKeys...', rootSubmenuKeys);
     const latestOpenKey = keys.find((key) => currentSubMenu.indexOf(key) === -1);
 
     if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
@@ -77,7 +81,7 @@ function MenuContent({ routeInfo }) {
         item.sub_menu.length > 0 ? (
           <Menu.ItemGroup key={item.url} title={t(item.name)}>
             {item.sub_menu.map((subMenuFirst) => (
-              subMenuFirst.sub_menu.length > 0 ? (
+              subMenuFirst.sub_menu.length > 0 && subMenuFirst.roles.includes(role) ? (
                 <SubMenu
                   key={subMenuFirst.url}
                   title={t(subMenuFirst.name)}
@@ -96,7 +100,7 @@ function MenuContent({ routeInfo }) {
                     </Menu.Item>
                   ))}
                 </SubMenu>
-              ) : (
+              ) : subMenuFirst.roles.includes(role) ? (
                 <Menu.Item
                   key={subMenuFirst.url}
                   icon={subMenuFirst.icon && React.createElement(AntdIcons[subMenuFirst.icon])}
@@ -107,7 +111,7 @@ function MenuContent({ routeInfo }) {
                     </a>
                   </Link>
                 </Menu.Item>
-              )
+              ) : null
             ))}
           </Menu.ItemGroup>
         ) : (

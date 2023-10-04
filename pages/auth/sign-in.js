@@ -12,8 +12,7 @@ import { useDispatch } from 'react-redux';
 const { Title, Paragraph } = Typography;
 
 function SignIn() {
-  const refreshToken = Cookies.getData('refreshToken');
-  const token = Cookies.getData('accessToken') ?? refreshToken;
+  const token = Cookies.getData('token');
   const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -21,36 +20,29 @@ function SignIn() {
 
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   if (token) {
-  //     router.push('/list-pinjaman');
-  //   }
-  // }, [token]);
+  useEffect(() => {
+    if (token) {
+      router.push('/list-pns');
+    }
+  }, [token]);
 
   const onSubmit = async (payload) => {
     setLoading(true);
-    message.success('login');
-    console.log(payload);
-    // setLoading(false);
-    // router.push('/list-asn');
-
     try {
       const auth = await AuthService.login({ data: payload });
       if (auth.status === 200) {
-        const { name, email } = auth.data.data;
-        const role = auth.data.data.Role.name;
-        Cookies.setData('name', name);
-        Cookies.setData('email', email);
-        Cookies.setData('role', role);
-        // alert('Berhasil Login');
+        console.log(auth.data);
+        const { token: freshToken, refreshToken } = auth.data.data;
+        Cookies.setData('token', freshToken);
+        Cookies.setData('refreshToken', refreshToken);
         dispatch(AuthenticationActions.fetchUser());
         message.success('Berhasil Login!');
-        router.push('/pengembangan/jenis');
-        // setLoading(false);
       }
     } catch (error) {
       if (error?.status === 401) {
-        // alert(error?.data?.message || 'Login Terlebih Dahulu');
+        message.error(error?.data?.message || 'Login Terlebih Dahulu');
+      } else {
+        message.error('Terjadi kesalahan pada server, hubguni admin');
       }
     }
 
@@ -72,14 +64,14 @@ function SignIn() {
         >
           <Form.Item
             name='username'
-            label='Username / Nomer Telepon'
+            label='Username / Email'
             className='mb-3'
             rules={[
-              { required: true, message: 'Username / Nomer Telepon Wajib Diisi' },
+              { required: true, message: 'Username / Email Wajib Diisi' },
             ]}
           >
             <Input
-              placeholder='Username / Nomer Telepon'
+              placeholder='Username / Email'
               type='text'
               autoFocus
             />

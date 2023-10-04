@@ -8,7 +8,7 @@ function Footer() {
       <Text type='secondary'>
         Copyright &copy;
         {`${new Date().getFullYear()} `}
-        PT. IKI Karunia Indonesia. All rights reserved.
+        PT. Sumapala Integrasi Solusi. All rights reserved.
       </Text>
     </footer>
   );

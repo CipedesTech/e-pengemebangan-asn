@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import { Menu, Dropdown, Avatar, Typography, Modal } from 'antd';
+import { Menu, Dropdown, Avatar, Typography, Modal, message } from 'antd';
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 
 import AuthenticationActions from 'stores/Authentication/Actions';
@@ -20,23 +20,13 @@ function NavProfile() {
   const { user } = useSelector((state) => state.auth);
   const [avatarBackground] = useState(randomAvatarColor());
 
-  function capital(string) {
-    let data;
-    if (string != null) {
-      data = string.charAt(0).toUpperCase() + string.slice(1);
-    } else {
-      data = '-';
-    }
-    return data;
-  }
-
   const onProfile = () => {
     router.push('/profile');
   };
 
   const onLogout = () => {
     confirm({
-      title: t('Confirm Logout'),
+      title: 'Konfirmasi logout',
       content: t('placeholder:confirm-logout'),
       icon: null,
       cancelText: t('button:cancel'),
@@ -44,6 +34,7 @@ function NavProfile() {
       okText: t('Logout'),
       okButtonProps: { type: 'primary' },
       onOk() {
+        message.success('logout');
         dispatch(AuthenticationActions.logoutUser());
       },
     });
@@ -78,23 +69,6 @@ function NavProfile() {
     </div>
   );
 
-  const role = (userRole) => {
-    let namaRole = '';
-    if (userRole === 0) {
-      namaRole = 'Peminjam';
-    } else if (userRole === 1) {
-      namaRole = 'Kredit Admin';
-    } else if (userRole === 2) {
-      namaRole = 'Kredit Analis';
-    } else if (userRole === 9) {
-      namaRole = 'Sales Admin';
-    } else {
-      namaRole = 'ASN';
-    }
-
-    return namaRole;
-  };
-  console.log(user);
   return (
     <Dropdown placement='bottomRight' overlay={profileMenu} trigger={['click']}>
       <div className='header-profile'>
