@@ -20,16 +20,6 @@ function NavProfile() {
   const { user } = useSelector((state) => state.auth);
   const [avatarBackground] = useState(randomAvatarColor());
 
-  function capital(string) {
-    let data;
-    if (string != null) {
-      data = string.charAt(0).toUpperCase() + string.slice(1);
-    } else {
-      data = '-';
-    }
-    return data;
-  }
-
   const onProfile = () => {
     router.push('/profile');
   };
@@ -79,23 +69,6 @@ function NavProfile() {
     </div>
   );
 
-  const role = (userRole) => {
-    let namaRole = '';
-    if (userRole === 0) {
-      namaRole = 'Peminjam';
-    } else if (userRole === 1) {
-      namaRole = 'Kredit Admin';
-    } else if (userRole === 2) {
-      namaRole = 'Kredit Analis';
-    } else if (userRole === 9) {
-      namaRole = 'Sales Admin';
-    } else {
-      namaRole = 'ASN';
-    }
-
-    return namaRole;
-  };
-  console.log(user);
   return (
     <Dropdown placement='bottomRight' overlay={profileMenu} trigger={['click']}>
       <div className='header-profile'>

@@ -360,7 +360,7 @@ function RencanaPengembangan1() {
 
 RencanaPengembangan1.getLayout = function getLayout(page) {
   return (
-    <AppLayout title='List PNS' key={1} extra={false} onTab={0}>
+    <AppLayout title='List PNS' extra={false}>
       {page}
     </AppLayout>
   );

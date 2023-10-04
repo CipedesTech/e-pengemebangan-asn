@@ -507,7 +507,7 @@ function RencanaPengembangan2() {
 
 RencanaPengembangan2.getLayout = function getLayout(page) {
   return (
-    <AppLayout title='List PNS' key={1} extra={false} onTab={0}>
+    <AppLayout title='List PNS' extra={false}>
       {page}
     </AppLayout>
   );
