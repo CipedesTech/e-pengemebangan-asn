@@ -9,24 +9,51 @@
     "order": 0,
     "sub_menu": [
       {
-          "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
-          "url": "/list-pns",
-          "name": "List PNS",
-          "icon": "UnorderedListOutlined",
-          "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
-          "description": null,
-          "order": 1,
-          "sub_menu": []
+        "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
+        "url": "/list-pns",
+        "name": "List PNS",
+        "icon": "UnorderedListOutlined",
+        "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
+        "description": null,
+        "order": 1,
+        "roles": [
+          "ADMIN",
+          "UMPEG",
+          "DIKLAT",
+          "Kepala BPKPSDM"
+        ],
+        "sub_menu": []
       },
       {
-          "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
-          "url": "/rencana-pengembangan/1",
-          "name": "Rencana Pengembangan",
-          "icon": "UnorderedListOutlined",
-          "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
-          "description": null,
-          "order": 1,
-          "sub_menu": []
+        "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
+        "url": "/rencana-pengembangan/data-diri",
+        "name": "Rencana Pengembangan",
+        "icon": "UnorderedListOutlined",
+        "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
+        "description": null,
+        "order": 2,
+        "roles": [
+          "ADMIN",
+          "UMPEG",
+          "DIKLAT",
+          "Kepala BPKPSDM"
+        ],
+        "sub_menu": []
+      },
+      {
+        "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
+        "url": "/rencana-pengembangan/data-diri",
+        "name": "Varifikasi PNS",
+        "icon": "UnorderedListOutlined",
+        "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
+        "description": null,
+        "order": 2,
+        "roles": [
+          "ADMIN",
+          "DIKLAT",
+          "Kepala BPKPSDM"
+        ],
+        "sub_menu": []
       },
       {
         "id": "ae98a907-a2e3-480c-8044-9e10abd61eff",
@@ -35,7 +62,10 @@
         "icon": "UnorderedListOutlined",
         "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
         "description": null,
-        "order": 1,
+        "order": 3,
+        "roles": [
+          "ADMIN"
+        ],
         "sub_menu": [
           {
             "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
@@ -74,7 +104,7 @@
             "sub_menu": []
           }
         ]
-    }
-  ]
+      }
+    ]
   }
 ]

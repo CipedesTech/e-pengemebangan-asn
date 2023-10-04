@@ -106,7 +106,7 @@ function RencanaPengembangan1() {
   };
 
   const onFinishForm = (e) => {
-    router.push('/rencana-pengembangan/2');
+    router.push('/rencana-pengembangan/diklat');
   };
 
   const onChangeJabatan = (label, value) => {
@@ -150,84 +150,6 @@ function RencanaPengembangan1() {
         <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
           <span style={{ fontSize: 18, fontWeight: 'bold' }}>Pendataan Pengembangan</span>
         </Col>
-        {/* <Col span={24} className='px-4 py-4'>
-          <Form form={form} layout='vertical' autoComplete='off' onFinish={(onSubmit) => console.log(onSubmit)}>
-            <Row gutter={[24, 24]}>
-              <Col span={12}>
-                <Form.Item
-                  name='transaksi_id'
-                  label={t('Transaksi ID')}
-                >
-                  <Input placeholder='Masukkan Transaksi ID' />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name='nama'
-                  label={t('Borrower Name')}
-                >
-                  <Input placeholder='Masukkan Nama Borrower' />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={[24, 24]}>
-              <Col span={12}>
-                <Form.Item
-                  name='nilai_pinjaman'
-                  label={t('Nilai Pinjaman')}
-                >
-                  <Input placeholder='Masukkan Nilai Pinjaman' />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name='status'
-                  label={t('Status')}
-                >
-                  <Select
-                    optionFilterProp='children'
-                    placeholder={t('placeholder:select', { field: t('Status') })}
-                    allowClear
-                    filterOption={(input, option) => (option.key.toLowerCase().includes(input.toLowerCase()))}
-                  >
-                    <Select.Option value={0}>Baru</Select.Option>
-                    <Select.Option value={2}>Rejected</Select.Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={[24, 24]}>
-              <Col span={12}>
-                <Form.Item
-                  name='tanggal'
-                  label={t('Waktu')}
-                >
-                  <DatePicker
-                    placeholder='Pilih Waktu'
-                    picker='date'
-                    disabledDate={(current) => current > dayjs()}
-                    className='w-100'
-                    allowClear={false}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col style={{ margin: 'auto', alignItems: 'center' }}>
-                <Form.Item className='mb-0'>
-                  <Space size='middle'>
-                    <Button type='primary' htmlType='submit'>
-                      {t('button:Terapkan')}
-                    </Button>
-                    <Button type='danger' onClick={() => console.log('')}>
-                      {t('button:Reset')}
-                    </Button>
-                  </Space>
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
-        </Col> */}
       </Row>
       <Row>
         <Col span={24}>
@@ -428,57 +350,6 @@ function RencanaPengembangan1() {
                   </Col>
                 </Row>
               </Form.Item>
-              {/* <Form.Item name='labels' label='7. Kebutuhan Pengembangan Kompetensi '>
-                <Radio.Group>
-                  <Space direction='vertical'>
-                    <Radio value='Manajerial'>1. Manajerial </Radio>
-                    <Radio value='Fungsional'>2. Fungsional </Radio>
-                    <Radio value='Teknis'>3. Teknis </Radio>
-                    <Radio value='Sosiokultural'>4. Sosiokultural </Radio>
-                    <Radio value='Pemerintahan'>5. Pemerintahan</Radio>
-                  </Space>
-                </Radio.Group>
-              </Form.Item>
-              <p style={{ color: '#1a3353', fontWeight: '600' }}>8. Bentuk pengembangan kompetensi yang akan diikuti</p>
-              <Form.Item name='labels'>
-                <Radio.Group>
-                  <Radio value='Klasikal'>Klasikal</Radio>
-                  <Radio value='Non Klasikal'>Non Klasikal</Radio>
-                </Radio.Group>
-              </Form.Item>
-              <p style={{ color: '#1a3353', fontWeight: '600' }}>9. Bentuk Pengembangan Kompetensi Klasikal yang akan diikuti</p>
-              <Form.Item name='labels'>
-                <Radio.Group>
-                  <Radio value='Tugas Belajar'>Tugas Belajar</Radio>
-                  <Radio value='Pelatihan'>Pelatihan</Radio>
-                  <Radio value='Workshop'>Workshop</Radio>
-                  <Radio value='Seminar'>Seminar</Radio>
-                  <Radio value='Bimtek'>Bimtek</Radio>
-                  <Radio value='Kursus'>Kursus</Radio>
-                  <Radio value='Penataran'>Penataran</Radio>
-                  <Radio value='Konfrensi'>Konfrensi</Radio>
-                  <Radio value='Sosialisasi'>Sosialisasi</Radio>
-                  <Radio value='Lainnya'>Lainnya</Radio>
-                </Radio.Group>
-              </Form.Item>
-              <p style={{ color: '#1a3353', fontWeight: '600' }}>10. Bentuk Pengembangan Kompetensi Non Klasikal yang akan diikuti</p>
-              <Form.Item name='labels'>
-                <Radio.Group>
-                  <Radio value='Coaching'>Coaching</Radio>
-                  <Radio value='Mentoring'>Mentoring</Radio>
-                  <Radio value='E-Learning'>E-Learning</Radio>
-                  <Radio value='Pelatihan Jarak Jauh'>Pelatihan Jarak Jauh</Radio>
-                  <Radio value='Datasering'>Datasering</Radio>
-                  <Radio value='Pembelajaran Alama Terbuka'>Pembelajaran Alama Terbuka</Radio>
-                  <Radio value='Patokan Banding'>Patokan Banding</Radio>
-                  <Radio value='Pertukaran Pegawai'>Pertukaran Pegawai</Radio>
-                  <Radio value='Belajar Mandiri'>Belajar Mandiri</Radio>
-                  <Radio value='Komunikasi Belajar'>Komunikasi Belajar</Radio>
-                  <Radio value='Bimbingan di tempat Kerja'>Bimbingan di tempat Kerja</Radio>
-                  <Radio value='Magang'>Magang</Radio>
-                  <Radio value='Lainnya'>Lainnya</Radio>
-                </Radio.Group>
-              </Form.Item> */}
             </Form>
           </Card>
         </Col>

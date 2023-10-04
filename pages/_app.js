@@ -20,7 +20,7 @@ const { publicRuntimeConfig: Config } = getConfig();
 
 function App({ Component, pageProps }) {
   const router = useRouter();
-  const token = Cookies.getData('name') || Cookies.getData('email') || Cookies.getData('role') || null;
+  const token = Cookies.getData('token');
   const store = useStore();
   const getLayout = Component.getLayout || ((page) => page);
 
@@ -30,11 +30,11 @@ function App({ Component, pageProps }) {
     router.events.on('routeChangeError', () => NProgress.done());
   }, [router]);
 
-  // useEffect(() => {
-  //   if (!token && !router.pathname.includes('auth')) {
-  //     router.push('/auth/sign-in');
-  //   }
-  // }, [token]);
+  useEffect(() => {
+    if (!token && !router.pathname.includes('auth')) {
+      router.push('/auth/sign-in');
+    }
+  }, [token]);
 
   return (
     <>

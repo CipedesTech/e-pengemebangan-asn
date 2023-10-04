@@ -2,6 +2,8 @@ import ApiClient from 'utils/ApiClient';
 
 const getAllPns = (params) => { return ApiClient.get('/api/pns', params); };
 
+const getPnsById = (id) => { console.log('first', id); return ApiClient.get(`/api/pns/${id}`, {}); };
+
 // const getBorrowerPinjaman = (params) => {
 //   return ApiClient.get('/pinjaman/list_pinjaman_borrower', params).then((result) => result?.data);
 // };
@@ -28,7 +30,7 @@ const getAllPns = (params) => { return ApiClient.get('/api/pns', params); };
 
 export default {
   getAllPns,
-  // getBorrowerPinjaman,
+  getPnsById,
   // getCariPinjaman,
   // getPinjaman,
   // getDetailPinjaman,

@@ -3,16 +3,13 @@ import { takeLatest, all, put, call } from 'redux-saga/effects';
 import AuthenticationActions, { AuthenticationTypes } from 'stores/Authentication/Actions';
 import ThemeActions from 'stores/Theme/Actions';
 import Cookies from 'utils/Cookies';
-import { parseJwt } from 'utils/Utils';
+import jwt from 'jsonwebtoken';
 import AuthService from 'services/AuthService';
 
 function* fetchUser() {
   try {
-    const name = Cookies.getData('name');
-    const email = Cookies.getData('email');
-    const role = Cookies.getData('role');
-    const user = { name, email, role };
-
+    const token = Cookies.getData('token');
+    const user = jwt.decode(token);
     if (user) {
       yield put(AuthenticationActions.setAccountData(user));
     }
@@ -23,15 +20,15 @@ function* fetchUser() {
 
 function* logoutUser() {
   try {
-    const user = yield call(AuthService.logout);
+    // const user = yield call(AuthService.logout);
 
-    if (user) {
-      yield call(Cookies.clearData);
-      yield put(AuthenticationActions.resetAccountData());
-      yield put(ThemeActions.resetTheme());
-      localStorage.clear();
-      window.location.href = '/auth/sign-in';
-    }
+    // if (user) {
+    yield call(Cookies.clearData);
+    yield put(AuthenticationActions.resetAccountData());
+    yield put(ThemeActions.resetTheme());
+    localStorage.clear();
+    window.location.href = '/auth/sign-in';
+    // }
   } catch (error) {
     console.error(error);
   }

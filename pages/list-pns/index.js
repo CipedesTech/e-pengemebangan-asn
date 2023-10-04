@@ -20,7 +20,7 @@ import {
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { EyeOutlined } from '@ant-design/icons';
-import { formatRupiah } from 'utils/Utils';
+import qs from 'qs';
 import PnsService from 'services/PnsService';
 
 const { Title, Paragraph, Text } = Typography;
@@ -28,21 +28,18 @@ const { Title, Paragraph, Text } = Typography;
 function ListASN() {
   const router = useRouter();
   const { t } = useTranslation();
-  // const [form] = Form.useForm();
-
   const { user } = useSelector((state) => state.auth);
-
+  const query = qs.parse(window.location.search.split('?')[1]);
   const [loading, setLoading] = useState(false);
   const [params, setParams] = useState({
-    page: 1,
-    perPage: 10,
+    page: parseInt(query.page, 10) || 1,
+    perPage: parseInt(query.perPage, 10) || 10,
   });
   const [tableData, setTableData] = useState({
     data: [],
     total: null,
   });
-
-  const fetchData = async (param) => {
+  const fetchData = async () => {
     const res = await PnsService.getAllPns({ params });
     setTableData((prevParam) => ({
       ...prevParam,
@@ -60,12 +57,16 @@ function ListASN() {
     fetchData(params);
   }, [params]);
 
+  useEffect(() => {
+    console.log(query);
+  }, [query]);
+
   const onDetail = (record) => {
-    router.push(`list-pns/${record.nip}/1`);
+    router.push(`list-pns/${record.id}`);
   };
 
   const onPageChange = (page, pageSize) => {
-    console.log(page, pageSize);
+    router.push('', `?page=${page}&perPage=${pageSize}`, { scroll: false });
     setParams((prevParam) => ({
       ...prevParam,
       page,
@@ -73,21 +74,14 @@ function ListASN() {
     }));
   };
 
-  const dataDummy = [
-    {
-      nip: 1111,
-      nama_pegawai: 'roorf',
-      status_kepegawaian: 'pns',
-    },
-  ];
-
   const columns = [
     {
       title: 'No',
       dataIndex: 'no',
       key: 'no',
       render: (text, record, index) => {
-        return index + 1;
+        return (params.page - 1) * params.perPage + 1 + index;
+        // return params.page > 1 ? index + (params.perPage * params.page) + 1 : index + 1;
       },
     },
     {
@@ -226,8 +220,7 @@ function ListASN() {
                 <Table
                   loading={loading}
                   columns={columns}
-                  // dataSource={tableData.data}
-                  dataSource={dataDummy}
+                  dataSource={tableData.data}
                   rowKey={(record) => record.id}
                   scroll={{ x: 700 }}
                   pagination={{
@@ -290,7 +283,7 @@ function ListASN() {
 
 ListASN.getLayout = function getLayout(page) {
   return (
-    <AppLayout title='Pengajuan' key={1} extra={false} onTab={0}>
+    <AppLayout title='PNS' onTab='list_pns' extra={false}>
       {page}
     </AppLayout>
   );

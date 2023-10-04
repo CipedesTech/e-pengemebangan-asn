@@ -19,7 +19,7 @@ const getData = (name, ctx) => {
 };
 
 const clearData = async (ctx) => {
-  nookies.destroy(ctx || null, getCookiesName('accessToken'), options);
+  nookies.destroy(ctx || null, getCookiesName('token'), options);
   nookies.destroy(ctx || null, getCookiesName('refreshToken'), options);
 };
 

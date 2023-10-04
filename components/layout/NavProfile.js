@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import { Menu, Dropdown, Avatar, Typography, Modal } from 'antd';
+import { Menu, Dropdown, Avatar, Typography, Modal, message } from 'antd';
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 
 import AuthenticationActions from 'stores/Authentication/Actions';
@@ -36,7 +36,7 @@ function NavProfile() {
 
   const onLogout = () => {
     confirm({
-      title: t('Confirm Logout'),
+      title: 'Konfirmasi logout',
       content: t('placeholder:confirm-logout'),
       icon: null,
       cancelText: t('button:cancel'),
@@ -44,6 +44,7 @@ function NavProfile() {
       okText: t('Logout'),
       okButtonProps: { type: 'primary' },
       onOk() {
+        message.success('logout');
         dispatch(AuthenticationActions.logoutUser());
       },
     });
