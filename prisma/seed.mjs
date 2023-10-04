@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const saltRounds = 10;
 
 async function main() {
-  await prisma.role.createMany({
+  await prisma.m_role.createMany({
     data: [
       { name: 'ADMIN' },
       { name: 'UMPEG' },
@@ -14,7 +14,7 @@ async function main() {
     ],
   });
 
-  const role = await prisma.role.findMany();
+  const role = await prisma.m_role.findMany();
   const roles = {
     admin: role.filter((el) => el.name === 'ADMIN')[0].id,
     umpeg: role.filter((el) => el.name === 'UMPEG')[0].id,
@@ -24,7 +24,7 @@ async function main() {
 
   const salt = await bcrypt.genSalt(saltRounds);
 
-  await prisma.user.createMany({
+  await prisma.m_user.createMany({
     data: [
       { name: 'Admin', email: 'admin@mail.id', password: await bcrypt.hash('asdqwe123', salt), roleId: roles.admin },
       { name: 'Umpeg', email: 'umpeg@mail.id', password: await bcrypt.hash('asdqwe123', salt), roleId: roles.umpeg },

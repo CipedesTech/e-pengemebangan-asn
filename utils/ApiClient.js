@@ -1,9 +1,6 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
-import getConfig from 'next/config';
 import Cookies from './Cookies';
-
-const { publicRuntimeConfig: Config } = getConfig();
 
 const StatusCode = {
   BadRequest: 400,
@@ -62,7 +59,6 @@ const Client = axios.create({
   /**
    * Import the config from the .env
    */
-  // baseURL: Config.API_URL,
   headers: {
     'Content-Type': 'application/json',
   },

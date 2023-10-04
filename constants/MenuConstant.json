@@ -9,19 +9,19 @@
     "order": 0,
     "sub_menu": [
       {
-        "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
-        "url": "/pengembangan/jenis",
-        "name": "Pengajuan",
-        "icon": "UnorderedListOutlined",
-        "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
-        "description": null,
-        "order": 1,
-        "sub_menu": []
+          "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
+          "url": "/list-pns",
+          "name": "List PNS",
+          "icon": "UnorderedListOutlined",
+          "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
+          "description": null,
+          "order": 1,
+          "sub_menu": []
       },
       {
           "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
-          "url": "/list-asn",
-          "name": "List ASN",
+          "url": "/rencana-pengembangan",
+          "name": "Rencana Pengembangan",
           "icon": "UnorderedListOutlined",
           "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
           "description": null,

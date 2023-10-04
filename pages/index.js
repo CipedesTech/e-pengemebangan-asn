@@ -1,1 +1,1 @@
-export { default } from './list-asn';
+export { default } from './list-pns';

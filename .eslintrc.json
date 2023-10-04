@@ -40,13 +40,15 @@
         ["sagas", "./sagas"],
         ["services", "./services"],
         ["stores", "./stores"],
-        ["utils", "./utils"]
+        ["utils", "./utils"],
+        ["lib", "./lib"]
       ]
     }
   },
   "plugins": ["react", "react-hooks"],
   "rules": {
     "react/react-in-jsx-scope": "off",
+    "no-case-declarations": "off",
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/display-name": 1,
     "jsx-quotes": ["error", "prefer-single"],
@@ -55,7 +57,7 @@
     "object-curly-newline": 0,
     "react/no-array-index-key": 0,
     "import/no-extraneous-dependencies": 0,
-    "no-console": ["warn", { "allow": ["warn"] }],
+    "no-console": "off",
     "max-len": 0,
     "linebreak-style": 0,
     "react/jsx-props-no-spreading": [

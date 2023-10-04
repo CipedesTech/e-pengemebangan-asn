@@ -30,11 +30,11 @@ function App({ Component, pageProps }) {
     router.events.on('routeChangeError', () => NProgress.done());
   }, [router]);
 
-  useEffect(() => {
-    if (!token && !router.pathname.includes('auth')) {
-      router.push('/auth/sign-in');
-    }
-  }, [token]);
+  // useEffect(() => {
+  //   if (!token && !router.pathname.includes('auth')) {
+  //     router.push('/auth/sign-in');
+  //   }
+  // }, [token]);
 
   return (
     <>

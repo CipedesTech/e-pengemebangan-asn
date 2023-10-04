@@ -129,3 +129,13 @@ export const dateSubtractWeekDayOnly = (dataDate, length = 0) => {
   }
   return dayjs(dataDate).add(length + weekCount, 'day').format('MMM DD, YYYY');
 };
+
+export const capital = (string) => {
+  let data;
+  if (string != null) {
+    data = string.charAt(0).toUpperCase() + string.slice(1);
+  } else {
+    data = '-';
+  }
+  return data;
+}

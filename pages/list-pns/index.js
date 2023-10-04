@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-else-return */
 import { useSelector } from 'react-redux';
@@ -9,7 +10,6 @@ import {
   Card,
   Col,
   Form,
-  message,
   Row,
   Space,
   Table,
@@ -20,65 +20,57 @@ import {
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { EyeOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
-import PinjamanService from 'services/PinjamanService';
 import { formatRupiah } from 'utils/Utils';
+import PnsService from 'services/PnsService';
 
 const { Title, Paragraph, Text } = Typography;
 
 function ListASN() {
   const router = useRouter();
   const { t } = useTranslation();
-  const [form] = Form.useForm();
+  // const [form] = Form.useForm();
 
   const { user } = useSelector((state) => state.auth);
 
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(0);
-  const [loanList, setLoanList] = useState({
-    data: [],
-    total: 0,
-  });
   const [params, setParams] = useState({
     page: 1,
-    limit: 10,
+    perPage: 10,
   });
-  const [paramsCari, setParamsCari] = useState({
-    page: 1,
-    limit: 10,
+  const [tableData, setTableData] = useState({
+    data: [],
+    total: null,
   });
 
+  const fetchData = async (param) => {
+    const res = await PnsService.getAllPns({ params });
+    setTableData((prevParam) => ({
+      ...prevParam,
+      data: res.data.data.data,
+      total: res.data.data.meta.total,
+    }));
+  };
+
   useEffect(() => {
-    console.log('LIST-ASN');
+    fetchData({ params });
+  }, []);
+
+  useEffect(() => {
+    console.log('REFECTH');
+    fetchData(params);
   }, [params]);
 
   const onDetail = (record) => {
-    window.localStorage.removeItem('pinjaman_id');
-    window.localStorage.removeItem('pinjaman');
-
-    const loanId = record?.pinjaman_id;
-    const userId = record?.borrower_id;
-
-    router.push(`/pengajuan/${loanId}/1`);
-
-    window.localStorage.setItem('pinjaman_id', userId);
-    window.localStorage.setItem('pinjaman', JSON.stringify(record));
+    console.log(record);
   };
 
   const onPageChange = (page, pageSize) => {
-    if (status === 0) {
-      setParams((prevParam) => ({
-        ...prevParam,
-        page,
-        limit: pageSize,
-      }));
-    } else {
-      setParamsCari((prevParam) => ({
-        ...prevParam,
-        page,
-        limit: pageSize,
-      }));
-    }
+    console.log(page, pageSize);
+    setParams((prevParam) => ({
+      ...prevParam,
+      page,
+      perPage: pageSize,
+    }));
   };
 
   const columns = [
@@ -97,15 +89,15 @@ function ListASN() {
     },
     {
       title: 'Nama',
-      dataIndex: 'borrower_name',
-      key: 'borrower_name',
+      dataIndex: 'nama_pegawai',
+      key: 'nama_pegawai',
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
+      title: 'Status Kepegawaian',
+      dataIndex: 'status_kepegawaian',
+      key: 'status_kepegawaian',
       render: (text) => {
-        return text === 0 ? <Tag color='geekblue'>Baru</Tag> : <Tag color='orange'>Rejected</Tag>;
+        return text === 'pns' ? <Tag color='geekblue'>{text}</Tag> : <Tag color='orange'>{text}</Tag>;
       },
     },
     {
@@ -135,7 +127,7 @@ function ListASN() {
         <>
           <Row>
             <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
-              <span style={{ fontSize: 18, fontWeight: 'bold' }}>List ASN</span>
+              <span style={{ fontSize: 18, fontWeight: 'bold' }}>List PNS</span>
             </Col>
             {/* <Col span={24} className='px-4 py-4'>
               <Form form={form} layout='vertical' autoComplete='off' onFinish={onSubmit}>
@@ -226,14 +218,14 @@ function ListASN() {
                 <Table
                   loading={loading}
                   columns={columns}
-                  dataSource={loanList.data}
+                  dataSource={tableData.data}
                   rowKey={(record) => record.id}
                   scroll={{ x: 700 }}
                   pagination={{
-                    total: loanList.total,
+                    total: tableData.total,
                     showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
-                    current: status === 0 ? params.page : paramsCari.page,
-                    pageSize: status === 0 ? params.limit : paramsCari.limit,
+                    current: params.page,
+                    pageSize: params.perPage,
                     onChange: onPageChange,
                   }}
                 />
@@ -247,7 +239,7 @@ function ListASN() {
             <span style={{ fontSize: 18, fontWeight: 'bold' }}>Daftar Pinjaman</span>
           </Col>
           <Col span={24}>
-            {loanList.data.map((item, key) => (
+            {/* {loanList.data.map((item, key) => (
               <Card className='mx-4 my-4' loading={loading} key={key}>
                 <Row gutter={[24, 24]}>
                   <Col span={24}>
@@ -279,7 +271,7 @@ function ListASN() {
                   </Col>
                 </Row>
               </Card>
-            ))}
+            ))} */}
           </Col>
         </Row>
       )}
