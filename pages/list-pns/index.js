@@ -61,7 +61,7 @@ function ListASN() {
   }, [params]);
 
   const onDetail = (record) => {
-    console.log(record);
+    router.push(`list-pns/${record.nip}/1`);
   };
 
   const onPageChange = (page, pageSize) => {
@@ -72,6 +72,14 @@ function ListASN() {
       perPage: pageSize,
     }));
   };
+
+  const dataDummy = [
+    {
+      nip: 1111,
+      nama_pegawai: 'roorf',
+      status_kepegawaian: 'pns',
+    },
+  ];
 
   const columns = [
     {
@@ -218,7 +226,8 @@ function ListASN() {
                 <Table
                   loading={loading}
                   columns={columns}
-                  dataSource={tableData.data}
+                  // dataSource={tableData.data}
+                  dataSource={dataDummy}
                   rowKey={(record) => record.id}
                   scroll={{ x: 700 }}
                   pagination={{

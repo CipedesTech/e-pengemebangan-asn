@@ -27,28 +27,30 @@ function SignIn() {
   // }, [authName]);
 
   const onSubmit = async (payload) => {
-    setLoading(true);
-    try {
-      const auth = await AuthService.login({ data: payload });
-      if (auth.status === 200) {
-        const { name, email } = auth.data.data;
-        const role = auth.data.data.Role.name;
-        Cookies.setData('name', name);
-        Cookies.setData('email', email);
-        Cookies.setData('role', role);
-        dispatch(AuthenticationActions.fetchUser());
-        message.success('Berhasil Login!');
-        router.push('/list-pns');
-      }
-    } catch (error) {
-      if (error?.status === 401) {
-        message.error(error?.data?.message || 'Login Terlebih Dahulu');
-      } else {
-        message.error('Terjadi kesalahan pada server, hubguni admin');
-      }
-    }
+    router.push('/list-pns');
 
-    setLoading(false);
+    // setLoading(true);
+    // try {
+    //   const auth = await AuthService.login({ data: payload });
+    //   if (auth.status === 200) {
+    //     const { name, email } = auth.data.data;
+    //     const role = auth.data.data.Role.name;
+    //     Cookies.setData('name', name);
+    //     Cookies.setData('email', email);
+    //     Cookies.setData('role', role);
+    //     dispatch(AuthenticationActions.fetchUser());
+    //     message.success('Berhasil Login!');
+    //     router.push('/list-pns');
+    //   }
+    // } catch (error) {
+    //   if (error?.status === 401) {
+    //     message.error(error?.data?.message || 'Login Terlebih Dahulu');
+    //   } else {
+    //     message.error('Terjadi kesalahan pada server, hubguni admin');
+    //   }
+    // }
+
+    // setLoading(false);
   };
 
   return (
