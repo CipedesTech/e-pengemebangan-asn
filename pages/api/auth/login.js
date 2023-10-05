@@ -1,9 +1,6 @@
 import prisma from 'lib/prisma';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import getConfig from 'next/config';
-
-const { publicRuntimeConfig: Config } = getConfig();
 
 export default async function handler(req, res) {
   const { username, password } = req.body;
@@ -32,8 +29,8 @@ export default async function handler(req, res) {
       const { id, name, email, Role } = user;
       const payload = { id, name, email, role: Role.name };
 
-      const token = jwt.sign(payload, Config.SECRET_KEY, { expiresIn: '4h' });
-      const refreshToken = jwt.sign(payload, Config.REFRESH_SECRET_KEY, { expiresIn: '5d' });
+      const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '4h' });
+      const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET_KEY, { expiresIn: '5d' });
 
       return res.status(200).json({ message: 'Login Berhasil!', data: { token, refreshToken } });
 

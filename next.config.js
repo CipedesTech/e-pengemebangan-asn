@@ -9,8 +9,8 @@ const nextConfig = {
     APP_ENVIRONMENT: process.env.APP_ENVIRONMENT,
     APP_NAME: process.env.APP_NAME,
     API_URL: process.env.API_URL,
-    SECRET_KEY: process.env.SECRET_KEY,
-    REFRESH_SECRET_KEY: process.env.REFRESH_SECRET_KEY,
+    // SECRET_KEY: process.env.SECRET_KEY,
+    // REFRESH_SECRET_KEY: process.env.REFRESH_SECRET_KEY,
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if
