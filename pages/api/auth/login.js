@@ -3,9 +3,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
-  const { username, password } = req.body;
   switch (req.method) {
     case 'POST':
+      const { username, password } = req.body;
       if (!username || !password) return res.status(500).json({ message: 'Validation Error', data: '' });
 
       const user = await prisma.m_user.findUnique({
@@ -35,8 +35,6 @@ export default async function handler(req, res) {
       return res.status(200).json({ message: 'Login Berhasil!', data: { token, refreshToken } });
 
     default:
-      console.log(jwt.decode(username));
-      console.log(jwt.decode(password));
       return res.status(404).json({ message: 'Not found', data: '' });
   }
 }
