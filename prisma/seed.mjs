@@ -26,10 +26,10 @@ async function main() {
 
   await prisma.m_user.createMany({
     data: [
-      { name: 'Admin', email: 'admin@mail.id', password: await bcrypt.hash('asdqwe123', salt), roleId: roles.admin },
-      { name: 'Umpeg', email: 'umpeg@mail.id', password: await bcrypt.hash('asdqwe123', salt), roleId: roles.umpeg },
-      { name: 'Diklat', email: 'diklat@mail.id', password: await bcrypt.hash('asdqwe123', salt), roleId: roles.diklat },
-      { name: 'Kepala', email: 'kepala.bpkpsdm@mail.id', password: await bcrypt.hash('asdqwe123', salt), roleId: roles.kepala },
+      { name: 'Admin', email: 'admin@cianjurkab.go.id', password: await bcrypt.hash('asdqwe123', salt), roleId: roles.admin },
+      { name: 'Umpeg', email: 'umpeg@cianjurkab.go.id', password: await bcrypt.hash('asdqwe123', salt), roleId: roles.umpeg },
+      { name: 'Diklat', email: 'diklat@cianjurkab.go.id', password: await bcrypt.hash('asdqwe123', salt), roleId: roles.diklat },
+      { name: 'Kepala', email: 'kepala.bpkpsdm@cianjurkab.go.id', password: await bcrypt.hash('asdqwe123', salt), roleId: roles.kepala },
     ],
     skipDuplicates: true,
   });
