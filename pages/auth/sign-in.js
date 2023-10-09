@@ -6,13 +6,12 @@ import { Row, Col, Typography, Form, Input, Button, message } from 'antd';
 import AuthLayout from 'layouts/auth-layout';
 import AuthService from 'services/AuthService';
 import AuthenticationActions from 'stores/Authentication/Actions';
-import Cookies from 'utils/Cookies';
 import { useDispatch } from 'react-redux';
 
 const { Title, Paragraph } = Typography;
 
 function SignIn() {
-  const token = Cookies.getData('token');
+  const token = localStorage.getItem('token');
   const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -33,8 +32,8 @@ function SignIn() {
       if (auth.status === 200) {
         console.log(auth.data);
         const { token: freshToken, refreshToken } = auth.data.data;
-        Cookies.setData('token', freshToken);
-        Cookies.setData('refreshToken', refreshToken);
+        localStorage.setItem('token', freshToken);
+        localStorage.setItem('refreshToken', refreshToken);
         dispatch(AuthenticationActions.fetchUser());
         message.success('Berhasil Login!');
       }
@@ -53,6 +52,11 @@ function SignIn() {
     <Row justify='center'>
       <Col xs={24} sm={24} md={20} lg={11} xl={8}>
         <div className='text-center'>
+          <img
+            src='/img/protokol.jpeg'
+            className='logo-auth mb-5'
+            alt='e-Pengembangan ASN'
+          />
           <Title level={1} className='mb-1'>{t('Sign In')}</Title>
           <Paragraph level={3}>Selamat datang kembali, untuk melanjutkan silahkan masukan akunmu.</Paragraph>
         </div>

@@ -41,7 +41,8 @@
         ["services", "./services"],
         ["stores", "./stores"],
         ["utils", "./utils"],
-        ["lib", "./lib"]
+        ["lib", "./lib"],
+        ["hooks", "./hooks"]
       ]
     }
   },

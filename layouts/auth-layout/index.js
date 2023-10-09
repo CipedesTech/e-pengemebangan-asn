@@ -25,13 +25,6 @@ function AuthLayout({ title, children }) {
             <div className='d-flex flex-column justify-content-between h-100 px-4' style={backgroundStyle} />
           </Col>
           <Col xs={20} sm={20} md={24} lg={12}>
-            <div className='text-right px-0 px-md-4 pt-4'>
-              <img
-                src='/img/protokol.jpeg'
-                className='logo-auth'
-                alt='e-Pengembangan ASN'
-              />
-            </div>
             <div className='container d-flex flex-column justify-content-center form-auth'>
               {children}
             </div>

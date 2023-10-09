@@ -9,6 +9,7 @@ import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 import AuthenticationActions from 'stores/Authentication/Actions';
 
 import { initialName, randomAvatarColor } from 'utils/Utils';
+import Cookies from 'utils/Cookies';
 
 const { Title } = Typography;
 const { confirm } = Modal;
@@ -35,7 +36,10 @@ function NavProfile() {
       okButtonProps: { type: 'primary' },
       onOk() {
         message.success('logout');
-        dispatch(AuthenticationActions.logoutUser());
+        // dispatch(AuthenticationActions.logoutUser());
+        Cookies.clearData();
+        localStorage.clear();
+        router.push('/auth/sign-in');
       },
     });
   };

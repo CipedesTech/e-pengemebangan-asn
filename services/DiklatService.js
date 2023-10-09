@@ -1,14 +1,14 @@
 import ApiClient from 'utils/ApiClient';
 
-const getAllPns = (params) => { return ApiClient.get('/api/pns', params); };
+const createPelaksanaanDiklat = (payload) => { return ApiClient.post('/api/diklat/pelaksanaan', payload); };
 
-const getPnsById = (id) => { return ApiClient.get(`/api/pns/${id}`, {}); };
+const getAllPelaksanaanDiklat = (params) => { return ApiClient.get('/api/diklat/pelaksanaan', params); };
 
-const getAllPengajuan = (params) => { return ApiClient.get('/api/pns/pengajuan', params); };
+// const getPnsById = (id) => { return ApiClient.get(`/api/pns/${id}`, {}); };
 
-const createPengajuan = (payload) => { return ApiClient.post('/api/pns/pengajuan', payload); };
+// const getAllPengajuan = (params) => { return ApiClient.get('/api/pns/pengajuan', params); };
 
-const updatePengajuan = (id, payload) => { return ApiClient.put(`/api/pns/pengajuan/${id}`, payload); };
+// const updatePengajuan = (id, payload) => { return ApiClient.put(`/api/pns/pengajuan/${id}`, payload); };
 
 // const getBorrowerPinjaman = (params) => {
 //   return ApiClient.get('/pinjaman/list_pinjaman_borrower', params).then((result) => result?.data);
@@ -35,11 +35,11 @@ const updatePengajuan = (id, payload) => { return ApiClient.put(`/api/pns/pengaj
 // };
 
 export default {
-  getAllPns,
-  getPnsById,
-  getAllPengajuan,
-  createPengajuan,
-  updatePengajuan,
+  createDiklat: createPelaksanaanDiklat,
+  getAllPelaksanaanDiklat,
+  // getPnsById,
+  // getAllPengajuan,
+  // updatePengajuan,
   // getCariPinjaman,
   // getPinjaman,
   // getDetailPinjaman,

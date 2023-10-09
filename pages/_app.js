@@ -8,21 +8,25 @@ import { createWrapper } from 'next-redux-wrapper';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
 import getConfig from 'next/config';
-import Cookies from 'utils/Cookies';
 
 import NProgress from 'nprogress';
 
 import createStore from 'stores';
 
 import 'locales/i18n';
+import { message } from 'antd';
 
 const { publicRuntimeConfig: Config } = getConfig();
 
 function App({ Component, pageProps }) {
   const router = useRouter();
-  const token = Cookies.getData('token');
   const store = useStore();
   const getLayout = Component.getLayout || ((page) => page);
+
+  let token;
+  if (typeof window !== 'undefined') {
+    token = localStorage.getItem('token');
+  }
 
   useEffect(() => {
     router.events.on('routeChangeStart', () => NProgress.start());
@@ -32,6 +36,7 @@ function App({ Component, pageProps }) {
 
   useEffect(() => {
     if (!token && !router.pathname.includes('auth')) {
+      message.error('sesi telah habis silahkan login kembali');
       router.push('/auth/sign-in');
     }
   }, [token]);
