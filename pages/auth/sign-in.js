@@ -6,12 +6,13 @@ import { Row, Col, Typography, Form, Input, Button, message } from 'antd';
 import AuthLayout from 'layouts/auth-layout';
 import AuthService from 'services/AuthService';
 import AuthenticationActions from 'stores/Authentication/Actions';
+import Cookies from 'utils/Cookies';
 import { useDispatch } from 'react-redux';
 
 const { Title, Paragraph } = Typography;
 
 function SignIn() {
-  const token = localStorage.getItem('token');
+  const token = Cookies.getData('token');
   const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -32,8 +33,8 @@ function SignIn() {
       if (auth.status === 200) {
         console.log(auth.data);
         const { token: freshToken, refreshToken } = auth.data.data;
-        localStorage.setItem('token', freshToken);
-        localStorage.setItem('refreshToken', refreshToken);
+        Cookies.setData('token', freshToken);
+        Cookies.setData('refreshToken', refreshToken);
         dispatch(AuthenticationActions.fetchUser());
         message.success('Berhasil Login!');
       }

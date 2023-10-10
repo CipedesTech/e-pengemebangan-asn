@@ -15,6 +15,7 @@ import createStore from 'stores';
 
 import 'locales/i18n';
 import { message } from 'antd';
+import Cookies from 'utils/Cookies';
 
 const { publicRuntimeConfig: Config } = getConfig();
 
@@ -23,10 +24,7 @@ function App({ Component, pageProps }) {
   const store = useStore();
   const getLayout = Component.getLayout || ((page) => page);
 
-  let token;
-  if (typeof window !== 'undefined') {
-    token = localStorage.getItem('token');
-  }
+  const token = Cookies.getData('token');
 
   useEffect(() => {
     router.events.on('routeChangeStart', () => NProgress.start());

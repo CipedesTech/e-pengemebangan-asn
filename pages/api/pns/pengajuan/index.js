@@ -74,6 +74,21 @@ export default async function handler(req, res) {
         },
       };
       return res.status(200).json({ message: 'Data Berhasil ditemukan', data: result });
+    case 'PUT':
+      try {
+        const { pegawaiId } = req.body;
+        if (!pegawaiId) return res.status(403).json({ message: 'Validation error', data: '' });
+        const pengajuan = await prisma.m_pns_diajukan.create({
+          data: {
+            r_pegawai_aktualId: parseInt(pegawaiId, 10),
+            status: 'DRAFT',
+          },
+        });
+        return res.status(201).json({ message: 'Pengajuan pns berhasil ditambahkan', data: pengajuan });
+      } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'Terjadi Kesalahan Pada Server', data: err });
+      }
     default:
       return res.status(404).json({ message: 'Not found', data: '' });
   }

@@ -100,8 +100,8 @@ function PelaksanaanDiklat() {
     router.push('/pelaksanaan-diklat/create');
   };
 
-  const onDetail = (id) => {
-    router.push(`/pelaksanaan-diklat/${id}/edit`);
+  const onDetail = (e) => {
+    router.push(`/pelaksanaan-diklat/${e.id}`);
   };
 
   const columns = [

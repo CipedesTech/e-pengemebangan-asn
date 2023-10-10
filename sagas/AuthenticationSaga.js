@@ -8,7 +8,7 @@ import AuthService from 'services/AuthService';
 
 function* fetchUser() {
   try {
-    const token = localStorage.getItem('token');
+    const token = Cookies.getData('token');
     const user = jwt.decode(token);
     if (user) {
       yield put(AuthenticationActions.setAccountData(user));
@@ -24,10 +24,9 @@ function* logoutUser() {
 
     // if (user) {
     yield call(Cookies.clearData);
-    // yield call(localStorage.clear());
     yield put(AuthenticationActions.resetAccountData());
     yield put(ThemeActions.resetTheme());
-    // localStorage.clear();
+    localStorage.clear();
     window.location.href = '/auth/sign-in';
     // }
   } catch (error) {

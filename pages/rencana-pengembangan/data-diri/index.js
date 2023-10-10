@@ -111,7 +111,7 @@ function RencanaPengembangan1() {
     console.log(`selected ${value}`);
     const nip = pnsList.raw.filter((el) => el.id === value)[0];
     const selectednip = nip.nip || '';
-    console.log(formRef.current.setFieldValue('nip', selectednip));
+    formRef.current.setFieldValue('nip', selectednip);
   };
   const onSearchNama = (value) => {
     console.log('search:', value);

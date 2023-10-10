@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
 import getConfig from 'next/config';
+import Cookies from './Cookies';
 
 const { publicRuntimeConfig: Config } = getConfig();
 const StatusCode = {
@@ -19,6 +20,7 @@ function handleError(error) {
       break;
     case StatusCode.Unauthorized:
       if (window.location.pathname !== '/auth/sign-in') {
+        Cookies.clearData([]);
         localStorage.clear();
         window.location.href = '/auth/sign-in';
       }
@@ -40,7 +42,7 @@ function handleError(error) {
 
 const injectToken = (config) => {
   try {
-    const token = localStorage.getItem('token');
+    const token = Cookies.getData('accessToken');
 
     if (token != null) {
       config.headers.authorization = `Bearer ${token}`;

@@ -13,7 +13,6 @@ export async function getServerSideProps({ query }) {
   const { id } = query;
   const res = await PnsService.getPnsById(id);
   const { data } = res;
-  console.log(data);
   return { props: { data: data.data } };
 }
 
