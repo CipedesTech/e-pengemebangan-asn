@@ -9,12 +9,12 @@ export default async function handler(req, res) {
         // eslint-disable-next-line no-restricted-syntax
         for (const el of datas) {
           // eslint-disable-next-line no-await-in-loop
-          await prisma.m_pns_diajukan.update({
+          await prisma.t_pns_diajukan.update({
             where: {
               id: el.id,
             },
             data: {
-              m_pelaksanaan_diklatId: id,
+              t_pelaksanaan_diklatId: id,
             },
           });
         }

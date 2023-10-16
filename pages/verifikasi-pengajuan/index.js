@@ -10,6 +10,7 @@ import {
   Card,
   Col,
   Form,
+  Modal,
   Row,
   Space,
   Table,
@@ -20,7 +21,7 @@ import {
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
+import { CloseOutlined, CheckOutlined, EyeOutlined } from '@ant-design/icons';
 import qs from 'qs';
 import PnsService from 'services/PnsService';
 import dayjs from 'dayjs';
@@ -33,6 +34,10 @@ function ListASN() {
   const { user } = useSelector((state) => state.auth);
   const query = qs.parse(window.location.search.split('?')[1]);
   const [loading, setLoading] = useState(false);
+  const [detailModal, setDetailModal] = useState({
+    isOpen: false,
+    data: {},
+  });
   const [params, setParams] = useState({
     page: parseInt(query.page, 10) || 1,
     perPage: parseInt(query.perPage, 10) || 10,
@@ -58,12 +63,13 @@ function ListASN() {
     console.log('REFECTH');
     fetchData(params);
   }, [params]);
-
-  useEffect(() => {
-    console.log(query);
-  }, [query]);
+  console.log(detailModal.data);
+  // useEffect(() => {
+  //   console.log(query);
+  // }, [query]);
 
   const onDetail = async (status, record) => {
+    setDetailModal({ isOpen: false, data: {} });
     const pengajuan = await PnsService.updatePengajuan(record.id, { status });
     if (pengajuan.status !== 200) {
       return message.error('terjadi kesalahan');
@@ -139,7 +145,7 @@ function ListASN() {
       width: 100,
       render: (text, record) => (
         <Space>
-          <Tooltip placement='top' title='verifikasi'>
+          {/* <Tooltip placement='top' title='verifikasi'>
             <Button
               type='default'
               size='small'
@@ -157,6 +163,15 @@ function ListASN() {
               icon={<CloseOutlined />}
               disabled={record.status === 'verified' || record.status === 'rejected'}
               onClick={() => onDetail('rejected', record)}
+            />
+          </Tooltip> */}
+          <Tooltip placement='top' title='tolak'>
+            <Button
+              type='primary'
+              size='small'
+              className='ant-btn-geekblue'
+              icon={<EyeOutlined />}
+              onClick={() => setDetailModal({ isOpen: true, data: record })}
             />
           </Tooltip>
         </Space>
@@ -273,6 +288,80 @@ function ListASN() {
           </Card>
         </Col>
       </Row>
+      <Modal
+        title='Detail Data Pengaju'
+        open={detailModal.isOpen}
+        onCancel={() => setDetailModal({ isOpen: false, data: {} })}
+        onOk={() => {
+          setDetailModal({ isOpen: false, data: {} });
+        }}
+        disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'rejected'}
+        okText='Verifikasi'
+        cancelText='Tolak'
+        footer={[
+          <Button
+            key='Submit'
+            type='default'
+            size='small'
+            className='ant-btn-geekblue'
+            icon={<CheckOutlined />}
+            disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'rejected'}
+            onClick={() => onDetail('verified', detailModal?.data)}
+          >Verifikasi
+          </Button>,
+          <Button
+            key='Back'
+            type='default'
+            size='small'
+            className='ant-btn-danger'
+            icon={<CloseOutlined />}
+            disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'rejected'}
+            onClick={() => onDetail('rejected', detailModal?.data)}
+          >Tolak
+          </Button>,
+        ]}
+      >
+        <Row gutter={[12, 12]} style={{ marginTop: '12px' }}>
+          <Col span={24}>
+            <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>
+              <Col span={12}>
+                <Text>NIP</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>{detailModal?.data?.pegawai_id?.nip}</Text>
+              </Col>
+            </Row>
+            <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>
+              <Col span={12}>
+                <Text>Nama Lengkap</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>{detailModal?.data?.pegawai_id?.nama_pegawai}</Text>
+              </Col>
+            </Row>
+            <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>
+              <Col span={12}>
+                <Text>Status</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>{detailModal?.data?.status === 'submit' ? <Tag color='geekblue'>diajukan</Tag>
+                  : detailModal?.data?.status === 'verified' ? <Tag color='green'>diverifikasi</Tag>
+                    : <Tag color='red'>ditolak</Tag>}
+                </Text>
+              </Col>
+            </Row>
+            <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>
+              <Col span={12}>
+                <Text>Diklat</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>{detailModal?.data?.diklat}
+                </Text>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Modal>
     </div>
   );
 }

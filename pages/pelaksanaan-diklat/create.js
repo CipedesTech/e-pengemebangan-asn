@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-else-return */
@@ -16,6 +17,7 @@ import {
   message,
   Table,
   Tag,
+  Empty,
 } from 'antd';
 import AppLayout from 'layouts/app-layout';
 import DiklatService from 'services/DiklatService';
@@ -27,7 +29,7 @@ function MasterDataDiklatCreate() {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const [dataPelaksanaan, setDataPelaksanaan] = useState({});
+  const [dataPelaksanaan, setDataPelaksanaan] = useState({ submited: false, data: {} });
   const [loading, setLoading] = useState(false);
   const query = QueryString.parse(window.location.search.split('?')[1]);
 
@@ -42,7 +44,7 @@ function MasterDataDiklatCreate() {
     total: null,
   });
   const fetchData = async () => {
-    const res = await PnsService.getAllPengajuan({ params });
+    const res = await PnsService.getAllPengajuanVerif({ params });
     setTableData((prevParam) => ({
       ...prevParam,
       data: res.data.data.data,
@@ -87,26 +89,28 @@ function MasterDataDiklatCreate() {
   };
 
   const onBack = () => {
-    router.push('/master-data/diklat');
+    router.push('/pelaksanaan-diklat');
   };
 
   const onSubmit = async (e) => {
-    const pelaksanaanDiklat = await DiklatService.createDiklat(e);
-    if (pelaksanaanDiklat.status !== 201) return message.error('terjadi masalah pada server');
-    // setLoading(true);
-    setDataPelaksanaan(pelaksanaanDiklat.data.data);
+    setDataPelaksanaan({ submited: true, data: e });
+    setLoading(true);
     setParams((prevParam) => ({
       ...prevParam,
-      'where[diklat]': pelaksanaanDiklat.data.data.diklat,
+      'where[diklat]': e.diklat,
+      'where[status]': 'verified',
     }));
-    console.log(pelaksanaanDiklat.data.data);
-    console.log(e);
+    setLoading(false);
   };
 
   const onSbmitCandidate = async (e) => {
-    const updateCandidate = await PnsService.updateCandidatePengajuan({ datas: selectedCandidate, id: dataPelaksanaan.id });
+    setLoading(true);
+    const pelaksanaanDiklat = await DiklatService.createDiklat(e);
+    if (pelaksanaanDiklat.status !== 201) return message.error('terjadi masalah pada server');
+    const updateCandidate = await PnsService.updateCandidatePengajuan({ datas: selectedCandidate, id: pelaksanaanDiklat.data.data.id });
     if (updateCandidate.status !== 200) return message.error('Terjadi kesalahan pada server');
     setSubmited(true);
+    setLoading(false);
   };
 
   const columns = [
@@ -220,10 +224,10 @@ function MasterDataDiklatCreate() {
             </Form.Item>
             <Form.Item className='mb-0'>
               <Space size='middle'>
-                <Button type='primary' htmlType='submit' disabled={dataPelaksanaan?.id}>
-                  {t('button:submit')}
+                <Button type='primary' htmlType='submit' disabled={dataPelaksanaan?.submited}>
+                  Pilih Kandidat
                 </Button>
-                <Button type='default' onClick={onBack} disabled={dataPelaksanaan?.id}>
+                <Button type='default' onClick={onBack} disabled={dataPelaksanaan?.submited}>
                   {t('button:cancel')}
                 </Button>
               </Space>
@@ -231,33 +235,38 @@ function MasterDataDiklatCreate() {
           </Form>
         </Spin>
       </Card>
-      {dataPelaksanaan?.id ? (
-        <Card title='List Kandidat'>
-          <Table
-            loading={loading}
-            columns={columns}
-            dataSource={tableData.data}
-            rowSelection={rowSelection}
-            rowKey={(record) => record.id}
-            scroll={{ x: 700 }}
-            pagination={{
-              total: tableData.total,
-              showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
-              current: params.page,
-              pageSize: params.perPage,
-              onChange: onPageChange,
-            }}
-          />
-          <Space size='middle'>
-            <Button type='primary' htmlType='submit' onClick={onSbmitCandidate} disabled={submited}>
-              {t('button:submit')}
-            </Button>
-            <Button type='default' onClick={onBack} disabled={submited}>
-              {t('button:cancel')}
-            </Button>
-          </Space>
-        </Card>
-      ) : null}
+      {/* {tableData.data.length > 0 ? ( */}
+      <Card title='List Kandidat'>
+        <Table
+          loading={loading}
+          columns={columns}
+          dataSource={tableData.data}
+          rowSelection={rowSelection}
+          rowKey={(record) => record.id}
+          scroll={{ x: 700 }}
+          pagination={{
+            total: tableData.total,
+            showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
+            current: params.page,
+            pageSize: params.perPage,
+            onChange: onPageChange,
+          }}
+        />
+        <Space size='middle' className='mt-4'>
+          <Button type='primary' htmlType='submit' onClick={onSbmitCandidate} disabled={submited || selectedCandidate.length === 0}>
+            {t('button:submit')}
+          </Button>
+          <Button type='default' onClick={onBack} disabled={submited}>
+            {t('button:cancel')}
+          </Button>
+        </Space>
+      </Card>
+      {/* )
+        : (
+          <Card title='List Kandidat'>
+            <Empty />
+          </Card>
+        )} */}
 
     </>
   );

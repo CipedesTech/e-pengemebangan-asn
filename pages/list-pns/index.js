@@ -125,13 +125,11 @@ function ListASN() {
 
   return (
     <div className='cards-container' style={{ backgroundColor: 'whitesmoke' }}>
-      {user?.type !== 'borrower' ? (
-        <>
-          <Row>
-            <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
-              <span style={{ fontSize: 18, fontWeight: 'bold' }}>List PNS</span>
-            </Col>
-            {/* <Col span={24} className='px-4 py-4'>
+      <Row>
+        <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
+          <span style={{ fontSize: 18, fontWeight: 'bold' }}>List PNS</span>
+        </Col>
+        {/* <Col span={24} className='px-4 py-4'>
               <Form form={form} layout='vertical' autoComplete='off' onFinish={onSubmit}>
                 <Row gutter={[24, 24]}>
                   <Col span={12}>
@@ -213,70 +211,27 @@ function ListASN() {
                 </Row>
               </Form>
             </Col> */}
-          </Row>
-          <Row>
-            <Col span={24}>
-              <Card>
-                <Table
-                  loading={loading}
-                  columns={columns}
-                  dataSource={tableData.data}
-                  rowKey={(record) => record.id}
-                  scroll={{ x: 700 }}
-                  pagination={{
-                    total: tableData.total,
-                    showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
-                    current: params.page,
-                    pageSize: params.perPage,
-                    onChange: onPageChange,
-                  }}
-                />
-              </Card>
-            </Col>
-          </Row>
-        </>
-      ) : (
-        <Row>
-          <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
-            <span style={{ fontSize: 18, fontWeight: 'bold' }}>Daftar Pinjaman</span>
-          </Col>
-          <Col span={24}>
-            {/* {loanList.data.map((item, key) => (
-              <Card className='mx-4 my-4' loading={loading} key={key}>
-                <Row gutter={[24, 24]}>
-                  <Col span={24}>
-                    <Row>
-                      <Col span={6}>
-                        <Title level={4}>{item.package !== undefined ? `${item.package}` : '-'}</Title>
-                        <Paragraph><Text strong>Transaksi ID:</Text> {item.transaksi_id || '-'}</Paragraph>
-                        <Paragraph><Text strong>Status:</Text> {item.status === 0 ? 'Baru' : item.status === 2 ? 'Ditolak' : '-'}</Paragraph>
-                      </Col>
-                      <Col span={5}>
-                        <Title level={4} />
-                        <Text strong>Nilai Pengajuan</Text>
-                        <Paragraph>{item.amount !== undefined ? formatRupiah(item.amount, 'Rp. ') : '-'}</Paragraph>
-                      </Col>
-                      <Col span={5}>
-                        <Title level={4} />
-                        <Text strong>Tenor</Text>
-                        <Paragraph>{item.tenor !== undefined ? `${item.tenor} Bulan` : '-'}</Paragraph>
-                      </Col>
-                      <Col span={5}>
-                        <Title level={4} />
-                        <Text strong>Bunga</Text>
-                        <Paragraph>{item.rate !== undefined ? `${parseFloat(item.rate, 3).toFixed(2)} per Tahun` : '-'}</Paragraph>
-                      </Col>
-                      <Col span={3}>
-                        <Button type='primary' block onClick={() => onDetail(item)}>Detail</Button>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
-              </Card>
-            ))} */}
-          </Col>
-        </Row>
-      )}
+      </Row>
+      <Row>
+        <Col span={24}>
+          <Card>
+            <Table
+              loading={loading}
+              columns={columns}
+              dataSource={tableData.data}
+              rowKey={(record) => record.id}
+              scroll={{ x: 700 }}
+              pagination={{
+                total: tableData.total,
+                showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
+                current: params.page,
+                pageSize: params.perPage,
+                onChange: onPageChange,
+              }}
+            />
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 }

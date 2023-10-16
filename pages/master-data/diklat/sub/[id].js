@@ -1,41 +1,57 @@
 /* eslint-disable consistent-return */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-nested-ternary */
+/* eslint-disable no-else-return */
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 
 import {
+  Card,
+  Button,
+  Form,
+  Spin,
+  Input,
+  Table,
+  Tag,
   Row,
   Col,
-  Button,
-  Card,
-  Table,
-  Tooltip,
-  Modal,
+  Typography,
   Space,
-  Form,
-  Input,
+  Tooltip,
   message,
-
+  Modal,
 } from 'antd';
 import AppLayout from 'layouts/app-layout';
-import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-} from '@ant-design/icons';
-
-import { ROW_GUTTER } from 'constants/ThemeConstant';
 import dayjs from 'dayjs';
-import QueryString from 'qs';
+import PropTypes from 'prop-types';
+import { ROW_GUTTER } from 'constants/ThemeConstant';
+import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
 import MasterDiklatService from 'services/MasterDiklatService';
+import QueryString from 'qs';
+import MasterSubDiklatService from 'services/MasterSubDiklatService';
 
 const { confirm } = Modal;
+const { Text } = Typography;
 
-function MasterDiklat() {
+export async function getServerSideProps({ query }) {
+  const { id } = query;
+  let data = {};
+  try {
+    const res = await MasterDiklatService.getById(id);
+    if (res.status === 200) data = res.data.data;
+    console.log(res.data);
+  } catch (err) {
+    console.log(err);
+  }
+  return { props: { data } };
+}
+
+function MasterSubDiklat({ data }) {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const [form2] = Form.useForm();
   const query = QueryString.parse(window.location.search.split('?')[1]);
   const [detailModal, setDetailModal] = useState({
     isOpen: false,
@@ -46,6 +62,7 @@ function MasterDiklat() {
   const [params, setParams] = useState({
     page: parseInt(query.page, 10) || 1,
     perPage: parseInt(query.perPage, 10) || 10,
+    'where[m_diklatId]': data.id,
   });
   const [tableData, setTableData] = useState({
     data: [],
@@ -54,7 +71,7 @@ function MasterDiklat() {
 
   const fetchData = async () => {
     setLoading(true);
-    const res = await MasterDiklatService.getAll({ params });
+    const res = await MasterSubDiklatService.getAll({ params });
     setTableData((prevParam) => ({
       ...prevParam,
       data: res.data.data.data,
@@ -64,6 +81,7 @@ function MasterDiklat() {
   };
 
   useEffect(() => {
+    form2.setFieldsValue(data);
     fetchData({ params });
   }, []);
 
@@ -85,7 +103,7 @@ function MasterDiklat() {
     }));
   };
 
-  const onDelete = (data) => {
+  const onDelete = (e) => {
     confirm({
       title: t('Confirm'),
       content: t('placeholder:delete-confirmation'),
@@ -97,7 +115,7 @@ function MasterDiklat() {
       async onOk() {
         setLoading(true);
         try {
-          const role = await MasterDiklatService.deleteById(data.id);
+          const role = await MasterSubDiklatService.deleteById(e.id);
           message.success(role.data.message);
           fetchData();
         } catch (error) {
@@ -121,19 +139,15 @@ function MasterDiklat() {
     setDetailModal({ isOpen: true, type: 'Perbarui', data: e });
   };
 
-  const onDetail = (e) => {
-    router.push(`/master-data/diklat/sub/${e.id}`);
-  };
-
   const onFinishForm = async (e) => {
     setLoading(true);
     try {
       if (detailModal.type === 'Tambah') {
-        const role = await MasterDiklatService.create(e);
+        const role = await MasterSubDiklatService.create({ ...e, m_diklatId: data.id });
         if (role.status === 201) message.success(role.data.message);
       }
       if (detailModal.type === 'Perbarui') {
-        const role = await MasterDiklatService.update(detailModal.data.id, e);
+        const role = await MasterSubDiklatService.update(detailModal.data.id, { ...e, m_diklatId: data.id });
         if (role.status === 202) message.success(role.data.message);
       }
       fetchData();
@@ -168,15 +182,6 @@ function MasterDiklat() {
               type='primary'
               size='small'
               className='ant-btn-geekblue'
-              icon={<EyeOutlined />}
-              onClick={() => onDetail(record)}
-            />
-          </Tooltip>
-          <Tooltip placement='top' title='Edit'>
-            <Button
-              type='primary'
-              size='small'
-              className='ant-btn-geekblue'
               icon={<EditOutlined />}
               onClick={() => onEdit(record)}
             />
@@ -194,42 +199,65 @@ function MasterDiklat() {
       ),
     },
   ];
-
+  console.log(form.getFieldValue());
+  console.log(form2.getFieldValue());
   return (
     <>
       <Row gutter={ROW_GUTTER}>
-        <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
-          <span style={{ fontSize: 18, fontWeight: 'bold' }}>Daftar Diklat</span>
-        </Col>
         <Col span={24}>
-          <div className='d-flex align-items-center justify-content-end'>
-            <Button
-              type='primary'
-              icon={<PlusOutlined />}
-              onClick={() => onCreate()}
-            >
-              {`${t('button:create')} Peran`}
-            </Button>
-
+          <div className='d-flex align-items-center justify-content-between'>
+            <Text strong>SUB DIKLAT </Text>
+            <div>
+              <Button
+                type='primary'
+                icon={<ArrowLeftOutlined />}
+                style={{ marginRight: 5 }}
+                onClick={() => router.back()}
+              >
+                Kembali
+              </Button>
+              <Button
+                type='primary'
+                icon={<PlusOutlined />}
+                style={{ marginRight: 5 }}
+                onClick={() => onCreate()}
+              >
+                Tambah Sub Diklat
+              </Button>
+            </div>
           </div>
         </Col>
         <Col span={24}>
-          <Card className='card-table'>
-            <Table
-              loading={loading}
-              columns={columns}
-              dataSource={tableData.data}
-              rowKey={(record) => record.id}
-              scroll={{ x: 700 }}
-              pagination={{
-                total: tableData.total,
-                showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
-                current: params.page,
-                pageSize: params.perPage,
-                onChange: onPageChange,
-              }}
-            />
+          <Card>
+            <Spin spinning={loading}>
+              <Form disabled form={form2} layout='vertical'>
+                <Form.Item
+                  name='nama'
+                  label='Nama Diklat'
+                >
+                  <Input style={{ color: 'black' }} />
+                </Form.Item>
+              </Form>
+            </Spin>
           </Card>
+          {data?.id ? (
+            <Card title='Daftar Sub Diklat'>
+              <Table
+                loading={loading}
+                columns={columns}
+                dataSource={tableData.data}
+                rowKey={(record) => record.id}
+                scroll={{ x: 700 }}
+                pagination={{
+                  total: tableData.total,
+                  showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
+                  current: params.page,
+                  pageSize: params.perPage,
+                  onChange: onPageChange,
+                }}
+              />
+            </Card>
+          ) : null}
         </Col>
       </Row>
       <Modal
@@ -268,12 +296,16 @@ function MasterDiklat() {
   );
 }
 
-MasterDiklat.getLayout = function getLayout(page) {
+MasterSubDiklat.getLayout = function getLayout(page) {
   return (
-    <AppLayout title='Peran' key={1} extra={false} onTab='null'>
+    <AppLayout title='Buat Diklat Baru' key={1} extra={false} onTab={0}>
       {page}
     </AppLayout>
   );
 };
 
-export default MasterDiklat;
+MasterSubDiklat.propTypes = {
+  data: PropTypes.object.isRequired,
+};
+
+export default MasterSubDiklat;

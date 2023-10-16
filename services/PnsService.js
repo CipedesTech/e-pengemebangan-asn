@@ -6,6 +6,8 @@ const getPnsById = (id) => { return ApiClient.get(`/api/pns/${id}`, {}); };
 
 const getAllPengajuan = (params) => { return ApiClient.get('/api/pns/pengajuan', params); };
 
+const getAllPengajuanVerif = (params) => { return ApiClient.get('/api/pns/pengajuan/verified', params); };
+
 const createPengajuan = (payload) => { return ApiClient.post('/api/pns/pengajuan', payload); };
 
 const updatePengajuan = (id, payload) => { return ApiClient.put(`/api/pns/pengajuan/${id}`, payload); };
@@ -40,6 +42,7 @@ export default {
   getAllPns,
   getPnsById,
   getAllPengajuan,
+  getAllPengajuanVerif,
   createPengajuan,
   updatePengajuan,
   updateCandidatePengajuan,

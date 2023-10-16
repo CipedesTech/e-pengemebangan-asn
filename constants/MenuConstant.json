@@ -4,8 +4,6 @@
     "url": "/",
     "name": "Menu",
     "icon": null,
-    "parent_id": null,
-    "description": null,
     "order": 0,
     "sub_menu": [
       {
@@ -13,8 +11,6 @@
         "url": "/list-pns",
         "name": "List PNS",
         "icon": "UnorderedListOutlined",
-        "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
-        "description": null,
         "order": 1,
         "roles": [
           "ADMIN",
@@ -29,8 +25,6 @@
         "url": "/rencana-pengembangan/data-diri",
         "name": "Rencana Pengembangan",
         "icon": "UnorderedListOutlined",
-        "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
-        "description": null,
         "order": 2,
         "roles": [
           "ADMIN",
@@ -45,8 +39,6 @@
         "url": "/verifikasi-pengajuan",
         "name": "Varifikasi PNS",
         "icon": "UnorderedListOutlined",
-        "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
-        "description": null,
         "order": 2,
         "roles": [
           "ADMIN",
@@ -60,8 +52,6 @@
         "url": "/pelaksanaan-diklat",
         "name": "Pelaksanaan Diklat",
         "icon": "UnorderedListOutlined",
-        "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
-        "description": null,
         "order": 2,
         "roles": [
           "ADMIN",
@@ -75,8 +65,6 @@
         "url": "/master-data/1",
         "name": "Master Data",
         "icon": "UnorderedListOutlined",
-        "parent_id": "03a8a1e8-f9be-44ec-8084-d13c6f59188a",
-        "description": null,
         "order": 3,
         "roles": [
           "ADMIN"
@@ -84,37 +72,29 @@
         "sub_menu": [
           {
             "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
+            "url": "/master-data/pengguna",
+            "name": "Pengguna",
+            "order": 3,
+            "sub_menu": []
+          },
+          {
+            "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
+            "url": "/master-data/peran",
+            "name": "Role",
+            "order": 2,
+            "sub_menu": []
+          },
+          {
+            "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
+            "url": "/master-data/opd",
+            "name": "Opd",
+            "order": 1,
+            "sub_menu": []
+          },
+          {
+            "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
             "url": "/master-data/diklat",
             "name": "Diklat",
-            "parent_id": "ae98a907-a2e3-480c-8044-9e10abd61eff",
-            "description": null,
-            "order": 1,
-            "sub_menu": []
-          },
-          {
-            "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
-            "url": "/master-data/kompetensi",
-            "name": "Kompetensi",
-            "parent_id": "ae98a907-a2e3-480c-8044-9e10abd61eff",
-            "description": null,
-            "order": 1,
-            "sub_menu": []
-          },
-          {
-            "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
-            "url": "/master-data/jabatan",
-            "name": "Jabatan",
-            "parent_id": "ae98a907-a2e3-480c-8044-9e10abd61eff",
-            "description": null,
-            "order": 1,
-            "sub_menu": []
-          },
-          {
-            "id": "ae98a907-a2e3-480c-8044-9e10abd61ef3",
-            "url": "/master-data/subjabatan",
-            "name": "Sub Jabatan",
-            "parent_id": "ae98a907-a2e3-480c-8044-9e10abd61eff",
-            "description": null,
             "order": 1,
             "sub_menu": []
           }

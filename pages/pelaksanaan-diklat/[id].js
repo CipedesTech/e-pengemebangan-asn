@@ -173,7 +173,7 @@ function MasterDataDiklatCreate({ data }) {
             <Table
               loading={loading}
               columns={columns}
-              dataSource={data.m_pns_diajukan}
+              dataSource={data.t_pns_diajukan}
               scroll={{ x: 700 }}
             />
             {/* <Space size='middle'>

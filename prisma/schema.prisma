@@ -10,43 +10,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model M_user {
+model m_user {
   id        String   @id @default(uuid())
   name      String
   email     String   @unique
   password  String
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
-  Role      M_role   @relation(fields: [roleId], references: [id])
+  Role      m_role   @relation(fields: [roleId], references: [id])
   roleId    String
+  Opd       m_opd    @relation(fields: [opdId], references: [id])
+  opdId     String
 }
 
-model M_role {
+model m_role {
   id        String   @id @default(uuid())
   name      String   @unique
-  user      M_user[]
+  user      m_user[]
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 }
 
-model M_kompetensi {
-  id        String     @id @default(uuid())
+model m_diklat {
+  id        String         @id @default(uuid())
   nama      String
-  diklat    T_diklat[]
-  createdAt DateTime   @default(now()) @map(name: "created_at")
-  updatedAt DateTime   @updatedAt @map(name: "updated_at")
+  diklat    m_sub_diklat[]
+  createdAt DateTime       @default(now()) @map(name: "created_at")
+  updatedAt DateTime       @updatedAt @map(name: "updated_at")
 }
 
-model T_diklat {
-  id             String       @id @default(uuid())
-  nama           String
-  createdAt      DateTime     @default(now()) @map(name: "created_at")
-  updatedAt      DateTime     @updatedAt @map(name: "updated_at")
-  M_kompetensi   M_kompetensi @relation(fields: [m_kompetensiId], references: [id])
-  m_kompetensiId String
+model m_sub_diklat {
+  id         String   @id @default(uuid())
+  nama       String
+  createdAt  DateTime @default(now()) @map(name: "created_at")
+  updatedAt  DateTime @updatedAt @map(name: "updated_at")
+  m_diklat   m_diklat @relation(fields: [m_diklatId], references: [id])
+  m_diklatId String
 }
 
-model m_pns_diajukan {
+model t_pns_diajukan {
   id                     String                @id @default(uuid())
   status                 String
   diklat                 String?
@@ -54,11 +56,11 @@ model m_pns_diajukan {
   updatedAt              DateTime              @updatedAt @map(name: "updated_at")
   pegawai_id             r_pegawai_aktual      @relation(fields: [r_pegawai_aktualId], references: [id])
   r_pegawai_aktualId     Int
-  pelaksanaan_diklat_id  m_pelaksanaan_diklat? @relation(fields: [m_pelaksanaan_diklatId], references: [id])
-  m_pelaksanaan_diklatId String?
+  pelaksanaan_diklat_id  t_pelaksanaan_diklat? @relation(fields: [t_pelaksanaan_diklatId], references: [id])
+  t_pelaksanaan_diklatId String?
 }
 
-model m_pelaksanaan_diklat {
+model t_pelaksanaan_diklat {
   id             String           @id @default(uuid())
   nama           String
   diklat         String
@@ -66,7 +68,16 @@ model m_pelaksanaan_diklat {
   kuota          Int
   createdAt      DateTime         @default(now()) @map(name: "created_at")
   updatedAt      DateTime         @updatedAt @map(name: "updated_at")
-  m_pns_diajukan m_pns_diajukan[]
+  t_pns_diajukan t_pns_diajukan[]
+}
+
+model m_opd {
+  id        String   @id @default(uuid())
+  kode_opd  String
+  nama      String
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+  user      m_user[]
 }
 
 model r_pegawai_aktual {
@@ -111,7 +122,7 @@ model r_pegawai_aktual {
   nama_jenjang_rumpun  String?          @db.VarChar(100)
   tanggal_lulus        DateTime?        @db.Date
   last_updated         DateTime?        @default(now()) @db.Timestamp(0)
-  m_pns_diajukan       m_pns_diajukan[]
+  t_pns_diajukan       t_pns_diajukan[]
 
   @@index([gender], map: "gender")
   @@index([id_pegawai], map: "id_pegawai")
@@ -128,69 +139,3 @@ model r_pegawai_aktual {
   @@index([status_perkawinan], map: "status_perkawinan")
   @@index([tmt_pns], map: "tmt_pns")
 }
-
-// model m_unor___31_maret_2023 {
-//   id_unor             Int       @id @default(autoincrement())
-//   jenis               String?   @db.VarChar(255)
-//   nama_unor           String    @db.VarChar(255)
-//   kode_ese            String?   @db.VarChar(10)
-//   nama_ese            String?   @db.VarChar(100)
-//   id_masjab           Int?
-//   nomenklatur_jabatan String?   @db.VarChar(255)
-//   nomenklatur_pada    String?   @db.VarChar(255)
-//   nomenklatur_unor    String?   @db.VarChar(255)
-//   nomenklatur_cari    String?   @db.VarChar(255)
-//   tugas_tambahan      String    @db.VarChar(255)
-//   kode_unor           String?   @db.VarChar(100)
-//   tmt_berlaku         DateTime? @db.Date
-//   tst_berlaku         DateTime? @db.Date
-
-//   @@index([id_masjab], map: "id_masjab")
-//   @@index([tugas_tambahan], map: "tugas_tambahan")
-//   @@map("m_unor - 31 maret 2023")
-// }
-
-// model r_peg_diklat_struk {
-//   id_peg_diklat_struk Int      @id @default(autoincrement())
-//   id_diklat           Int
-//   id_rumpun           Int
-//   id_pegawai          Int
-//   jenis_diklat        String   @db.VarChar(120)
-//   jenjang_diklat      String   @db.VarChar(120)
-//   nama_diklat         String   @db.VarChar(120)
-//   tempat_diklat       String   @db.VarChar(50)
-//   penyelenggara       String   @db.VarChar(120)
-//   tahun               Int      @db.Year
-//   angkatan            String   @db.VarChar(20)
-//   tmt_diklat          DateTime @db.Date
-//   tst_diklat          DateTime @db.Date
-//   jam                 Decimal  @db.Decimal(5, 2)
-//   nomor_sttpl         String   @db.VarChar(30)
-//   tanggal_sttpl       DateTime @db.Date
-//   status              String   @db.VarChar(7)
-
-//   @@index([id_diklat], map: "id_diklat")
-//   @@index([id_pegawai], map: "id_pegawai")
-// }
-
-// model r_peg_kursus {
-//   id_peg_kursus      Int      @id @default(autoincrement())
-//   id_diklat          Int
-//   id_rumpun          Int
-//   id_pegawai         Int
-//   jenis_kursus       String   @db.VarChar(120)
-//   jenjang_kursus     String   @db.VarChar(120)
-//   nama_kursus        String   @db.VarChar(120)
-//   tempat_kursus      String   @db.VarChar(50)
-//   penyelenggara      String   @db.VarChar(120)
-//   tahun              Int      @db.Year
-//   angkatan           String   @db.VarChar(20)
-//   tmt_kursus         DateTime @db.Date
-//   tst_kursus         DateTime @db.Date
-//   jam                Decimal  @db.Decimal(5, 2)
-//   nomor_sertifikat   String   @db.VarChar(30)
-//   tanggal_sertifikat DateTime @db.Date
-//   status             String   @db.VarChar(7)
-
-//   @@index([id_pegawai], map: "id_pegawai")
-// }

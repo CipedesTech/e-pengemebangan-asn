@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   switch (req.method) {
     case 'PUT':
       try {
-        const pengajuan = await prisma.m_pns_diajukan.update({
+        const pengajuan = await prisma.t_pns_diajukan.update({
           where: {
             id,
           },

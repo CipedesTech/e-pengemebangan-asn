@@ -22,17 +22,16 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  EyeOutlined,
 } from '@ant-design/icons';
 
 import { ROW_GUTTER } from 'constants/ThemeConstant';
 import dayjs from 'dayjs';
 import QueryString from 'qs';
-import MasterDiklatService from 'services/MasterDiklatService';
+import OpdService from 'services/OpdService';
 
 const { confirm } = Modal;
 
-function MasterDiklat() {
+function MasterOPD() {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -54,7 +53,7 @@ function MasterDiklat() {
 
   const fetchData = async () => {
     setLoading(true);
-    const res = await MasterDiklatService.getAll({ params });
+    const res = await OpdService.getAll({ params });
     setTableData((prevParam) => ({
       ...prevParam,
       data: res.data.data.data,
@@ -97,7 +96,7 @@ function MasterDiklat() {
       async onOk() {
         setLoading(true);
         try {
-          const role = await MasterDiklatService.deleteById(data.id);
+          const role = await OpdService.deleteById(data.id);
           message.success(role.data.message);
           fetchData();
         } catch (error) {
@@ -116,24 +115,20 @@ function MasterDiklat() {
     setDetailModal({ isOpen: true, type: 'Tambah', data: {} });
   };
 
-  const onEdit = (e) => {
+  const onDetail = (e) => {
     form.setFieldsValue(e);
     setDetailModal({ isOpen: true, type: 'Perbarui', data: e });
-  };
-
-  const onDetail = (e) => {
-    router.push(`/master-data/diklat/sub/${e.id}`);
   };
 
   const onFinishForm = async (e) => {
     setLoading(true);
     try {
       if (detailModal.type === 'Tambah') {
-        const role = await MasterDiklatService.create(e);
+        const role = await OpdService.create(e);
         if (role.status === 201) message.success(role.data.message);
       }
       if (detailModal.type === 'Perbarui') {
-        const role = await MasterDiklatService.update(detailModal.data.id, e);
+        const role = await OpdService.update(detailModal.data.id, e);
         if (role.status === 202) message.success(role.data.message);
       }
       fetchData();
@@ -146,9 +141,14 @@ function MasterDiklat() {
 
   const columns = [
     {
-      title: 'Nama Diklat',
+      title: 'Nama OPD',
       dataIndex: 'nama',
       key: 'nama',
+    },
+    {
+      title: 'Kode OPD',
+      dataIndex: 'kode_opd',
+      key: 'kode_opd',
     },
     {
       title: 'Tanggal ditambahkan',
@@ -168,17 +168,8 @@ function MasterDiklat() {
               type='primary'
               size='small'
               className='ant-btn-geekblue'
-              icon={<EyeOutlined />}
-              onClick={() => onDetail(record)}
-            />
-          </Tooltip>
-          <Tooltip placement='top' title='Edit'>
-            <Button
-              type='primary'
-              size='small'
-              className='ant-btn-geekblue'
               icon={<EditOutlined />}
-              onClick={() => onEdit(record)}
+              onClick={() => onDetail(record)}
             />
           </Tooltip>
           <Tooltip placement='top' title='Hapus'>
@@ -199,7 +190,7 @@ function MasterDiklat() {
     <>
       <Row gutter={ROW_GUTTER}>
         <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
-          <span style={{ fontSize: 18, fontWeight: 'bold' }}>Daftar Diklat</span>
+          <span style={{ fontSize: 18, fontWeight: 'bold' }}>Daftar OPD</span>
         </Col>
         <Col span={24}>
           <div className='d-flex align-items-center justify-content-end'>
@@ -233,7 +224,7 @@ function MasterDiklat() {
         </Col>
       </Row>
       <Modal
-        title={`${detailModal.type} Diklat`}
+        title={`${detailModal.type} OPD`}
         open={detailModal.isOpen}
         onCancel={() => resetModal()}
         footer={null}
@@ -252,11 +243,20 @@ function MasterDiklat() {
               { required: true },
             ]}
           >
-            <Input placeholder='Nama Diklat' type='text' />
+            <Input placeholder='Nama OPD' type='text' />
+          </Form.Item>
+          <Form.Item
+            label='Kode OPD'
+            name='kode_opd'
+            rules={[
+              { required: true },
+            ]}
+          >
+            <Input placeholder='Kode OPD' type='text' />
           </Form.Item>
           <Form.Item>
             <Button type='primary' htmlType='submit'>
-              {`${detailModal.type} Diklat`}
+              {`${detailModal.type} OPD`}
             </Button>
             <Button type='danger' style={{ marginLeft: '4px' }} onClick={() => resetModal()}>
               Batal
@@ -268,7 +268,7 @@ function MasterDiklat() {
   );
 }
 
-MasterDiklat.getLayout = function getLayout(page) {
+MasterOPD.getLayout = function getLayout(page) {
   return (
     <AppLayout title='Peran' key={1} extra={false} onTab='null'>
       {page}
@@ -276,4 +276,4 @@ MasterDiklat.getLayout = function getLayout(page) {
   );
 };
 
-export default MasterDiklat;
+export default MasterOPD;

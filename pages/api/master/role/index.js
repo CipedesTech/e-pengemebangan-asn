@@ -5,36 +5,31 @@ export default async function handler(req, res) {
   switch (req.method) {
     case 'POST':
       try {
-        const { pagu, nama, diklat, kuota } = req.body;
-        if (!pagu || !nama || !diklat || !kuota) return res.status(403).json({ message: 'Validation error', data: '' });
-        const agendaDiklat = await prisma.t_pelaksanaan_diklat.create({
+        const { name } = req.body;
+        if (!name) return res.status(403).json({ message: 'Validation error', data: '' });
+        const role = await prisma.m_role.create({
           data: {
-            nama,
-            diklat,
-            pagu: parseInt(pagu, 10),
-            kuota: parseInt(kuota, 10),
+            name,
           },
         });
-        return res.status(201).json({ message: 'Agenda diklat berhasil ditambahkan', data: agendaDiklat });
+        return res.status(201).json({ message: 'Role berhasil ditambahkan', data: role });
       } catch (err) {
         console.log(err);
         return res.status(500).json({ message: 'Terjadi Kesalahan Pada Server', data: err });
       }
     case 'GET':
       const { where, orderBy, page: pages, perPage: perPages } = QueryString.parse(req.query);
+      console.log(where);
       const page = Number(pages || pages) || 1;
       const perPage = Number(perPages || perPages) || 10;
       const skip = page > 0 ? perPage * (page - 1) : 0;
       const [total, data] = await Promise.all([
-        prisma.t_pelaksanaan_diklat.count({ where }),
-        prisma.t_pelaksanaan_diklat.findMany({
+        prisma.m_role.count({ where }),
+        prisma.m_role.findMany({
           where,
+          orderBy,
           take: perPage,
           skip,
-          include: {
-            t_pns_diajukan: true,
-          },
-          orderBy,
         }),
       ]);
       const lastPage = Math.ceil(total / perPage);

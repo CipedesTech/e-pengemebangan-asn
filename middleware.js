@@ -13,12 +13,19 @@ export async function middleware(req) {
     if (auth.status !== 200) {
       return NextResponse.redirect(new URL('/api/auth/unauthorized', req.url));
     }
+    return NextResponse.next();
   }
-  return NextResponse.next();
+  if (process.env.NODE_ENV === 'development') {
+    return NextResponse.next();
+  }
+
+  return NextResponse.redirect(new URL('/api/auth/unauthorized', req.url));
 }
 
 export const config = {
   matcher: [
     '/api/pns/:path*',
+    '/api/master/:path*',
+    '/api/diklat/:path*',
   ],
 };

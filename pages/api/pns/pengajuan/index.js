@@ -7,7 +7,7 @@ export default async function handler(req, res) {
       try {
         const { pegawaiId } = req.body;
         if (!pegawaiId) return res.status(403).json({ message: 'Validation error', data: '' });
-        const pengajuan = await prisma.m_pns_diajukan.create({
+        const pengajuan = await prisma.t_pns_diajukan.create({
           data: {
             r_pegawai_aktualId: parseInt(pegawaiId, 10),
             status: 'DRAFT',
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
       const perPage = Number(perPages || perPages) || 10;
       const skip = page > 0 ? perPage * (page - 1) : 0;
       const [total, data] = await Promise.all([
-        prisma.m_pns_diajukan.count({
+        prisma.t_pns_diajukan.count({
           where: {
             OR: [
               { status: 'submit' },
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
             ],
           },
         }),
-        prisma.m_pns_diajukan.findMany({
+        prisma.t_pns_diajukan.findMany({
           where: {
             OR: [
               { status: 'submit' },
@@ -78,7 +78,7 @@ export default async function handler(req, res) {
       try {
         const { pegawaiId } = req.body;
         if (!pegawaiId) return res.status(403).json({ message: 'Validation error', data: '' });
-        const pengajuan = await prisma.m_pns_diajukan.create({
+        const pengajuan = await prisma.t_pns_diajukan.create({
           data: {
             r_pegawai_aktualId: parseInt(pegawaiId, 10),
             status: 'DRAFT',

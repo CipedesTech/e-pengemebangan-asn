@@ -15,8 +15,6 @@ import {
 import AppLayout from 'layouts/app-layout';
 import {
   PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
   EyeOutlined,
 } from '@ant-design/icons';
 
@@ -37,11 +35,6 @@ function PelaksanaanDiklat() {
   const [params, setParams] = useState({
     page: parseInt(query.page, 10) || 1,
     perPage: parseInt(query.perPage, 10) || 10,
-  });
-
-  const [response, setResponse] = useState({
-    results: [],
-    count: 0,
   });
 
   const [deleteId, setDeleteId] = useState(null);

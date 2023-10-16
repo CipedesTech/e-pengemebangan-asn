@@ -5,12 +5,12 @@ export default async function handler(req, res) {
   switch (req.method) {
     case 'GET':
       try {
-        const pns = await prisma.m_pelaksanaan_diklat.findUnique({
+        const pns = await prisma.t_pelaksanaan_diklat.findUnique({
           where: {
             id,
           },
           include: {
-            m_pns_diajukan: {
+            t_pns_diajukan: {
               include: {
                 pegawai_id: {
                   select: {

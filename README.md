@@ -1,4 +1,4 @@
-# E-ASN
+# e-PASTI ASN
 ## How to run
 copy .env.example to  .env
 ```bash

@@ -15,6 +15,7 @@ import {
   Form,
   Input,
   message,
+  Select,
 
 } from 'antd';
 import AppLayout from 'layouts/app-layout';
@@ -22,17 +23,33 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  EyeOutlined,
 } from '@ant-design/icons';
+import PropTypes from 'prop-types';
 
 import { ROW_GUTTER } from 'constants/ThemeConstant';
 import dayjs from 'dayjs';
 import QueryString from 'qs';
-import MasterDiklatService from 'services/MasterDiklatService';
+import RoleService from 'services/RoleService';
+import UserService from 'services/UserService';
+import OpdService from 'services/OpdService';
 
 const { confirm } = Modal;
 
-function MasterDiklat() {
+export async function getServerSideProps() {
+  let roles = [];
+  let opds = [];
+  try {
+    const role = await RoleService.getAllRole({ perPage: 1000 });
+    if (role.status === 200) roles = role.data.data.data.map((el) => ({ value: el.id, label: el.name }));
+    const opd = await OpdService.getAll({ perPage: 1000 });
+    if (role.status === 200) opds = opd.data.data.data.map((el) => ({ value: el.id, label: el.nama }));
+  } catch (err) {
+    console.log(err);
+  }
+  return { props: { roles, opds } };
+}
+
+function MasterRole({ roles, opds }) {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -54,7 +71,7 @@ function MasterDiklat() {
 
   const fetchData = async () => {
     setLoading(true);
-    const res = await MasterDiklatService.getAll({ params });
+    const res = await UserService.getAll({ params });
     setTableData((prevParam) => ({
       ...prevParam,
       data: res.data.data.data,
@@ -97,7 +114,7 @@ function MasterDiklat() {
       async onOk() {
         setLoading(true);
         try {
-          const role = await MasterDiklatService.deleteById(data.id);
+          const role = await RoleService.deleteRoleById(data.id);
           message.success(role.data.message);
           fetchData();
         } catch (error) {
@@ -116,29 +133,29 @@ function MasterDiklat() {
     setDetailModal({ isOpen: true, type: 'Tambah', data: {} });
   };
 
-  const onEdit = (e) => {
-    form.setFieldsValue(e);
-    setDetailModal({ isOpen: true, type: 'Perbarui', data: e });
-  };
-
   const onDetail = (e) => {
-    router.push(`/master-data/diklat/sub/${e.id}`);
+    console.log(e);
+    form.setFieldsValue(e);
+    form.setFieldValue('opdId', e.Opd.id);
+    form.setFieldValue('roleId', e.Role.id);
+    setDetailModal({ isOpen: true, type: 'Perbarui', data: e });
   };
 
   const onFinishForm = async (e) => {
     setLoading(true);
     try {
       if (detailModal.type === 'Tambah') {
-        const role = await MasterDiklatService.create(e);
-        if (role.status === 201) message.success(role.data.message);
+        const user = await UserService.create(e);
+        if (user.status === 201) message.success(user.data.message);
       }
       if (detailModal.type === 'Perbarui') {
-        const role = await MasterDiklatService.update(detailModal.data.id, e);
-        if (role.status === 202) message.success(role.data.message);
+        const user = await UserService.update(detailModal.data.id, e);
+        if (user.status === 202) message.success(user.data.message);
       }
       fetchData();
       resetModal();
     } catch (err) {
+      console.log(err);
       return message.error('Terjadi kesalahan pada server');
     }
     setLoading(false);
@@ -146,9 +163,26 @@ function MasterDiklat() {
 
   const columns = [
     {
-      title: 'Nama Diklat',
-      dataIndex: 'nama',
-      key: 'nama',
+      title: 'Nama',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: 'OPD',
+      render: (text, record) => {
+        return record.Opd.nama;
+      },
+    },
+    {
+      title: 'Role',
+      render: (text, record) => {
+        return record.Role.name;
+      },
     },
     {
       title: 'Tanggal ditambahkan',
@@ -168,17 +202,8 @@ function MasterDiklat() {
               type='primary'
               size='small'
               className='ant-btn-geekblue'
-              icon={<EyeOutlined />}
-              onClick={() => onDetail(record)}
-            />
-          </Tooltip>
-          <Tooltip placement='top' title='Edit'>
-            <Button
-              type='primary'
-              size='small'
-              className='ant-btn-geekblue'
               icon={<EditOutlined />}
-              onClick={() => onEdit(record)}
+              onClick={() => onDetail(record)}
             />
           </Tooltip>
           <Tooltip placement='top' title='Hapus'>
@@ -199,7 +224,7 @@ function MasterDiklat() {
     <>
       <Row gutter={ROW_GUTTER}>
         <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
-          <span style={{ fontSize: 18, fontWeight: 'bold' }}>Daftar Diklat</span>
+          <span style={{ fontSize: 18, fontWeight: 'bold' }}>Daftar Pengguna</span>
         </Col>
         <Col span={24}>
           <div className='d-flex align-items-center justify-content-end'>
@@ -208,7 +233,7 @@ function MasterDiklat() {
               icon={<PlusOutlined />}
               onClick={() => onCreate()}
             >
-              {`${t('button:create')} Peran`}
+              {`${t('button:create')} Pengguna`}
             </Button>
 
           </div>
@@ -233,7 +258,7 @@ function MasterDiklat() {
         </Col>
       </Row>
       <Modal
-        title={`${detailModal.type} Diklat`}
+        title={`${detailModal.type} Pengguna`}
         open={detailModal.isOpen}
         onCancel={() => resetModal()}
         footer={null}
@@ -247,16 +272,80 @@ function MasterDiklat() {
         >
           <Form.Item
             label='nama'
-            name='nama'
+            name='name'
             rules={[
               { required: true },
             ]}
           >
-            <Input placeholder='Nama Diklat' type='text' />
+            <Input placeholder='Nama Pengguna' type='text' />
           </Form.Item>
+          <Form.Item
+            label='email'
+            name='email'
+            rules={[
+              { required: true, type: 'email' },
+            ]}
+          >
+            <Input placeholder='Email Pengguna' type='text' />
+          </Form.Item>
+          <Form.Item
+            label='Roles'
+            name='roleId'
+            rules={[
+              { required: true },
+            ]}
+          >
+            <Select
+              options={roles}
+            />
+          </Form.Item>
+          <Form.Item
+            label='OPD'
+            name='opdId'
+            rules={[
+              { required: true },
+            ]}
+          >
+            <Select
+              options={opds}
+            />
+          </Form.Item>
+          {detailModal.type === 'Perbarui' ? null : (
+            <>
+
+              <Form.Item
+                label='Password'
+                name='password'
+                rules={[
+                  { required: true },
+                ]}
+              >
+                <Input placeholder='Email Pengguna' type='password' />
+              </Form.Item>
+              <Form.Item
+                label='Konfirmasi Password'
+                name='passwordMatch'
+                rules={[
+                  {
+                    required: true,
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue('password') === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error('Password tidak sama!'));
+                    },
+                  }),
+                ]}
+              >
+                <Input placeholder='Email Pengguna' type='password' />
+              </Form.Item>
+            </>
+          )}
           <Form.Item>
             <Button type='primary' htmlType='submit'>
-              {`${detailModal.type} Diklat`}
+              {`${detailModal.type} Pengguna`}
             </Button>
             <Button type='danger' style={{ marginLeft: '4px' }} onClick={() => resetModal()}>
               Batal
@@ -268,7 +357,7 @@ function MasterDiklat() {
   );
 }
 
-MasterDiklat.getLayout = function getLayout(page) {
+MasterRole.getLayout = function getLayout(page) {
   return (
     <AppLayout title='Peran' key={1} extra={false} onTab='null'>
       {page}
@@ -276,4 +365,9 @@ MasterDiklat.getLayout = function getLayout(page) {
   );
 };
 
-export default MasterDiklat;
+MasterRole.propTypes = {
+  roles: PropTypes.array.isRequired,
+  opds: PropTypes.array.isRequired,
+};
+
+export default MasterRole;
