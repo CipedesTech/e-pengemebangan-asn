@@ -114,7 +114,7 @@ function MasterRole({ roles, opds }) {
       async onOk() {
         setLoading(true);
         try {
-          const role = await RoleService.deleteRoleById(data.id);
+          const role = await UserService.deleteById(data.id);
           message.success(role.data.message);
           fetchData();
         } catch (error) {
