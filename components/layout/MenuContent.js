@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
@@ -8,6 +8,7 @@ import { Menu } from 'antd';
 import * as AntdIcons from '@ant-design/icons';
 import ThemeActions from 'stores/Theme/Actions';
 import MenuConstant from 'constants/MenuConstant.json';
+import MenuService from 'services/MenuService';
 
 const { SubMenu } = Menu;
 
@@ -40,15 +41,28 @@ const getRootSubMenu = (menu) => {
   return rootSubMenu;
 };
 
-function MenuContent({ routeInfo }) {
+export async function getServerSideProps() {
+  let constant = [];
+  try {
+    const menuConst = await MenuService.getConstant();
+    if (menuConst.status === 200) constant = menuConst.data.data;
+  } catch (err) {
+    console.log(err);
+  }
+  console.log(constant);
+  return { props: { constant } };
+}
+
+function MenuContent({ routeInfo, constant }) {
   const { user } = useSelector((state) => state.auth);
   const { role } = user;
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { mobileNav } = useSelector((state) => state.theme);
-  const menu = MenuConstant;
+  // const menu = MenuConstant;
+  const [menu, setMenu] = useState([]);
   const [currentSubMenu, setCurrentSubMenu] = useState(setDefaultOpen(routeInfo?.url));
-
+  console.log(constant);
   const onSelect = () => {
     if (mobileNav) {
       dispatch(ThemeActions.toggleMobileNav(false));
@@ -66,6 +80,16 @@ function MenuContent({ routeInfo }) {
       setCurrentSubMenu(latestOpenKey ? [latestOpenKey] : []);
     }
   };
+
+  const fetchData = async () => {
+    const res = await MenuService.getConstant();
+    console.log(res.data.data);
+    setMenu(res.data.data);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <Menu

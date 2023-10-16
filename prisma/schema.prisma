@@ -48,6 +48,16 @@ model m_sub_diklat {
   m_diklatId String
 }
 
+model m_menu_access {
+  id String @id @default(uuid())
+  url String
+  name String
+  order Int?
+  icon String?
+  parentId String?
+  allowedRole String?
+}
+
 model t_pns_diajukan {
   id                     String                @id @default(uuid())
   status                 String

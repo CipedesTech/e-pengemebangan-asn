@@ -1,14 +1,17 @@
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
+import getConfig from 'next/config';
 
-import { Grid } from 'antd';
+import { Grid, Typography } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 
 import { getBreakpoint } from 'utils/Utils';
 import { SIDE_NAV_WIDTH } from 'constants/ThemeConstant';
 
 import ThemeActions from 'stores/Theme/Actions';
+
+const { publicRuntimeConfig: Config } = getConfig();
 
 const { useBreakpoint } = Grid;
 
@@ -27,6 +30,8 @@ const getLogoDisplay = (isMobile, mobileLogo) => {
 
   return 'logo';
 };
+
+const { Title } = Typography;
 
 function Logo({ mobileLogo }) {
   const dispatch = useDispatch();
@@ -58,6 +63,7 @@ function Logo({ mobileLogo }) {
               />
             </a>
           </Link>
+          <Title style={{ marginLeft: '3px', margin: 'auto' }} level={4}>{Config?.APP_NAME}</Title>
         </>
       )}
     </div>

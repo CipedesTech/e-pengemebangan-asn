@@ -105,7 +105,7 @@ function MasterDataDiklatCreate() {
 
   const onSbmitCandidate = async (e) => {
     setLoading(true);
-    const pelaksanaanDiklat = await DiklatService.createDiklat(e);
+    const pelaksanaanDiklat = await DiklatService.createDiklat(dataPelaksanaan.data);
     if (pelaksanaanDiklat.status !== 201) return message.error('terjadi masalah pada server');
     const updateCandidate = await PnsService.updateCandidatePengajuan({ datas: selectedCandidate, id: pelaksanaanDiklat.data.data.id });
     if (updateCandidate.status !== 200) return message.error('Terjadi kesalahan pada server');
