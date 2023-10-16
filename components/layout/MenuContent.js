@@ -59,8 +59,8 @@ function MenuContent({ routeInfo, constant }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { mobileNav } = useSelector((state) => state.theme);
-  // const menu = MenuConstant;
-  const [menu, setMenu] = useState([]);
+  const menu = MenuConstant;
+  // const [menu, setMenu] = useState([]);
   const [currentSubMenu, setCurrentSubMenu] = useState(setDefaultOpen(routeInfo?.url));
   console.log(constant);
   const onSelect = () => {
@@ -81,15 +81,15 @@ function MenuContent({ routeInfo, constant }) {
     }
   };
 
-  const fetchData = async () => {
-    const res = await MenuService.getConstant();
-    console.log(res.data.data);
-    setMenu(res.data.data);
-  };
+  // const fetchData = async () => {
+  //   const res = await MenuService.getConstant();
+  //   console.log(res.data.data);
+  //   setMenu(res.data.data);
+  // };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   return (
     <Menu

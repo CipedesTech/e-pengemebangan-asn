@@ -8,13 +8,13 @@ export default async function handler(req, res) {
       try {
         const { nama, kode_opd } = req.body;
         if (!nama || !kode_opd) return res.status(403).json({ message: 'Validation error', data: '' });
-        const opd = await prisma.m_opd.create({
+        const role = await prisma.m_opd.create({
           data: {
             nama,
             kode_opd,
           },
         });
-        return res.status(201).json({ message: 'OPD berhasil ditambahkan', data: opd });
+        return res.status(201).json({ message: 'OPD berhasil ditambahkan', data: role });
       } catch (err) {
         console.log(err);
         return res.status(500).json({ message: 'Terjadi Kesalahan Pada Server', data: err });
