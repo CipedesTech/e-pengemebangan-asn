@@ -29,6 +29,7 @@ function ListASN() {
   const router = useRouter();
   const { t } = useTranslation();
   const { user } = useSelector((state) => state.auth);
+  console.log('USER', user);
   const query = qs.parse(window.location.search.split('?')[1]);
   const [loading, setLoading] = useState(false);
   const [params, setParams] = useState({
@@ -49,12 +50,18 @@ function ListASN() {
   };
 
   useEffect(() => {
-    fetchData({ params });
+    if (user.role === 'UMPEG' && user.opd.nama !== 'master') {
+      setParams((prevParam) => ({
+        ...prevParam,
+        'where[nomenklatur_pada]': user.opd.nama,
+      }));
+    }
+    fetchData();
   }, []);
 
   useEffect(() => {
     console.log('REFECTH');
-    fetchData(params);
+    fetchData();
   }, [params]);
 
   useEffect(() => {
@@ -86,8 +93,8 @@ function ListASN() {
     },
     {
       title: 'NIP',
-      dataIndex: 'nip',
-      key: 'nip',
+      dataIndex: 'nip_baru',
+      key: 'nip_baru',
     },
     {
       title: 'Nama',
@@ -95,13 +102,28 @@ function ListASN() {
       key: 'nama_pegawai',
     },
     {
-      title: 'Status Kepegawaian',
-      dataIndex: 'status_kepegawaian',
-      key: 'status_kepegawaian',
-      render: (text) => {
-        return text === 'pns' ? <Tag color='geekblue'>{text}</Tag> : <Tag color='orange'>{text}</Tag>;
-      },
+      title: 'Jabatan',
+      dataIndex: 'nomenklatur_jabatan',
+      key: 'nomenklatur_jabatan',
     },
+    {
+      title: 'Golongan',
+      dataIndex: 'nama_golongan',
+      key: 'nama_golongan',
+    },
+    {
+      title: 'Instansi',
+      dataIndex: 'nomenklatur_pada',
+      key: 'nomenklatur_pada',
+    },
+    // {
+    //   title: 'Status Kepegawaian',
+    //   dataIndex: 'status_kepegawaian',
+    //   key: 'status_kepegawaian',
+    //   render: (text) => {
+    //     return text === 'pns' ? <Tag color='geekblue'>{text}</Tag> : <Tag color='orange'>{text}</Tag>;
+    //   },
+    // },
     {
       title: t('Action'),
       dataIndex: 'action',

@@ -41,28 +41,16 @@ const getRootSubMenu = (menu) => {
   return rootSubMenu;
 };
 
-export async function getServerSideProps() {
-  let constant = [];
-  try {
-    const menuConst = await MenuService.getConstant();
-    if (menuConst.status === 200) constant = menuConst.data.data;
-  } catch (err) {
-    console.log(err);
-  }
-  console.log(constant);
-  return { props: { constant } };
-}
-
-function MenuContent({ routeInfo, constant }) {
+function MenuContent({ routeInfo, menuConstant }) {
   const { user } = useSelector((state) => state.auth);
   const { role } = user;
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { mobileNav } = useSelector((state) => state.theme);
-  const menu = MenuConstant;
+  const menu = menuConstant;
   // const [menu, setMenu] = useState([]);
   const [currentSubMenu, setCurrentSubMenu] = useState(setDefaultOpen(routeInfo?.url));
-  console.log(constant);
+
   const onSelect = () => {
     if (mobileNav) {
       dispatch(ThemeActions.toggleMobileNav(false));
@@ -154,6 +142,7 @@ function MenuContent({ routeInfo, constant }) {
 
 MenuContent.propTypes = {
   routeInfo: PropTypes.objectOf(PropTypes.any),
+  menuConstant: PropTypes.array.isRequired,
 };
 
 MenuContent.defaultProps = {

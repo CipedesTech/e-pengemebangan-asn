@@ -42,7 +42,7 @@ function handleError(error) {
 
 const injectToken = (config) => {
   try {
-    const token = Cookies.getData('accessToken');
+    const token = Cookies.getData('token');
 
     if (token != null) {
       config.headers.authorization = `Bearer ${token}`;

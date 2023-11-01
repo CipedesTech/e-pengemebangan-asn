@@ -48,8 +48,7 @@ export default async function handler(req, res) {
             Opd: {
               select: {
                 id: true,
-                kode_opd: true,
-                nama: true,
+                nomenklatur_pada: true,
               },
             },
             Role: {

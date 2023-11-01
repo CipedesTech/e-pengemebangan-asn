@@ -39,10 +39,10 @@ export async function getServerSideProps() {
   let roles = [];
   let opds = [];
   try {
-    const role = await RoleService.getAllRole({ perPage: 1000 });
+    const role = await RoleService.getAllRole({ params: { perPage: 1000 } });
     if (role.status === 200) roles = role.data.data.data.map((el) => ({ value: el.id, label: el.name }));
-    const opd = await OpdService.getAll({ perPage: 1000 });
-    if (role.status === 200) opds = opd.data.data.data.map((el) => ({ value: el.id, label: el.nama }));
+    const opd = await OpdService.getAll({ params: { perPage: 2000 } });
+    if (role.status === 200) opds = opd.data.data.data.map((el) => ({ value: el.id, label: el.nomenklatur_pada }));
   } catch (err) {
     console.log(err);
   }
@@ -175,7 +175,7 @@ function MasterRole({ roles, opds }) {
     {
       title: 'OPD',
       render: (text, record) => {
-        return record.Opd.nama;
+        return record.Opd.nomenklatur_pada;
       },
     },
     {

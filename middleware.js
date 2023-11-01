@@ -1,12 +1,13 @@
+/* eslint-disable prefer-const */
 import { NextResponse } from 'next/server';
 
 export async function middleware(req) {
   if (req.headers.get('authorization') && req.headers.get('authorization').split(' ')[0] === 'Bearer') {
-    const myHeaders = new Headers();
-    myHeaders.append('Authorization', `Bearer ${req.headers.get('authorization').split(' ')[1]}`);
     const requestOptions = {
       method: 'POST',
-      headers: myHeaders,
+      headers: {
+        Authorization: `Bearer ${req.headers.get('authorization').split(' ')[1]}`,
+      },
       redirect: 'follow',
     };
     const auth = await fetch(`${process.env.API_URL}/api/auth/me`, requestOptions);

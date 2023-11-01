@@ -26,8 +26,8 @@ export default async function handler(req, res) {
       const perPage = Number(perPages || perPages) || 10;
       const skip = page > 0 ? perPage * (page - 1) : 0;
       const [total, data] = await Promise.all([
-        prisma.m_opd.count({ where }),
-        prisma.m_opd.findMany({
+        prisma.r_nomenklatur_pada.count({ where }),
+        prisma.r_nomenklatur_pada.findMany({
           where,
           orderBy,
           take: perPage,

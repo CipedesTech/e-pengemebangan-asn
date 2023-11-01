@@ -18,7 +18,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   // swcMinify: true,
-  output: 'standalone',
+  // output: 'standalone',
 };
 
 // Make sure adding Sentry options is the last code to run before exporting, to

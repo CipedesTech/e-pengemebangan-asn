@@ -31,6 +31,9 @@ export default async function handler(req, res) {
           orderBy,
           take: perPage,
           skip,
+          include: {
+            diklat: true,
+          },
         }),
       ]);
       const lastPage = Math.ceil(total / perPage);

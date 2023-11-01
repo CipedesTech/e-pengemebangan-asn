@@ -142,13 +142,8 @@ function MasterOPD() {
   const columns = [
     {
       title: 'Nama OPD',
-      dataIndex: 'nama',
-      key: 'nama',
-    },
-    {
-      title: 'Kode OPD',
-      dataIndex: 'kode_opd',
-      key: 'kode_opd',
+      dataIndex: 'nomenklatur_pada',
+      key: 'nomemklatur_pada',
     },
     {
       title: 'Tanggal ditambahkan',
@@ -156,34 +151,34 @@ function MasterOPD() {
       key: 'createdAt',
       render: (text) => dayjs(text).format('DD MMMM YYYY HH:mm'),
     },
-    {
-      title: t('Action'),
-      dataIndex: 'action',
-      key: 'action',
-      width: 100,
-      render: (text, record) => (
-        <Space>
-          <Tooltip placement='top' title='Edit'>
-            <Button
-              type='primary'
-              size='small'
-              className='ant-btn-geekblue'
-              icon={<EditOutlined />}
-              onClick={() => onDetail(record)}
-            />
-          </Tooltip>
-          <Tooltip placement='top' title='Hapus'>
-            <Button
-              type='primary'
-              size='small'
-              className='ant-btn-red'
-              icon={<DeleteOutlined />}
-              onClick={() => onDelete(record)}
-            />
-          </Tooltip>
-        </Space>
-      ),
-    },
+    // {
+    //   title: t('Action'),
+    //   dataIndex: 'action',
+    //   key: 'action',
+    //   width: 100,
+    //   render: (text, record) => (
+    //     <Space>
+    //       <Tooltip placement='top' title='Edit'>
+    //         <Button
+    //           type='primary'
+    //           size='small'
+    //           className='ant-btn-geekblue'
+    //           icon={<EditOutlined />}
+    //           onClick={() => onDetail(record)}
+    //         />
+    //       </Tooltip>
+    //       <Tooltip placement='top' title='Hapus'>
+    //         <Button
+    //           type='primary'
+    //           size='small'
+    //           className='ant-btn-red'
+    //           icon={<DeleteOutlined />}
+    //           onClick={() => onDelete(record)}
+    //         />
+    //       </Tooltip>
+    //     </Space>
+    //   ),
+    // },
   ];
 
   return (
@@ -192,7 +187,7 @@ function MasterOPD() {
         <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
           <span style={{ fontSize: 18, fontWeight: 'bold' }}>Daftar OPD</span>
         </Col>
-        <Col span={24}>
+        {/* <Col span={24}>
           <div className='d-flex align-items-center justify-content-end'>
             <Button
               type='primary'
@@ -203,7 +198,7 @@ function MasterOPD() {
             </Button>
 
           </div>
-        </Col>
+        </Col> */}
         <Col span={24}>
           <Card className='card-table'>
             <Table

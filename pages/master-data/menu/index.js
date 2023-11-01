@@ -28,6 +28,7 @@ import { ROW_GUTTER } from 'constants/ThemeConstant';
 import dayjs from 'dayjs';
 import QueryString from 'qs';
 import RoleService from 'services/RoleService';
+import MenuAccessService from 'services/MenuAccessService';
 
 const { confirm } = Modal;
 
@@ -53,7 +54,7 @@ function MasterRole() {
 
   const fetchData = async () => {
     setLoading(true);
-    const res = await RoleService.getAllRole({ params });
+    const res = await MenuAccessService.getAll({ params });
     setTableData((prevParam) => ({
       ...prevParam,
       data: res.data.data.data,
@@ -96,7 +97,7 @@ function MasterRole() {
       async onOk() {
         setLoading(true);
         try {
-          const role = await RoleService.deleteRoleById(data.id);
+          const role = await MenuAccessService.deleteById(data.id);
           message.success(role.data.message);
           fetchData();
         } catch (error) {
@@ -124,11 +125,11 @@ function MasterRole() {
     setLoading(true);
     try {
       if (detailModal.type === 'Tambah') {
-        const role = await RoleService.createRole(e);
+        const role = await MenuAccessService.create(e);
         if (role.status === 201) message.success(role.data.message);
       }
       if (detailModal.type === 'Perbarui') {
-        const role = await RoleService.updateRole(detailModal.data.id, e);
+        const role = await MenuAccessService.update(detailModal.data.id, e);
         if (role.status === 202) message.success(role.data.message);
       }
       fetchData();
@@ -141,9 +142,34 @@ function MasterRole() {
 
   const columns = [
     {
-      title: 'Nama Peran',
+      title: 'Nama Menu',
       dataIndex: 'name',
       key: 'name',
+    },
+    {
+      title: 'URL',
+      dataIndex: 'url',
+      key: 'url',
+    },
+    {
+      title: 'Order',
+      dataIndex: 'order',
+      key: 'order',
+    },
+    {
+      title: 'Icon',
+      dataIndex: 'icon',
+      key: 'icon',
+    },
+    {
+      title: 'Parent Name',
+      dataIndex: 'parentId',
+      key: 'parentId',
+    },
+    {
+      title: 'Hak Akses',
+      dataIndex: 'allowedRole',
+      key: 'allowedRole',
     },
     {
       title: 'Tanggal ditambahkan',
@@ -185,7 +211,7 @@ function MasterRole() {
     <>
       <Row gutter={ROW_GUTTER}>
         <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
-          <span style={{ fontSize: 18, fontWeight: 'bold' }}>Daftar Peran</span>
+          <span style={{ fontSize: 18, fontWeight: 'bold' }}>Daftar Menu</span>
         </Col>
         <Col span={24}>
           <div className='d-flex align-items-center justify-content-end'>
@@ -194,7 +220,7 @@ function MasterRole() {
               icon={<PlusOutlined />}
               onClick={() => onCreate()}
             >
-              {`${t('button:create')} Peran`}
+              {`${t('button:create')} Menu`}
             </Button>
 
           </div>
@@ -219,7 +245,7 @@ function MasterRole() {
         </Col>
       </Row>
       <Modal
-        title={`${detailModal.type} Peran`}
+        title={`${detailModal.type} Menu`}
         open={detailModal.isOpen}
         onCancel={() => resetModal()}
         footer={null}
@@ -242,7 +268,7 @@ function MasterRole() {
           </Form.Item>
           <Form.Item>
             <Button type='primary' htmlType='submit'>
-              {`${detailModal.type} Peran`}
+              {`${detailModal.type} Menu`}
             </Button>
             <Button type='danger' style={{ marginLeft: '4px' }} onClick={() => resetModal()}>
               Batal

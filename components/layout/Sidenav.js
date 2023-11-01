@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 const { Sider } = Layout;
 const { Title } = Typography;
 
-function SideNav({ routeInfo, navCollapsed }) {
+function SideNav({ routeInfo, navCollapsed, menuConstant }) {
   const { user } = useSelector((state) => state.auth);
   return (
     <Sider
@@ -25,7 +25,7 @@ function SideNav({ routeInfo, navCollapsed }) {
           </Col>
         </Row>
       )}
-      <MenuContent routeInfo={routeInfo} />
+      <MenuContent routeInfo={routeInfo} menuConstant={menuConstant} />
     </Sider>
   );
 }
@@ -33,6 +33,7 @@ function SideNav({ routeInfo, navCollapsed }) {
 SideNav.propTypes = {
   routeInfo: PropTypes.objectOf(PropTypes.any),
   navCollapsed: PropTypes.bool.isRequired,
+  menuConstant: PropTypes.array.isRequired,
 };
 
 SideNav.defaultProps = {

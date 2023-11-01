@@ -23,7 +23,7 @@ import {
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import { CloseOutlined, CheckOutlined, EyeOutlined } from '@ant-design/icons';
+import { CloseOutlined, CheckOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
 import qs from 'qs';
 import PnsService from 'services/PnsService';
 import dayjs from 'dayjs';
@@ -31,7 +31,7 @@ import dayjs from 'dayjs';
 const { Title, Paragraph, Text } = Typography;
 const { TextArea } = Input;
 
-function ListASN() {
+function ListPengembanganDiri() {
   const router = useRouter();
   const { t } = useTranslation();
   const { user } = useSelector((state) => state.auth);
@@ -40,7 +40,6 @@ function ListASN() {
   const [detailModal, setDetailModal] = useState({
     isOpen: false,
     data: {},
-    keterangan: '',
   });
   const [params, setParams] = useState({
     page: parseInt(query.page, 10) || 1,
@@ -67,10 +66,14 @@ function ListASN() {
     console.log('REFECTH');
     fetchData(params);
   }, [params]);
+  console.log(detailModal.data);
+  // useEffect(() => {
+  //   console.log(query);
+  // }, [query]);
 
   const onDetail = async (status, record) => {
     setDetailModal({ isOpen: false, data: {} });
-    const pengajuan = await PnsService.updatePengajuan(record.id, { status, keterangan: detailModal.keterangan });
+    const pengajuan = await PnsService.updatePengajuan(record.id, { status });
     if (pengajuan.status !== 200) {
       return message.error('terjadi kesalahan');
     }
@@ -88,11 +91,8 @@ function ListASN() {
     }));
   };
 
-  const updateKeterangan = (evt) => {
-    setDetailModal((prev) => ({
-      ...prev,
-      keterangan: evt.target.value,
-    }));
+  const onCreate = () => {
+    router.push('/rencana-pengembangan/data-diri');
   };
 
   const openModal = (record) => {
@@ -126,8 +126,9 @@ function ListASN() {
     },
     {
       title: 'Kompetensi',
-      dataIndex: 'diklat',
-      key: 'diklat',
+      render: (text, record, index) => {
+        return record.kompetensi.nama;
+      },
     },
 
     {
@@ -192,10 +193,22 @@ function ListASN() {
   ];
 
   return (
-    <div className='cards-container' style={{ backgroundColor: 'whitesmoke' }}>
+    <div className='cards-container'>
       <Row>
         <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
-          <span style={{ fontSize: 18, fontWeight: 'bold' }}>List Pengajuan Calon Diklat</span>
+          <span style={{ fontSize: 18, fontWeight: 'bold' }}>List Usulan Calon Diklat</span>
+        </Col>
+        <Col span={24}>
+          <div className='d-flex m-4 align-items-center justify-content-end'>
+            <Button
+              type='primary'
+              icon={<PlusOutlined />}
+              onClick={() => onCreate()}
+            >
+              Tambah Calon Usulan Diklat
+            </Button>
+
+          </div>
         </Col>
         {/* <Col span={24} className='px-4 py-4'>
               <Form form={form} layout='vertical' autoComplete='off' onFinish={onSubmit}>
@@ -307,7 +320,7 @@ function ListASN() {
         onOk={() => {
           setDetailModal({ isOpen: false, data: {} });
         }}
-        disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'rejected'}
+        disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'}
         okText='Verifikasi'
         cancelText='Tolak'
         footer={[
@@ -317,7 +330,7 @@ function ListASN() {
             size='small'
             className='ant-btn-geekblue'
             icon={<CheckOutlined />}
-            disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'rejected'}
+            disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'}
             onClick={() => onDetail('verified', detailModal?.data)}
           >Verifikasi
           </Button>,
@@ -327,7 +340,7 @@ function ListASN() {
             size='small'
             className='ant-btn-danger'
             icon={<CloseOutlined />}
-            disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'rejected'}
+            disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'}
             onClick={() => onDetail('rejected', detailModal?.data)}
           >Tolak
           </Button>,
@@ -376,14 +389,13 @@ function ListASN() {
                 <Text>Keterangan</Text>
               </Col>
               <Col span={12}>
-                <TextArea disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'rejected'} onChange={(e) => updateKeterangan(e)} rows={4} />
+                <TextArea disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'} rows={4} />
               </Col>
             </Row>
           </Col>
         </Row>
         <Row gutter={[12, 12]} style={{ marginTop: '12px' }}>
           <Col span={24}>
-            <Text strong>History Pengajuan</Text>
             <Steps
               progressDot
               direction='vertical'
@@ -398,7 +410,7 @@ function ListASN() {
   );
 }
 
-ListASN.getLayout = function getLayout(page) {
+ListPengembanganDiri.getLayout = function getLayout(page) {
   return (
     <AppLayout title='PNS-pengajuan' onTab='verifikasi_pengajuan' extra={false}>
       {page}
@@ -406,4 +418,4 @@ ListASN.getLayout = function getLayout(page) {
   );
 };
 
-export default ListASN;
+export default ListPengembanganDiri;

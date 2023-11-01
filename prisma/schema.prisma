@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,63 +8,86 @@ datasource db {
 }
 
 model m_user {
-  id        String   @id @default(uuid())
+  id        String             @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String             @unique
   password  String
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  Role      m_role   @relation(fields: [roleId], references: [id])
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
   roleId    String
-  Opd       m_opd    @relation(fields: [opdId], references: [id])
   opdId     String
+  Opd       r_nomenklatur_pada @relation(fields: [opdId], references: [id])
+  Role      m_role             @relation(fields: [roleId], references: [id])
+
+  @@index([opdId], map: "m_user_opdId_fkey")
+  @@index([roleId], map: "m_user_roleId_fkey")
 }
 
 model m_role {
   id        String   @id @default(uuid())
   name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
   user      m_user[]
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
 }
 
 model m_diklat {
-  id        String         @id @default(uuid())
-  nama      String
-  diklat    m_sub_diklat[]
-  createdAt DateTime       @default(now()) @map(name: "created_at")
-  updatedAt DateTime       @updatedAt @map(name: "updated_at")
+  id             String           @id @default(uuid())
+  nama           String
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  diklat         m_sub_diklat[]
+  t_pns_diajukan t_pns_diajukan[]
 }
 
 model m_sub_diklat {
   id         String   @id @default(uuid())
   nama       String
-  createdAt  DateTime @default(now()) @map(name: "created_at")
-  updatedAt  DateTime @updatedAt @map(name: "updated_at")
-  m_diklat   m_diklat @relation(fields: [m_diklatId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
   m_diklatId String
+  m_diklat   m_diklat @relation(fields: [m_diklatId], references: [id])
+
+  @@index([m_diklatId], map: "m_sub_diklat_m_diklatId_fkey")
 }
 
 model m_menu_access {
-  id String @id @default(uuid())
-  url String
-  name String
-  order Int?
-  icon String?
-  parentId String?
+  id          String  @id @default(uuid())
+  url         String
+  name        String
+  icon        String?
+  parentId    String?
   allowedRole String?
+  order       Int?
 }
 
 model t_pns_diajukan {
-  id                     String                @id @default(uuid())
+  id                     String                   @id @default(uuid())
   status                 String
-  diklat                 String?
-  createdAt              DateTime              @default(now()) @map(name: "created_at")
-  updatedAt              DateTime              @updatedAt @map(name: "updated_at")
-  pegawai_id             r_pegawai_aktual      @relation(fields: [r_pegawai_aktualId], references: [id])
+  createdAt              DateTime                 @default(now()) @map("created_at")
+  updatedAt              DateTime                 @updatedAt @map("updated_at")
   r_pegawai_aktualId     Int
-  pelaksanaan_diklat_id  t_pelaksanaan_diklat? @relation(fields: [t_pelaksanaan_diklatId], references: [id])
   t_pelaksanaan_diklatId String?
+  keterangan             t_keterangan_pengajuan[]
+  pegawai_id             r_pegawai_aktual         @relation(fields: [r_pegawai_aktualId], references: [id])
+  pelaksanaan_diklat_id  t_pelaksanaan_diklat?    @relation(fields: [t_pelaksanaan_diklatId], references: [id])
+  kompetensi             m_diklat?                @relation(fields: [diklat], references: [id])
+  diklat                 String?
+
+  @@index([r_pegawai_aktualId], map: "t_pns_diajukan_r_pegawai_aktualId_fkey")
+  @@index([t_pelaksanaan_diklatId], map: "t_pns_diajukan_t_pelaksanaan_diklatId_fkey")
+}
+
+model t_keterangan_pengajuan {
+  id               String          @id @default(uuid())
+  status           String?
+  keterangan       String?
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+  t_pns_diajukanId String?
+  t_pns_diajukan   t_pns_diajukan? @relation(fields: [t_pns_diajukanId], references: [id])
+
+  @@index([t_pns_diajukanId], map: "t_keterangan_pengajuan_t_pns_diajukanId_fkey")
 }
 
 model t_pelaksanaan_diklat {
@@ -76,8 +96,8 @@ model t_pelaksanaan_diklat {
   diklat         String
   pagu           Int
   kuota          Int
-  createdAt      DateTime         @default(now()) @map(name: "created_at")
-  updatedAt      DateTime         @updatedAt @map(name: "updated_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
   t_pns_diajukan t_pns_diajukan[]
 }
 
@@ -85,9 +105,8 @@ model m_opd {
   id        String   @id @default(uuid())
   kode_opd  String
   nama      String
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  user      m_user[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 }
 
 model r_pegawai_aktual {
@@ -125,7 +144,7 @@ model r_pegawai_aktual {
   tmt_jabatan          DateTime?        @db.Date
   kode_ese             Int?
   nama_ese             String?          @db.VarChar(100)
-  tmt_ese              DateTime?        @db.Date
+  // tmt_ese              DateTime?        @db.Date
   kelas_jabatan        String?          @db.VarChar(2)
   nilai_jabatan        String?          @db.VarChar(4)
   nama_jenjang         String?          @db.VarChar(100)
@@ -148,4 +167,39 @@ model r_pegawai_aktual {
   @@index([status_kepegawaian], map: "status_kepegawaian")
   @@index([status_perkawinan], map: "status_perkawinan")
   @@index([tmt_pns], map: "tmt_pns")
+}
+
+model r_nomenklatur_pada {
+  id               String   @id @default(uuid())
+  nomenklatur_pada String?  @db.VarChar(255)
+  user             m_user[]
+}
+
+model r_pegawai_bulanan {
+  id                   Int      @id @default(autoincrement())
+  bulan                Int?     @db.TinyInt
+  tahun                Int      @db.Year
+  id_pegawai           Int
+  gelar_nonakademis    String?  @db.VarChar(25)
+  gelar_depan          String   @db.VarChar(25)
+  gelar_belakang       String   @db.VarChar(25)
+  status_perkawinan    String   @db.VarChar(20)
+  kode_golongan        Int
+  tmt_pangkat          DateTime @db.Date
+  id_unor              Int
+  kode_unor            String   @db.VarChar(100)
+  nomenklatur_jabatan  String   @db.VarChar(255)
+  jab_type             String   @db.VarChar(100)
+  id_jenjang_jabatan   Int?
+  tingkat              String?  @db.VarChar(100)
+  nama_jenjang_jabatan String?  @db.VarChar(100)
+  tugas_tambahan       String   @db.VarChar(255)
+  tmt_jabatan          DateTime @db.Date
+  kode_ese             Int
+  tmt_ese              DateTime @db.Date
+  status_kepegawaian   String?  @db.VarChar(100)
+  kelas_jabatan        String?  @db.VarChar(2)
+  nilai_jabatan        String?  @db.VarChar(4)
+  nama_jenjang         String?  @db.VarChar(100)
+  reff_jabatan         Int?
 }

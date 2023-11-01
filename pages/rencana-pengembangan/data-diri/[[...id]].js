@@ -4,6 +4,7 @@
 import { useSelector } from 'react-redux';
 import { useEffect, useState, createRef } from 'react';
 import AppLayout from 'layouts/app-layout';
+import PropTypes from 'prop-types';
 
 import {
   Button,
@@ -34,17 +35,29 @@ import { useTranslation } from 'react-i18next';
 import { EyeOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import PnsService from 'services/PnsService';
+// eslint-disable-next-line import/no-unresolved
 import useDebounce from 'hooks/useDebounce';
+import OpdService from 'services/OpdService';
 
 const { Title, Paragraph, Text } = Typography;
 
-function RencanaPengembangan1() {
+export async function getServerSideProps() {
+  let opds = [];
+  try {
+    const opd = await OpdService.getAll({ params: { perPage: 2000 } });
+    if (opd.status === 200) opds = opd.data.data.data.map((el) => ({ value: el.nomenklatur_pada, label: el.nomenklatur_pada }));
+  } catch (err) {
+    console.log(err);
+  }
+  return { props: { opds } };
+}
+
+function RencanaPengembangan1({ opds }) {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const formRef = createRef();
   const { user } = useSelector((state) => state.auth);
-
   const [jabatan, setJabatan] = useState({
     JPT: false,
     Administrator: false,
@@ -62,12 +75,6 @@ function RencanaPengembangan1() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(0);
-  const [loanList, setLoanList] = useState({
-    data: [],
-    total: 0,
-  });
-
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
@@ -75,6 +82,7 @@ function RencanaPengembangan1() {
   });
   const debouncedSearchValue = useDebounce(params, 1000);
   const fetchPnsData = async () => {
+    setLoading(true);
     const res = await PnsService.getAllPns({ params });
     const list = res.data.data.data.map((el) => ({ value: el.id, label: el.nama_pegawai }));
     setPnsList((prevParam) => ({
@@ -83,12 +91,22 @@ function RencanaPengembangan1() {
       raw: res.data.data.data,
       total: res.data.data.meta.total,
     }));
+    setLoading(false);
   };
 
   useEffect(() => {
     console.log('LIST-PNS');
-    fetchPnsData({ params });
+    fetchPnsData();
   }, [debouncedSearchValue]);
+
+  useEffect(() => {
+    if (user.role === 'UMPEG' && user.opd.nama !== 'master') {
+      setParams((prevParam) => ({
+        ...prevParam,
+        'where[nomenklatur_pada]': user.opd.nama,
+      }));
+    }
+  }, []);
 
   const onDetail = (record) => {
     console.log(record);
@@ -109,9 +127,15 @@ function RencanaPengembangan1() {
   // NAMA SECTION
   const onChangeNama = (value) => {
     console.log(`selected ${value}`);
-    const nip = pnsList.raw.filter((el) => el.id === value)[0];
-    const selectednip = nip.nip || '';
+    const data = pnsList.raw.filter((el) => el.id === value)[0];
+    const selectednip = data.nip_baru || '';
+    const golongan = data.nama_golongan || '';
+    const pendidikan = data.nama_jenjang_rumpun || '';
+    const unitKerja = data.nomenklatur_pada || '';
     formRef.current.setFieldValue('nip', selectednip);
+    formRef.current.setFieldValue('golongan', golongan);
+    formRef.current.setFieldValue('pendidikan', pendidikan);
+    formRef.current.setFieldValue('unit_kerja', unitKerja);
   };
   const onSearchNama = (value) => {
     console.log('search:', value);
@@ -179,23 +203,129 @@ function RencanaPengembangan1() {
   };
 
   const GolonganClassifications = [
-    { value: '1a', label: 'IA - Juru Muda' },
-    { value: '1b', label: 'IB - Juru Muda Tingkat I' },
-    { value: '1c', label: 'IC - Juru' },
-    { value: '1d', label: 'ID - Juru Tingkat I' },
-    { value: '2a', label: 'IIA - Pengatur Muda' },
-    { value: '2b', label: 'IIB - Pengatur Muda Tingkat I' },
-    { value: '2c', label: 'IIC - Pengatur' },
-    { value: '2d', label: 'IID - Pengatur Tingkat I' },
-    { value: '3a', label: 'IIIA - Penata Muda' },
-    { value: '3b', label: 'IIIB - Penata Muda Tingkat I' },
-    { value: '3c', label: 'IIIC - Penata' },
-    { value: '3d', label: 'IIID - Penata Tingkat I' },
-    { value: '4a', label: 'IVA - Pembina' },
-    { value: '4b', label: 'IVB - Pembina Tingkat I' },
-    { value: '4c', label: 'IVC - Pembina Muda' },
-    { value: '4d', label: 'IVD - Pembina Madya' },
-    { value: '4e', label: 'IVE - Pembina Utama' },
+    {
+      value: 'I/a',
+      label: 'I/a - Juru Muda',
+    },
+    {
+      value: 'I/b',
+      label: 'I/b - Juru Muda Tingkat I',
+    },
+    {
+      value: 'I/c',
+      label: 'I/c - Juru',
+    },
+    {
+      value: 'I/d',
+      label: 'I/d - Juru Tingkat I',
+    },
+    {
+      value: 'II/a',
+      label: 'II/a - Pengatur Muda',
+    },
+    {
+      value: 'II/b',
+      label: 'II/b - Pengatur Muda Tingkat I',
+    },
+    {
+      value: 'II/c',
+      label: 'II/c - Pengatur',
+    },
+    {
+      value: 'II/d',
+      label: 'II/d - Pengatur Tingkat I',
+    },
+    {
+      value: 'III/a',
+      label: 'III/a - Penata Muda',
+    },
+    {
+      value: 'III/b',
+      label: 'III/b - Penata Muda Tingkat I',
+    },
+    {
+      value: 'III/c',
+      label: 'III/c - Penata',
+    },
+    {
+      value: 'III/d',
+      label: 'III/d - Penata Tingkat I',
+    },
+    {
+      value: 'IV/a',
+      label: 'IV/a - Pembina',
+    },
+    {
+      value: 'IV/b',
+      label: 'IV/b - Pembina Tingkat I',
+    },
+    {
+      value: 'IV/c',
+      label: 'IV/c - Pembina Utama Muda',
+    },
+    {
+      value: 'IV/d',
+      label: 'IV/d - Pembina Utama Madya',
+    },
+    {
+      value: 'IV/e',
+      label: 'IV/e - Pembina Utama',
+    },
+  ];
+
+  const EducationClassifications = [
+    {
+      value: 'D-II',
+      label: 'D-II',
+    },
+    {
+      value: 'D-III',
+      label: 'D-III',
+    },
+    {
+      value: 'D-IV',
+      label: 'D-IV',
+    },
+    {
+      value: 'Diploma I',
+      label: 'Diploma I',
+    },
+    {
+      value: 'Diploma II',
+      label: 'Diploma II',
+    },
+    {
+      value: 'Diploma III',
+      label: 'Diploma III',
+    },
+    {
+      value: 'Diploma IV',
+      label: 'Diploma IV',
+    },
+    {
+      value: 'S-1',
+      label: 'S-1',
+    },
+    {
+      value: 'S-2',
+      label: 'S-2',
+    },
+    {
+      value: 'S-3',
+      label: 'S-3',
+    },
+    {
+      value: 'Sekolah Dasar',
+      label: 'Sekolah Dasar',
+    },
+    {
+      value: 'Sekolah Menegah Pertama',
+      label: 'Sekolah Menegah Pertama',
+    },
+    {
+      value: 'Sekolah Menengah Atas',
+      label: 'Sekolah Menengah Atas',
+    },
   ];
 
   return (
@@ -266,14 +396,13 @@ function RencanaPengembangan1() {
                   { required: true },
                 ]}
               >
-                <Radio.Group>
-                  <Radio value='SMP'> SMP </Radio>
-                  <Radio value='SMA'> SMA </Radio>
-                  <Radio value='D-III'> D-III </Radio>
-                  <Radio value='D-IV/S-1'> D-IV/S-1 </Radio>
-                  <Radio value='S-2'> S-2</Radio>
-                  <Radio value='S-3'> S-3</Radio>
-                </Radio.Group>
+                <Select
+                  style={{
+                    width: '30%',
+                  }}
+                  onChange={handleChangePangkat}
+                  options={EducationClassifications}
+                />
               </Form.Item>
               <Form.Item
                 label='Unit Kerja'
@@ -284,16 +413,7 @@ function RencanaPengembangan1() {
               >
                 <Select
                   onChange={handleChangeUnitKerja}
-                  options={[
-                    {
-                      value: 'satuan1',
-                      label: 'Satuan 1',
-                    },
-                    {
-                      value: 'satuan2',
-                      label: 'Satuan 2',
-                    },
-                  ]}
+                  options={opds}
                 />
               </Form.Item>
               <Form.Item
@@ -308,96 +428,96 @@ function RencanaPengembangan1() {
                     <Row>
                       <Checkbox value='jpt' onChange={(e) => onChangeJabatan('JPT', e)} disabled={jabatanCheck && !jabatan.JPT}>JPT</Checkbox>
                       {jabatan.JPT && (
-                        <Select
-                          onChange={handleChangeUnitKerja}
-                          placeholder='Pilih JPT'
-                          options={[
-                            {
-                              value: 'satuan1',
-                              label: 'Satuan 1',
-                            },
-                            {
-                              value: 'satuan2',
-                              label: 'Satuan 2',
-                            },
-                          ]}
-                        />
+                      <Select
+                        onChange={handleChangeUnitKerja}
+                        placeholder='Pilih JPT'
+                        options={[
+                          {
+                            value: 'satuan1',
+                            label: 'Satuan 1',
+                          },
+                          {
+                            value: 'satuan2',
+                            label: 'Satuan 2',
+                          },
+                        ]}
+                      />
                       )}
                     </Row>
                     <Row>
                       <Checkbox value='admin' onChange={(e) => onChangeJabatan('Administrator', e)} disabled={jabatanCheck && !jabatan.Administrator}>Administrator</Checkbox>
                       {jabatan.Administrator && (
-                        <Select
-                          onChange={handleChangeUnitKerja}
-                          placeholder='Pilih Admin'
-                          options={[
-                            {
-                              value: 'satuan1',
-                              label: 'Satuan 1',
-                            },
-                            {
-                              value: 'satuan2',
-                              label: 'Satuan 2',
-                            },
-                          ]}
-                        />
+                      <Select
+                        onChange={handleChangeUnitKerja}
+                        placeholder='Pilih Admin'
+                        options={[
+                          {
+                            value: 'satuan1',
+                            label: 'Satuan 1',
+                          },
+                          {
+                            value: 'satuan2',
+                            label: 'Satuan 2',
+                          },
+                        ]}
+                      />
                       )}
                     </Row>
                     <Row>
                       <Checkbox value='pengawas' onChange={(e) => onChangeJabatan('Pengawas', e)} disabled={jabatanCheck && !jabatan.Pengawas}>Pengawas</Checkbox>
                       {jabatan.Pengawas && (
-                        <Select
-                          onChange={handleChangeUnitKerja}
-                          placeholder='Pilih Pengawas'
-                          options={[
-                            {
-                              value: 'satuan1',
-                              label: 'Satuan 1',
-                            },
-                            {
-                              value: 'satuan2',
-                              label: 'Satuan 2',
-                            },
-                          ]}
-                        />
+                      <Select
+                        onChange={handleChangeUnitKerja}
+                        placeholder='Pilih Pengawas'
+                        options={[
+                          {
+                            value: 'satuan1',
+                            label: 'Satuan 1',
+                          },
+                          {
+                            value: 'satuan2',
+                            label: 'Satuan 2',
+                          },
+                        ]}
+                      />
                       )}
                     </Row>
                     <Row>
                       <Checkbox value='fungsional' onChange={(e) => onChangeJabatan('Fungsional', e)} disabled={jabatanCheck && !jabatan.Fungsional}>Fungsional</Checkbox>
                       {jabatan.Fungsional && (
-                        <Select
-                          onChange={handleChangeUnitKerja}
-                          placeholder='Pilih Fungsional'
-                          options={[
-                            {
-                              value: 'satuan1',
-                              label: 'Satuan 1',
-                            },
-                            {
-                              value: 'satuan2',
-                              label: 'Satuan 2',
-                            },
-                          ]}
-                        />
+                      <Select
+                        onChange={handleChangeUnitKerja}
+                        placeholder='Pilih Fungsional'
+                        options={[
+                          {
+                            value: 'satuan1',
+                            label: 'Satuan 1',
+                          },
+                          {
+                            value: 'satuan2',
+                            label: 'Satuan 2',
+                          },
+                        ]}
+                      />
                       )}
                     </Row>
                     <Row>
                       <Checkbox value='pelaksana' onChange={(e) => onChangeJabatan('Pelaksana', e)} disabled={jabatanCheck && !jabatan.Pelaksana}>Pelaksana</Checkbox>
                       {jabatan.Pelaksana && (
-                        <Select
-                          onChange={handleChangeUnitKerja}
-                          placeholder='Pilih Pelaksana'
-                          options={[
-                            {
-                              value: 'satuan1',
-                              label: 'Satuan 1',
-                            },
-                            {
-                              value: 'satuan2',
-                              label: 'Satuan 2',
-                            },
-                          ]}
-                        />
+                      <Select
+                        onChange={handleChangeUnitKerja}
+                        placeholder='Pilih Pelaksana'
+                        options={[
+                          {
+                            value: 'satuan1',
+                            label: 'Satuan 1',
+                          },
+                          {
+                            value: 'satuan2',
+                            label: 'Satuan 2',
+                          },
+                        ]}
+                      />
                       )}
                     </Row>
 
@@ -413,7 +533,7 @@ function RencanaPengembangan1() {
                   </Col>
                   <Col span={4}>
                     <Button type='primary' htmlType='submit'>
-                      Tambah Riwayat Diklat
+                      Selanjutnya
                     </Button>
                   </Col>
                 </Row>
@@ -428,10 +548,14 @@ function RencanaPengembangan1() {
 
 RencanaPengembangan1.getLayout = function getLayout(page) {
   return (
-    <AppLayout title='List PNS' extra={false}>
+    <AppLayout title='List PNS' extraDef='rencanaPengembangan' onTab='dataDiri'>
       {page}
     </AppLayout>
   );
+};
+
+RencanaPengembangan1.propTypes = {
+  opds: PropTypes.array.isRequired,
 };
 
 export default RencanaPengembangan1;

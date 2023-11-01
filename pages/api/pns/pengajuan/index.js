@@ -50,6 +50,19 @@ export default async function handler(req, res) {
                 nip: true,
               },
             },
+            kompetensi: {
+              select: {
+                id: true,
+                nama: true,
+              },
+            },
+            keterangan: {
+              select: {
+                keterangan: true,
+                status: true,
+                createdAt: true,
+              },
+            },
           },
           orderBy: [
             {
