@@ -43,6 +43,7 @@ model m_diklat {
 model m_sub_diklat {
   id         String   @id @default(uuid())
   nama       String
+  children   Json?
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
   m_diklatId String

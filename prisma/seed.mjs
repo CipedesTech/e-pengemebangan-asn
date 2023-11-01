@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
@@ -115,7 +117,244 @@ const menuAccess = [
   },
 ];
 
+const diklat = [
+  {
+    nama: 'MANAJERIAL',
+    sub: [
+      {
+        nama: 'Pelatihan Dasar',
+        children: [
+          {
+            label: 'Diklat Prajabatan',
+            value: 'Diklat Prajabatan',
+          },
+          {
+            label: 'Pelatihan Dasar CPNS',
+            value: 'Pelatihan Dasar CPNS',
+          },
+        ],
+      },
+      {
+        nama: 'Pelatihan Kepemimpinan',
+        children: [
+          {
+            label: 'Diklat Kepemimpinan Tk. IV',
+            value: 'Diklat Kepemimpinan Tk. IV',
+          },
+          {
+            label: 'Diklat Kepemimpinan Tk. III',
+            value: 'Diklat Kepemimpinan Tk. III',
+          },
+          {
+            label: 'Diklat Kepemimpinan Tk. III',
+            value: 'Diklat Kepemimpinan Tk. III',
+          },
+          {
+            label: 'Diklat Kepemimpinan Tk. I',
+            value: 'Diklat Kepemimpinan Tk. I',
+          },
+          {
+            label: 'Pelatihan Kepemimpinan Pengawas (PKP)',
+            value: 'Pelatihan Kepemimpinan Pengawas (PKP)',
+          },
+          {
+            label: 'Pelatihan Kepemimpinan Administrator (PKA)',
+            value: 'Pelatihan Kepemimpinan Administrator (PKA)',
+          },
+          {
+            label: 'Pelatihan Kepemimpinan Nasional (PKN) Tk. II',
+            value: 'Pelatihan Kepemimpinan Nasional (PKN) Tk. II',
+          },
+          {
+            label: 'Pelatihan Kepemimpinan Nasional (PKN) Tk. I',
+            value: 'Pelatihan Kepemimpinan Nasional (PKN) Tk. I',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    nama: 'SOSIAL KULTURAL',
+    sub: [
+      {
+        nama: 'Pelatihan Soskul Jenjang I',
+      },
+      {
+        nama: 'Pelatihan Soskul Jenjang II',
+      },
+      {
+        nama: 'Pelatihan Soskul Jenjang III',
+      },
+    ],
+  },
+  {
+    nama: 'TEKNIS',
+    sub: [
+      {
+        nama: 'Pembangunan Manusia & Kebudayaan',
+        children: [
+          {
+            label: 'Agama',
+            value: 'Agama',
+          },
+          {
+            label: 'Kesehatan',
+            value: 'Kesehatan',
+          },
+          {
+            label: 'Sosial, Kependudukan, Pembangunan Desa & Pemberdayaan Perempuan',
+            value: 'Sosial, Kependudukan, Pembangunan Desa & Pemberdayaan Perempuan',
+          },
+          {
+            label: 'Pendidikan',
+            value: 'Pendidikan',
+          },
+          {
+            label: 'Seni & Budaya',
+            value: 'Seni & Budaya',
+          },
+          {
+            label: 'Sains',
+            value: 'Sains',
+          },
+          {
+            label: 'Keolahragaan',
+            value: 'Keolahragaan',
+          },
+        ],
+      },
+      {
+        nama: 'Koordinatif / Pendukung',
+        children: [
+          {
+            label: 'Kearsipan',
+            value: 'Kearsipan',
+          },
+          {
+            label: 'Kehumasan',
+            value: 'Kehumasan',
+          },
+          {
+            label: 'Kepegawaian',
+            value: 'Kepegawaian',
+          },
+          {
+            label: 'Perencanaan',
+            value: 'Perencanaan',
+          },
+          {
+            label: 'Keuangan',
+            value: 'Keuangan',
+          },
+          {
+            label: 'Barang Jasa/Pemerintah',
+            value: 'Barang Jasa/Pemerintah',
+          },
+          {
+            label: 'Pengawasan Internal',
+            value: 'Pengawasan Internal',
+          },
+        ],
+      },
+      {
+        nama: 'Kemaritiman & Investasi',
+        children: [
+          {
+            label: 'Kelautan & Perikanan',
+            value: 'Kelautan & Perikanan',
+          },
+          {
+            label: 'Pariwisata & Ekra',
+            value: 'Pariwisata & Ekra',
+          },
+          {
+            label: 'Perhubungan',
+            value: 'Perhubungan',
+          },
+          {
+            label: 'E S D M',
+            value: 'E S D M',
+          },
+        ],
+      },
+      {
+        nama: 'Perekonomian',
+        children: [
+          {
+            label: 'Perindustrian',
+            value: 'Perindustrian',
+          },
+          {
+            label: 'Perdagangan',
+            value: 'Perdagangan',
+          },
+          {
+            label: 'Pertanian',
+            value: 'Pertanian',
+          },
+          {
+            label: 'LHK',
+            value: 'LHK',
+          },
+          {
+            label: 'ATR / Pertanahan',
+            value: 'ATR / Pertanahan',
+          },
+          {
+            label: 'Ketenagakerjaan',
+            value: 'Ketenagakerjaan',
+          },
+          {
+            label: 'PUPR',
+            value: 'PUPR',
+          },
+        ],
+      },
+      {
+        nama: 'Politik Hukum & Keamanan',
+        children: [
+          {
+            label: 'Pemerintahan Dalam Negeri',
+            value: 'Pemerintahan Dalam Negeri',
+          },
+          {
+            label: 'Hubungan Luar Negeri',
+            value: 'Hubungan Luar Negeri',
+          },
+          {
+            label: 'Pertahanan & Keamanan',
+            value: 'Pertahanan & Keamanan',
+          },
+          {
+            label: 'Komunikasi & Informatika',
+            value: 'Komunikasi & Informatika',
+          },
+          {
+            label: 'Pemberantasan Narkotika',
+            value: 'Pemberantasan Narkotika',
+          },
+          {
+            label: 'Keamanan Siber & Persandian',
+            value: 'Keamanan Siber & Persandian',
+          },
+        ],
+      },
+    ],
+  },
+];
+
 async function main() {
+  for (const element of diklat) {
+    console.log(element);
+    await prisma.m_diklat.create({
+      data: {
+        nama: element.nama,
+        diklat: {
+          create: element.sub,
+        },
+      },
+    });
+  }
   await prisma.m_menu_access.createMany({
     data: menuAccess,
   });
