@@ -124,7 +124,7 @@ function MasterDataDiklatCreate({ diklats }) {
     if (updateCandidate.status !== 200) return message.error('Terjadi kesalahan pada server');
     setSubmited(true);
     setLoading(false);
-    return router.push('/');
+    return router.push('/pelaksanaan-diklat');
   };
 
   const columns = [
