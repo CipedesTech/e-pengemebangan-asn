@@ -90,7 +90,7 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
   const fetchPnsData = async () => {
     setLoading(true);
     const res = await PnsService.getAllPns({ params });
-    const list = res.data.data.data.map((el) => ({ value: el.id, label: el.nama_pegawai }));
+    const list = res.data.data.data.map((el) => ({ value: el.id, label: el.nip_baru }));
     setPnsList((prevParam) => ({
       ...prevParam,
       data: list,
@@ -134,11 +134,11 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
   const onChangeNama = (value) => {
     console.log(`selected ${value}`);
     const data = pnsList.raw.filter((el) => el.id === value)[0];
-    const selectednip = data.nip_baru || '';
+    const selectednama = data.nama_pegawai || '';
     const golongan = data.nama_golongan || '';
     const pendidikan = data.nama_jenjang_rumpun || '';
     const unitKerja = data.nomenklatur_pada || '';
-    formRef.current.setFieldValue('nip', selectednip);
+    formRef.current.setFieldValue('nama', selectednama);
     formRef.current.setFieldValue('golongan', golongan);
     formRef.current.setFieldValue('pendidikan', pendidikan);
     formRef.current.setFieldValue('unit_kerja', unitKerja);
@@ -371,8 +371,8 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
               autoComplete='off'
             >
               <Form.Item
-                label='Nama'
-                name='name'
+                label='Nip'
+                name='nip'
                 rules={[
                   { required: true },
                 ]}
@@ -388,13 +388,13 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
                 />
               </Form.Item>
               <Form.Item
-                label='NIP'
-                name='nip'
+                label='Nama'
+                name='nama'
                 rules={[
                   { required: true },
                 ]}
               >
-                <Input placeholder='nip' type='text' />
+                <Input placeholder='Nama' type='text' />
               </Form.Item>
               <Form.Item
                 label='Pangkat/Golongan'
