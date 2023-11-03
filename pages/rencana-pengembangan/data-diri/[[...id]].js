@@ -138,10 +138,14 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
     const golongan = data.nama_golongan || '';
     const pendidikan = data.nama_jenjang_rumpun || '';
     const unitKerja = data.nomenklatur_pada || '';
+    const jabatanType = data.jab_type || '';
     formRef.current.setFieldValue('nama', selectednama);
     formRef.current.setFieldValue('golongan', golongan);
     formRef.current.setFieldValue('pendidikan', pendidikan);
     formRef.current.setFieldValue('unit_kerja', unitKerja);
+    formRef.current.setFieldValue('jabatan', jabatanType);
+    // eslint-disable-next-line no-use-before-define
+    onChangeJabatan2(jabatanType, { target: { checked: true } });
   };
   const onSearchNama = (value) => {
     console.log('search:', value);
@@ -164,9 +168,9 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
   };
 
   const onFinishForm = async (e) => {
-    const pengajuan = await PnsService.createPengajuan({ pegawaiId: e.name });
-    console.log(pengajuan);
     console.log(e);
+    const pengajuan = await PnsService.createPengajuan({ pegawaiId: e.nama });
+    console.log(pengajuan);
     router.push(`/rencana-pengembangan/diklat/${pengajuan.data.data.id}`);
   };
 
