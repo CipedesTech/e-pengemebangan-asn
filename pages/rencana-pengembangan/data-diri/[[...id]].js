@@ -134,6 +134,7 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
   const onChangeNama = (value) => {
     console.log(`selected ${value}`);
     const data = pnsList.raw.filter((el) => el.id === value)[0];
+    console.log('selected data', data);
     const selectednama = data.nama_pegawai || '';
     const golongan = data.nama_golongan || '';
     const pendidikan = data.nama_jenjang_rumpun || '';
@@ -169,7 +170,7 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
 
   const onFinishForm = async (e) => {
     console.log(e);
-    const pengajuan = await PnsService.createPengajuan({ pegawaiId: e.nama });
+    const pengajuan = await PnsService.createPengajuan({ pegawaiId: e.nip });
     console.log(pengajuan);
     router.push(`/rencana-pengembangan/diklat/${pengajuan.data.data.id}`);
   };
@@ -383,7 +384,7 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
               >
                 <Select
                   showSearch
-                  placeholder='Select Nama'
+                  placeholder='Select Nip'
                   optionFilterProp='children'
                   onChange={onChangeNama}
                   onSearch={onSearchNama}

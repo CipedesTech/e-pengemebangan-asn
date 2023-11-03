@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Menu, Dropdown, Avatar, Typography, Modal, message } from 'antd';
-import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
+import { DownOutlined, KeyOutlined, LogoutOutlined } from '@ant-design/icons';
 
 import AuthenticationActions from 'stores/Authentication/Actions';
 
@@ -20,9 +20,10 @@ function NavProfile() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const [avatarBackground] = useState(randomAvatarColor());
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const onProfile = () => {
-    router.push('/profile');
+    // router.push('/profile');
+    setIsModalOpen(true);
   };
 
   const onLogout = () => {
@@ -55,7 +56,7 @@ function NavProfile() {
         <Menu
           mode='vertical'
           onClick={({ key }) => {
-            if (key === 'profile') {
+            if (key === 'changePassword') {
               onProfile();
             } else {
               onLogout();
@@ -67,6 +68,11 @@ function NavProfile() {
               label: t('Logout'),
               icon: <LogoutOutlined />,
             },
+            {
+              key: 'changePassword',
+              label: 'Ganti kata sandi',
+              icon: <KeyOutlined />,
+            },
           ]}
         />
       </div>
@@ -74,18 +80,25 @@ function NavProfile() {
   );
 
   return (
-    <Dropdown placement='bottomRight' overlay={profileMenu} trigger={['click']}>
-      <div className='header-profile'>
-        <Avatar style={avatarStyle} className='mr-2'>
-          {initialName(user?.name ? user?.name : 'Nama ASN')}
-        </Avatar>
-        <div className='mr-3'>
-          <Title style={{ fontSize: 14 }} className='font-weight-semibold mb-0'>{user?.name ? user?.name : 'Nama ASN'}</Title>
-          <span style={{ fontSize: 12 }}>{user?.role}</span>
+    <>
+      <Dropdown placement='bottomRight' overlay={profileMenu} trigger={['click']}>
+        <div className='header-profile'>
+          <Avatar style={avatarStyle} className='mr-2'>
+            {initialName(user?.name ? user?.name : 'Nama ASN')}
+          </Avatar>
+          <div className='mr-3'>
+            <Title style={{ fontSize: 14 }} className='font-weight-semibold mb-0'>{user?.name ? user?.name : 'Nama ASN'}</Title>
+            <span style={{ fontSize: 12 }}>{user?.role}</span>
+          </div>
+          <DownOutlined />
         </div>
-        <DownOutlined />
-      </div>
-    </Dropdown>
+      </Dropdown>
+      <Modal title='Basic Modal' open={isModalOpen} onOk={() => setIsModalOpen(false)} onCancel={() => setIsModalOpen(false)}>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
+    </>
   );
 }
 
