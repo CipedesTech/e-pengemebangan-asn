@@ -18,6 +18,7 @@ import {
   Checkbox,
   Space,
   message,
+  Cascader,
 } from 'antd';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
@@ -41,6 +42,7 @@ export async function getServerSideProps() {
           el.diklat = el.diklat.map((val) => ({
             value: val.id,
             label: val.nama,
+            children: val.children,
           }));
         }
       }
@@ -73,10 +75,7 @@ function RencanaPengembangan2({ diklatList }) {
   const [tipePengembangan, setTipePengembangan] = useState(3);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(0);
-  const [loanList, setLoanList] = useState({
-    data: [],
-    total: 0,
-  });
+  const [subKompetensi, setSubKompetensi] = useState([]);
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
@@ -120,19 +119,23 @@ function RencanaPengembangan2({ diklatList }) {
 
   // PANGKAT SECTION
   const handleChangePangkat = (value) => {
-    console.log(`selected ${value}`);
+    console.log('selected', value);
   };
 
   // UNITKERJA SECTION
-  const handleChangeUnitKerja = (value) => {
-    console.log(`selected ${value}`);
+  const handleChangeSubKompetensi = (value) => {
+    setSubKompetensi(value);
+    console.log('selected', value);
   };
-  console.log(isNoId);
+
   const onFinishForm = async (e) => {
+    console.log(e);
     const { id } = router.query;
     const pengajuan = await PnsService.updatePengajuan(id, {
       status: 'submit',
       diklat: e.kompetensi_diklat[0],
+      subdiklat: subKompetensi[0],
+      subdiklatChild: subKompetensi[1] || '',
     });
     if (pengajuan.status !== 200) {
       return message.error('terjadi kesalahan');
@@ -230,9 +233,9 @@ function RencanaPengembangan2({ diklatList }) {
                 <Checkbox.Group style={{ width: '100%' }}>
                   <Col span={24}>
                     {diklatList
-                      ? diklatList.map((el) => {
+                      ? diklatList.map((el, idx) => {
                         return (
-                          <Row key={el.id}>
+                          <Row key={idx}>
                             <Checkbox
                               value={el.id}
                               onChange={(e) => onChangeKompetensi(el, e)}
@@ -244,8 +247,8 @@ function RencanaPengembangan2({ diklatList }) {
                               {el.nama}
                             </Checkbox>
                             {kompetensi.diklatId !== undefined && kompetensi.diklatId === el.id && (
-                            <Select
-                              onChange={handleChangeUnitKerja}
+                            <Cascader
+                              onChange={handleChangeSubKompetensi}
                               placeholder='Pilih Sub'
                               options={el.diklat}
                             />

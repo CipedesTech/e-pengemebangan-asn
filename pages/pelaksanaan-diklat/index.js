@@ -11,6 +11,7 @@ import {
   Tooltip,
   Modal,
   Space,
+  Tabs,
 } from 'antd';
 import AppLayout from 'layouts/app-layout';
 import {
@@ -22,10 +23,23 @@ import { ROW_GUTTER } from 'constants/ThemeConstant';
 import dayjs from 'dayjs';
 import QueryString from 'qs';
 import DiklatService from 'services/DiklatService';
+import MasterDiklatService from 'services/MasterDiklatService';
+import PropTypes from 'prop-types';
 
 const { confirm } = Modal;
 
-function PelaksanaanDiklat() {
+export async function getServerSideProps() {
+  let diklats = [];
+  try {
+    const diklat = await MasterDiklatService.getAll({ params: { perPage: 2000 } });
+    if (diklat.status === 200) diklats = diklat.data.data.data.map((el) => ({ key: el.id, label: el.nama }));
+  } catch (err) {
+    console.log(err);
+  }
+  return { props: { diklats } };
+}
+
+function PelaksanaanDiklat({ diklats }) {
   const router = useRouter();
   const { t } = useTranslation();
   const query = QueryString.parse(window.location.search.split('?')[1]);
@@ -35,21 +49,22 @@ function PelaksanaanDiklat() {
   const [params, setParams] = useState({
     page: parseInt(query.page, 10) || 1,
     perPage: parseInt(query.perPage, 10) || 10,
+    'where[diklat]': diklats[0],
   });
-
-  const [deleteId, setDeleteId] = useState(null);
 
   const [tableData, setTableData] = useState({
     data: [],
     total: null,
   });
   const fetchData = async () => {
+    setLoading(true);
     const res = await DiklatService.getAllPelaksanaanDiklat({ params });
     setTableData((prevParam) => ({
       ...prevParam,
       data: res.data.data.data,
       total: res.data.data.meta.total,
     }));
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -74,19 +89,11 @@ function PelaksanaanDiklat() {
     }));
   };
 
-  const onDelete = (id) => {
-    confirm({
-      title: t('Confirm'),
-      content: t('placeholder:delete-confirmation'),
-      icon: null,
-      cancelText: t('button:cancel'),
-      okType: 'danger',
-      okText: t('button:delete'),
-      okButtonProps: { type: 'primary' },
-      onOk() {
-        setDeleteId(id);
-      },
-    });
+  const onTabChange = (key) => {
+    setParams((prevParam) => ({
+      ...prevParam,
+      'where[diklat]': key,
+    }));
   };
 
   const onCreate = () => {
@@ -144,7 +151,7 @@ function PelaksanaanDiklat() {
       ),
     },
   ];
-
+  console.log('DIKLATS', diklats);
   return (
     <Row gutter={ROW_GUTTER}>
       <Col span={24}>
@@ -158,6 +165,13 @@ function PelaksanaanDiklat() {
           </Button>
 
         </div>
+      </Col>
+      <Col span={24}>
+        <Tabs
+          defaultActiveKey='1'
+          onChange={onTabChange}
+          items={diklats}
+        />
       </Col>
       <Col span={24}>
         <Card className='card-table'>
@@ -187,6 +201,10 @@ PelaksanaanDiklat.getLayout = function getLayout(page) {
       {page}
     </AppLayout>
   );
+};
+
+PelaksanaanDiklat.propTypes = {
+  diklats: PropTypes.array.isRequired,
 };
 
 export default PelaksanaanDiklat;

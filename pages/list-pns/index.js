@@ -69,7 +69,7 @@ function ListASN() {
   }, [query]);
 
   const onDetail = (record) => {
-    router.push(`list-pns/${record.id}`);
+    router.push(`/list-pns/${record.id}`);
   };
 
   const onPageChange = (page, pageSize) => {

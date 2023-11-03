@@ -38,21 +38,27 @@ import PnsService from 'services/PnsService';
 // eslint-disable-next-line import/no-unresolved
 import useDebounce from 'hooks/useDebounce';
 import OpdService from 'services/OpdService';
+import prisma from 'lib/prisma';
 
 const { Title, Paragraph, Text } = Typography;
 
 export async function getServerSideProps() {
   let opds = [];
+  let nomenklaturJabatan = [];
   try {
     const opd = await OpdService.getAll({ params: { perPage: 2000 } });
     if (opd.status === 200) opds = opd.data.data.data.map((el) => ({ value: el.nomenklatur_pada, label: el.nomenklatur_pada }));
+    const jabatan = await prisma.$queryRaw`SELECT DISTINCT nomenklatur_jabatan  FROM r_pegawai_aktual rpa WHERE nomenklatur_jabatan IS NOT NULL AND nomenklatur_jabatan != '-'`;
+    if (jabatan.length > 0) {
+      nomenklaturJabatan = jabatan.map((el) => ({ value: el.nomenklatur_jabatan, label: el.nomenklatur_jabatan }));
+    }
   } catch (err) {
     console.log(err);
   }
-  return { props: { opds } };
+  return { props: { opds, nomenklaturJabatan } };
 }
 
-function RencanaPengembangan1({ opds }) {
+function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -67,7 +73,7 @@ function RencanaPengembangan1({ opds }) {
   });
   const [subJabatan, setSubjabatan] = useState('');
   const [jabatanCheck, setJabatanCheck] = useState(false);
-
+  const [jabatan2, setJabatan2] = useState(undefined);
   const [pnsList, setPnsList] = useState({
     data: [],
     raw: [],
@@ -202,6 +208,14 @@ function RencanaPengembangan1({ opds }) {
     }
   };
 
+  const onChangeJabatan2 = (el, evt) => {
+    if (evt.target.checked) {
+      setJabatan2(el.value);
+    } else {
+      setJabatan2(undefined);
+    }
+  };
+
   const GolonganClassifications = [
     {
       value: 'I/a',
@@ -328,6 +342,14 @@ function RencanaPengembangan1({ opds }) {
     },
   ];
 
+  const JabatanClassifications = [
+    { value: 'jf', label: 'Fungsional' },
+    { value: 'jfu', label: 'Fungsional Umum/Staff' },
+    { value: 'js', label: 'Struktural' },
+    { value: 'jftguru', label: 'Fungsional Guru' },
+    { value: 'jft', label: 'Fungsional Tertentu' },
+  ];
+
   return (
     <div className='cards-container' style={{ backgroundColor: 'whitesmoke' }}>
       <Row>
@@ -425,102 +447,31 @@ function RencanaPengembangan1({ opds }) {
               >
                 <Checkbox.Group style={{ width: '100%' }}>
                   <Col span={24}>
-                    <Row>
-                      <Checkbox value='jpt' onChange={(e) => onChangeJabatan('JPT', e)} disabled={jabatanCheck && !jabatan.JPT}>JPT</Checkbox>
-                      {jabatan.JPT && (
-                      <Select
-                        onChange={handleChangeUnitKerja}
-                        placeholder='Pilih JPT'
-                        options={[
-                          {
-                            value: 'satuan1',
-                            label: 'Satuan 1',
-                          },
-                          {
-                            value: 'satuan2',
-                            label: 'Satuan 2',
-                          },
-                        ]}
-                      />
-                      )}
-                    </Row>
-                    <Row>
-                      <Checkbox value='admin' onChange={(e) => onChangeJabatan('Administrator', e)} disabled={jabatanCheck && !jabatan.Administrator}>Administrator</Checkbox>
-                      {jabatan.Administrator && (
-                      <Select
-                        onChange={handleChangeUnitKerja}
-                        placeholder='Pilih Admin'
-                        options={[
-                          {
-                            value: 'satuan1',
-                            label: 'Satuan 1',
-                          },
-                          {
-                            value: 'satuan2',
-                            label: 'Satuan 2',
-                          },
-                        ]}
-                      />
-                      )}
-                    </Row>
-                    <Row>
-                      <Checkbox value='pengawas' onChange={(e) => onChangeJabatan('Pengawas', e)} disabled={jabatanCheck && !jabatan.Pengawas}>Pengawas</Checkbox>
-                      {jabatan.Pengawas && (
-                      <Select
-                        onChange={handleChangeUnitKerja}
-                        placeholder='Pilih Pengawas'
-                        options={[
-                          {
-                            value: 'satuan1',
-                            label: 'Satuan 1',
-                          },
-                          {
-                            value: 'satuan2',
-                            label: 'Satuan 2',
-                          },
-                        ]}
-                      />
-                      )}
-                    </Row>
-                    <Row>
-                      <Checkbox value='fungsional' onChange={(e) => onChangeJabatan('Fungsional', e)} disabled={jabatanCheck && !jabatan.Fungsional}>Fungsional</Checkbox>
-                      {jabatan.Fungsional && (
-                      <Select
-                        onChange={handleChangeUnitKerja}
-                        placeholder='Pilih Fungsional'
-                        options={[
-                          {
-                            value: 'satuan1',
-                            label: 'Satuan 1',
-                          },
-                          {
-                            value: 'satuan2',
-                            label: 'Satuan 2',
-                          },
-                        ]}
-                      />
-                      )}
-                    </Row>
-                    <Row>
-                      <Checkbox value='pelaksana' onChange={(e) => onChangeJabatan('Pelaksana', e)} disabled={jabatanCheck && !jabatan.Pelaksana}>Pelaksana</Checkbox>
-                      {jabatan.Pelaksana && (
-                      <Select
-                        onChange={handleChangeUnitKerja}
-                        placeholder='Pilih Pelaksana'
-                        options={[
-                          {
-                            value: 'satuan1',
-                            label: 'Satuan 1',
-                          },
-                          {
-                            value: 'satuan2',
-                            label: 'Satuan 2',
-                          },
-                        ]}
-                      />
-                      )}
-                    </Row>
-
+                    {JabatanClassifications
+                      ? JabatanClassifications.map((el, idx) => {
+                        return (
+                          <Row key={idx}>
+                            <Checkbox
+                              value={el.value}
+                              onChange={(e) => onChangeJabatan2(el, e)}
+                              disabled={
+                                  jabatan2 !== undefined
+                                  && jabatan2 !== el.value
+                                }
+                            >
+                              {el.label}
+                            </Checkbox>
+                            {jabatan2 !== undefined && jabatan2 === el.value && (
+                              <Select
+                                onChange={handleChangeUnitKerja}
+                                placeholder='Pilih Bidang'
+                                options={nomenklaturJabatan}
+                              />
+                            )}
+                          </Row>
+                        );
+                      })
+                      : null}
                   </Col>
                 </Checkbox.Group>
 
@@ -556,6 +507,7 @@ RencanaPengembangan1.getLayout = function getLayout(page) {
 
 RencanaPengembangan1.propTypes = {
   opds: PropTypes.array.isRequired,
+  nomenklaturJabatan: PropTypes.array.isRequired,
 };
 
 export default RencanaPengembangan1;

@@ -2,8 +2,7 @@ import prisma from 'lib/prisma';
 
 export default async function handler(req, res) {
   const { id } = req.query;
-  const { status, diklat, keterangan } = req.body;
-  console.log(keterangan);
+  const { status, diklat, keterangan, subdiklat, subdiklatChild } = req.body;
   switch (req.method) {
     case 'PUT':
       try {
@@ -14,6 +13,8 @@ export default async function handler(req, res) {
           data: {
             status,
             diklat,
+            subdiklat,
+            subdiklatChild,
             keterangan: {
               create: {
                 keterangan,

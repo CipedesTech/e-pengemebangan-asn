@@ -24,8 +24,21 @@ import DiklatService from 'services/DiklatService';
 import dayjs from 'dayjs';
 import QueryString from 'qs';
 import PnsService from 'services/PnsService';
+import MasterDiklatService from 'services/MasterDiklatService';
+import PropTypes from 'prop-types';
 
-function MasterDataDiklatCreate() {
+export async function getServerSideProps() {
+  let diklats = [];
+  try {
+    const diklat = await MasterDiklatService.getAll({ params: { perPage: 2000 } });
+    if (diklat.status === 200) diklats = diklat.data.data.data.map((el) => ({ value: el.id, label: el.nama }));
+  } catch (err) {
+    console.log(err);
+  }
+  return { props: { diklats } };
+}
+
+function MasterDataDiklatCreate({ diklats }) {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -111,6 +124,7 @@ function MasterDataDiklatCreate() {
     if (updateCandidate.status !== 200) return message.error('Terjadi kesalahan pada server');
     setSubmited(true);
     setLoading(false);
+    return router.push('/');
   };
 
   const columns = [
@@ -127,7 +141,7 @@ function MasterDataDiklatCreate() {
       title: 'NIP',
       dataIndex: 'nip',
       render: (text, record, index) => {
-        return record.pegawai_id.nip;
+        return record.pegawai_id.nip_baru;
       },
     },
     {
@@ -184,28 +198,7 @@ function MasterDataDiklatCreate() {
               ]}
             >
               <Select
-                options={[
-                  {
-                    value: 'jpt',
-                    label: 'Manajerial',
-                  },
-                  {
-                    value: 'pelaksana',
-                    label: 'Pemerintah',
-                  },
-                  {
-                    value: 'fungsional',
-                    label: 'Fungsional',
-                  },
-                  {
-                    value: 'pengawas',
-                    label: 'Sosiokultural',
-                  },
-                  {
-                    value: 'admin',
-                    label: 'Teknis',
-                  },
-                ]}
+                options={diklats}
               />
             </Form.Item>
             <Form.Item
@@ -278,6 +271,10 @@ MasterDataDiklatCreate.getLayout = function getLayout(page) {
       {page}
     </AppLayout>
   );
+};
+
+MasterDataDiklatCreate.propTypes = {
+  diklats: PropTypes.array.isRequired,
 };
 
 export default MasterDataDiklatCreate;

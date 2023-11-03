@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-else-return */
-import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useSelector, usere } from 'react-redux';
+import { useEffect, useRef, useState } from 'react';
 import AppLayout from 'layouts/app-layout';
 
 import {
@@ -42,6 +42,7 @@ function ListASN() {
     data: {},
     keterangan: '',
   });
+  const [modalKeterangan, setModalKeterangan] = useState();
   const [params, setParams] = useState({
     page: parseInt(query.page, 10) || 1,
     perPage: parseInt(query.perPage, 10) || 10,
@@ -52,6 +53,8 @@ function ListASN() {
   });
   const fetchData = async () => {
     const res = await PnsService.getAllPengajuan({ params });
+    const statusOrder = { submit: 0, rejected: 1, verified: 2 };
+    res.data.data.data.sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
     setTableData((prevParam) => ({
       ...prevParam,
       data: res.data.data.data,
@@ -89,6 +92,7 @@ function ListASN() {
   };
 
   const updateKeterangan = (evt) => {
+    setModalKeterangan(evt.target.value);
     setDetailModal((prev) => ({
       ...prev,
       keterangan: evt.target.value,
@@ -96,6 +100,7 @@ function ListASN() {
   };
 
   const openModal = (record) => {
+    setModalKeterangan('');
     const history = record.keterangan.map((el) => ({ title: `${el.status} ${dayjs(el.createdAt).format('DD MMMM YYYY HH:mm')}`, description: el.keterangan }));
     setDetailModal({ isOpen: true, data: record, history });
   };
@@ -114,7 +119,7 @@ function ListASN() {
       title: 'NIP',
       dataIndex: 'nip',
       render: (text, record, index) => {
-        return record.pegawai_id.nip;
+        return record.pegawai_id.nip_baru;
       },
     },
     {
@@ -126,8 +131,9 @@ function ListASN() {
     },
     {
       title: 'Kompetensi',
-      dataIndex: 'diklat',
-      key: 'diklat',
+      render: (text, record, index) => {
+        return record.kompetensi.nama;
+      },
     },
 
     {
@@ -303,7 +309,10 @@ function ListASN() {
       <Modal
         title='Detail Data Pengaju'
         open={detailModal.isOpen}
-        onCancel={() => setDetailModal({ isOpen: false, data: {} })}
+        onCancel={() => {
+          setDetailModal({ isOpen: false, data: {} });
+          setModalKeterangan('');
+        }}
         onOk={() => {
           setDetailModal({ isOpen: false, data: {} });
         }}
@@ -376,7 +385,7 @@ function ListASN() {
                 <Text>Keterangan</Text>
               </Col>
               <Col span={12}>
-                <TextArea disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'rejected'} onChange={(e) => updateKeterangan(e)} rows={4} />
+                <TextArea disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'rejected'} value={modalKeterangan} onChange={(e) => updateKeterangan(e)} rows={4} />
               </Col>
             </Row>
           </Col>

@@ -1,7 +1,9 @@
+import { decode } from 'jsonwebtoken';
 import prisma from 'lib/prisma';
 import QueryString from 'qs';
 
 export default async function handler(req, res) {
+  const user = decode(req.headers?.authorization?.split(' ')[1]);
   switch (req.method) {
     case 'POST':
       try {
@@ -23,31 +25,31 @@ export default async function handler(req, res) {
       const page = Number(pages || pages) || 1;
       const perPage = Number(perPages || perPages) || 10;
       const skip = page > 0 ? perPage * (page - 1) : 0;
+      const where = {
+        OR: [
+          { status: 'submit' },
+          { status: 'verified' },
+          { status: 'rejected' },
+        ],
+      };
+      if (user?.role === 'UMPEG' && user?.opd?.nama !== 'master') {
+        where.pegawai_id = {
+          nomenklatur_pada: user?.opd?.nama,
+        };
+      }
       const [total, data] = await Promise.all([
         prisma.t_pns_diajukan.count({
-          where: {
-            OR: [
-              { status: 'submit' },
-              { status: 'verified' },
-              { status: 'rejected' },
-            ],
-          },
+          where,
         }),
         prisma.t_pns_diajukan.findMany({
-          where: {
-            OR: [
-              { status: 'submit' },
-              { status: 'verified' },
-              { status: 'rejected' },
-            ],
-          },
+          where,
           take: perPage,
           skip,
           include: {
             pegawai_id: {
               select: {
                 nama_pegawai: true,
-                nip: true,
+                nip_baru: true,
               },
             },
             kompetensi: {
@@ -61,6 +63,12 @@ export default async function handler(req, res) {
                 keterangan: true,
                 status: true,
                 createdAt: true,
+              },
+            },
+            subKompetensi: {
+              select: {
+                nama: true,
+                children: true,
               },
             },
           },

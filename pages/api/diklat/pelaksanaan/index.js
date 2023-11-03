@@ -33,6 +33,7 @@ export default async function handler(req, res) {
           skip,
           include: {
             t_pns_diajukan: true,
+            Diklat: true,
           },
           orderBy,
         }),

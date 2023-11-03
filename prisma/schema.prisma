@@ -32,22 +32,24 @@ model m_role {
 }
 
 model m_diklat {
-  id             String           @id @default(uuid())
-  nama           String
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  diklat         m_sub_diklat[]
-  t_pns_diajukan t_pns_diajukan[]
+  id                   String                 @id @default(uuid())
+  nama                 String
+  createdAt            DateTime               @default(now()) @map("created_at")
+  updatedAt            DateTime               @updatedAt @map("updated_at")
+  diklat               m_sub_diklat[]
+  t_pns_diajukan       t_pns_diajukan[]
+  t_pelaksanaan_diklat t_pelaksanaan_diklat[]
 }
 
 model m_sub_diklat {
-  id         String   @id @default(uuid())
-  nama       String
-  children   Json?
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
-  m_diklatId String
-  m_diklat   m_diklat @relation(fields: [m_diklatId], references: [id])
+  id             String           @id @default(uuid())
+  nama           String
+  children       Json?
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  m_diklatId     String
+  m_diklat       m_diklat         @relation(fields: [m_diklatId], references: [id])
+  t_pns_diajukan t_pns_diajukan[]
 
   @@index([m_diklatId], map: "m_sub_diklat_m_diklatId_fkey")
 }
@@ -74,6 +76,9 @@ model t_pns_diajukan {
   pelaksanaan_diklat_id  t_pelaksanaan_diklat?    @relation(fields: [t_pelaksanaan_diklatId], references: [id])
   kompetensi             m_diklat?                @relation(fields: [diklat], references: [id])
   diklat                 String?
+  subKompetensi          m_sub_diklat?            @relation(fields: [subdiklat], references: [id])
+  subdiklat              String?
+  subdiklatChild         String?
 
   @@index([r_pegawai_aktualId], map: "t_pns_diajukan_r_pegawai_aktualId_fkey")
   @@index([t_pelaksanaan_diklatId], map: "t_pns_diajukan_t_pelaksanaan_diklatId_fkey")
@@ -100,6 +105,7 @@ model t_pelaksanaan_diklat {
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
   t_pns_diajukan t_pns_diajukan[]
+  Diklat         m_diklat         @relation(fields: [diklat], references: [id])
 }
 
 model m_opd {

@@ -41,6 +41,7 @@ function ListPengembanganDiri() {
     isOpen: false,
     data: {},
   });
+  const [modalKeterangan, setModalKeterangan] = useState();
   const [params, setParams] = useState({
     page: parseInt(query.page, 10) || 1,
     perPage: parseInt(query.perPage, 10) || 10,
@@ -50,12 +51,14 @@ function ListPengembanganDiri() {
     total: null,
   });
   const fetchData = async () => {
+    setLoading(true);
     const res = await PnsService.getAllPengajuan({ params });
     setTableData((prevParam) => ({
       ...prevParam,
       data: res.data.data.data,
       total: res.data.data.meta.total,
     }));
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -72,14 +75,15 @@ function ListPengembanganDiri() {
   // }, [query]);
 
   const onDetail = async (status, record) => {
+    setLoading(true);
     setDetailModal({ isOpen: false, data: {} });
-    const pengajuan = await PnsService.updatePengajuan(record.id, { status });
+    const pengajuan = await PnsService.updatePengajuan(record.id, { status, keterangan: detailModal.keterangan });
     if (pengajuan.status !== 200) {
+      setLoading(false);
       return message.error('terjadi kesalahan');
     }
-    console.log(status, record);
     fetchData(params);
-    return message.success(`${record.id} di ${status === 'verified' ? 'verifikasi' : 'tolak'}`);
+    return message.success(`${record.id} di ${status === 'verified' ? 'verifikasi' : 'ajukan'}`);
   };
 
   const onPageChange = (page, pageSize) => {
@@ -96,8 +100,17 @@ function ListPengembanganDiri() {
   };
 
   const openModal = (record) => {
+    setModalKeterangan('');
     const history = record.keterangan.map((el) => ({ title: `${el.status} ${dayjs(el.createdAt).format('DD MMMM YYYY HH:mm')}`, description: el.keterangan }));
     setDetailModal({ isOpen: true, data: record, history });
+  };
+
+  const updateKeterangan = (evt) => {
+    setModalKeterangan(evt.target.value);
+    setDetailModal((prev) => ({
+      ...prev,
+      keterangan: evt.target.value,
+    }));
   };
 
   const columns = [
@@ -114,7 +127,7 @@ function ListPengembanganDiri() {
       title: 'NIP',
       dataIndex: 'nip',
       render: (text, record, index) => {
-        return record.pegawai_id.nip;
+        return record.pegawai_id.nip_baru;
       },
     },
     {
@@ -201,6 +214,7 @@ function ListPengembanganDiri() {
         <Col span={24}>
           <div className='d-flex m-4 align-items-center justify-content-end'>
             <Button
+              disabled={loading}
               type='primary'
               icon={<PlusOutlined />}
               onClick={() => onCreate()}
@@ -316,7 +330,10 @@ function ListPengembanganDiri() {
       <Modal
         title='Detail Data Pengaju'
         open={detailModal.isOpen}
-        onCancel={() => setDetailModal({ isOpen: false, data: {} })}
+        onCancel={() => {
+          setDetailModal({ isOpen: false, data: {} });
+          setModalKeterangan('');
+        }}
         onOk={() => {
           setDetailModal({ isOpen: false, data: {} });
         }}
@@ -331,19 +348,19 @@ function ListPengembanganDiri() {
             className='ant-btn-geekblue'
             icon={<CheckOutlined />}
             disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'}
-            onClick={() => onDetail('verified', detailModal?.data)}
-          >Verifikasi
+            onClick={() => onDetail('submit', detailModal?.data)}
+          >Ajukan Kembali
           </Button>,
-          <Button
-            key='Back'
-            type='default'
-            size='small'
-            className='ant-btn-danger'
-            icon={<CloseOutlined />}
-            disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'}
-            onClick={() => onDetail('rejected', detailModal?.data)}
-          >Tolak
-          </Button>,
+          // <Button
+          //   key='Back'
+          //   type='default'
+          //   size='small'
+          //   className='ant-btn-danger'
+          //   icon={<CloseOutlined />}
+          //   disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'}
+          //   onClick={() => onDetail('rejected', detailModal?.data)}
+          // >Tolak
+          // </Button>,
         ]}
       >
         <Row gutter={[12, 12]} style={{ marginTop: '12px' }}>
@@ -389,7 +406,7 @@ function ListPengembanganDiri() {
                 <Text>Keterangan</Text>
               </Col>
               <Col span={12}>
-                <TextArea disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'} rows={4} />
+                <TextArea disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'} value={modalKeterangan} onChange={(e) => updateKeterangan(e)} rows={4} />
               </Col>
             </Row>
           </Col>

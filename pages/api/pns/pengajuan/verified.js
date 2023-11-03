@@ -20,7 +20,7 @@ export default async function handler(req, res) {
             pegawai_id: {
               select: {
                 nama_pegawai: true,
-                nip: true,
+                nip_baru: true,
               },
             },
           },
