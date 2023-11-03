@@ -23,6 +23,7 @@ export default async function handler(req, res) {
                 nip_baru: true,
               },
             },
+            kompetensi: true,
           },
         }),
       ]);

@@ -112,8 +112,10 @@ function PelaksanaanDiklat({ diklats }) {
     },
     {
       title: 'Kompetensi',
-      dataIndex: 'diklat',
-      key: 'diklat',
+      // eslint-disable-next-line no-unused-vars
+      render: (text, record, index) => {
+        return record.Diklat.nama;
+      },
     },
     {
       title: 'Pagu',

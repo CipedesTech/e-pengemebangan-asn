@@ -15,9 +15,19 @@ export default async function handler(req, res) {
                 pegawai_id: {
                   select: {
                     nama_pegawai: true,
-                    nip: true,
+                    nip_baru: true,
                   },
                 },
+                kompetensi: {
+                  select: {
+                    nama: true,
+                  },
+                },
+              },
+            },
+            Diklat: {
+              select: {
+                nama: true,
               },
             },
           },

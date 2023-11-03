@@ -153,8 +153,9 @@ function MasterDataDiklatCreate({ diklats }) {
     },
     {
       title: 'Kompetensi',
-      dataIndex: 'diklat',
-      key: 'diklat',
+      render: (text, record, index) => {
+        return record.kompetensi.nama;
+      },
     },
 
     {

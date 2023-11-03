@@ -26,31 +26,64 @@ import QueryString from 'qs';
 import PropTypes from 'prop-types';
 import PnsService from 'services/PnsService';
 import { ROW_GUTTER } from 'constants/ThemeConstant';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, EditOutlined } from '@ant-design/icons';
+import MasterDiklatService from 'services/MasterDiklatService';
 
 export async function getServerSideProps({ query }) {
   const { id } = query;
   let data = {};
+  let diklats = [];
   try {
     const res = await DiklatService.getPelaksanaanDiklatById(id);
     if (res.status === 200) data = res.data.data;
-    console.log(res.data);
+    const diklat = await MasterDiklatService.getAll({ params: { perPage: 2000 } });
+    if (diklat.status === 200) diklats = diklat.data.data.data.map((el) => ({ value: el.id, label: el.nama }));
   } catch (err) {
     // console.log(err.status);
   }
-  return { props: { data } };
+  return { props: { data, diklats } };
 }
 
-function MasterDataDiklatCreate({ data }) {
+function MasterDataDiklatCreate({ data, diklats }) {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const formRef = createRef();
   const [loading, setLoading] = useState(false);
+  const [Edit, setEdit] = useState(true);
+  const query = QueryString.parse(window.location.search.split('?')[1]);
+  const [dataPelaksanaan, setDataPelaksanaan] = useState({ submited: false, data: {} });
+  const [params, setParams] = useState({
+    page: parseInt(query.page, 10) || 1,
+    perPage: parseInt(query.perPage, 10) || 10,
+    'where[diklat]': data.diklat,
+    'where[status]': 'verified',
+  });
+  const [tableData, setTableData] = useState({
+    data: [],
+    total: null,
+  });
+  const [selectedCandidate, setSelectedCandidate] = useState([]);
+  const [submited, setSubmited] = useState(false);
+
+  const fetchData = async () => {
+    const res = await PnsService.getAllPengajuanVerif({ params });
+    setTableData((prevParam) => ({
+      ...prevParam,
+      data: res.data.data.data,
+      total: res.data.data.meta.total,
+    }));
+  };
 
   useEffect(() => {
     formRef.current.setFieldsValue(data);
+    // form.setFieldValue('diklat', data.Diklat.nama);
   }, []);
+
+  useEffect(() => {
+    console.log('REFECTH');
+    fetchData(params);
+  }, [params]);
 
   const onBack = () => {
     router.push('/master-data/diklat');
@@ -69,7 +102,7 @@ function MasterDataDiklatCreate({ data }) {
       title: 'NIP',
       dataIndex: 'nip',
       render: (text, record, index) => {
-        return record.pegawai_id.nip;
+        return record.pegawai_id.nip_baru;
       },
     },
     {
@@ -81,8 +114,9 @@ function MasterDataDiklatCreate({ data }) {
     },
     {
       title: 'Kompetensi',
-      dataIndex: 'diklat',
-      key: 'diklat',
+      render: (text, record, index) => {
+        return record.kompetensi.nama;
+      },
     },
 
     {
@@ -106,6 +140,56 @@ function MasterDataDiklatCreate({ data }) {
     },
   ];
 
+  const onSubmit = async (e) => {
+    console.log('SUBMIT', e);
+    setDataPelaksanaan({ submited: true, data: e });
+    setLoading(true);
+    setParams((prevParam) => ({
+      ...prevParam,
+      'where[status]': 'verified',
+    }));
+    setLoading(false);
+  };
+
+  const onPageChange = (page, pageSize) => {
+    router.push('', `?page=${page}&perPage=${pageSize}`, { scroll: false });
+    setParams((prevParam) => ({
+      ...prevParam,
+      page,
+      perPage: pageSize,
+    }));
+  };
+
+  const rowSelection = {
+    type: 'checkbox',
+    onChange: (selectedRowKeys, selectedRows) => {
+      setSelectedCandidate(selectedRows);
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+    getCheckboxProps: (record) => {
+      console.log(selectedCandidate);
+      console.log(dataPelaksanaan);
+      console.log(record);
+      return {
+        disabled: selectedCandidate.length === parseInt(dataPelaksanaan?.data?.kuota, 10) && selectedCandidate.filter((el) => el.id === record.id) < 1,
+        // Column configuration not to be checked
+        name: record.name,
+      };
+    },
+    // selectedRowKeys: data.t_pns_diajukan.map((el) => el.id),
+  };
+
+  const onSbmitCandidate = async (e) => {
+    setLoading(true);
+    const pelaksanaanDiklat = await DiklatService.createDiklat(dataPelaksanaan.data);
+    if (pelaksanaanDiklat.status !== 201) return message.error('terjadi masalah pada server');
+    const updateCandidate = await PnsService.updateCandidatePengajuan({ datas: selectedCandidate, id: pelaksanaanDiklat.data.data.id });
+    if (updateCandidate.status !== 200) return message.error('Terjadi kesalahan pada server');
+    setSubmited(true);
+    setLoading(false);
+    return router.push('/pelaksanaan-diklat');
+  };
+
   return (
     <Row gutter={ROW_GUTTER}>
       <Col span={24}>
@@ -118,19 +202,27 @@ function MasterDataDiklatCreate({ data }) {
           >
             Kembali
           </Button>
+          <Button
+            type={!Edit ? 'danger' : 'primary'}
+            icon={<EditOutlined />}
+            style={{ marginRight: 5 }}
+            onClick={() => setEdit(!Edit)}
+          >
+            {!Edit ? 'Batal' : 'Edit'}
+          </Button>
 
         </div>
       </Col>
       <Col span={24}>
         <Card>
           <Spin spinning={loading}>
-            <Form ref={formRef} form={form} layout='vertical'>
+            <Form ref={formRef} form={form} layout='vertical' onFinish={onSubmit}>
               <Form.Item
                 name='nama'
                 label={t('Nama Diklat')}
                 rules={[{ required: true }]}
               >
-                <Input style={{ color: 'black' }} disabled placeholder={t('placeholder:enter', { field: t('Nama Diklat') })} />
+                <Input style={{ color: 'black' }} disabled={Edit} placeholder={t('placeholder:enter', { field: t('Nama Diklat') })} />
               </Form.Item>
               <Form.Item
                 label='Kompetensi diklat'
@@ -139,51 +231,82 @@ function MasterDataDiklatCreate({ data }) {
                   { required: true },
                 ]}
               >
-                <Input style={{ color: 'black' }} disabled />
+                <Select
+                  options={diklats}
+                  disabled={Edit}
+                />
               </Form.Item>
               <Form.Item
                 name='pagu'
                 label='Pagu'
                 rules={[{ required: true }]}
               >
-                <Input style={{ color: 'black' }} disabled type='number' placeholder='1000000' />
+                <Input style={{ color: 'black' }} disabled={Edit} type='number' placeholder='1000000' />
               </Form.Item>
               <Form.Item
                 name='kuota'
                 label='Kuota Diklat'
                 rules={[{ required: true }]}
               >
-                <Input style={{ color: 'black' }} disabled type='number' placeholder='10' />
+                <Input style={{ color: 'black' }} disabled={Edit} type='number' placeholder='10' />
               </Form.Item>
-              {/* <Form.Item className='mb-0'>
-              <Space size='middle'>
-                <Button type='primary' htmlType='submit' disabled={dataPelaksanaan?.id}>
-                  {t('button:submit')}
-                </Button>
-                <Button type='default' onClick={onBack} disabled={dataPelaksanaan?.id}>
-                  {t('button:cancel')}
-                </Button>
-              </Space>
-            </Form.Item> */}
+              <Form.Item className='mb-0'>
+                <Space size='middle'>
+                  <Button type='primary' htmlType='submit' disabled={Edit}>
+                    Update Table
+                  </Button>
+                  <Button type='default' onClick={onBack} disabled={Edit}>
+                    {t('button:cancel')}
+                  </Button>
+                </Space>
+              </Form.Item>
             </Form>
           </Spin>
         </Card>
         {data?.id ? (
           <Card title='List Kandidat'>
-            <Table
-              loading={loading}
-              columns={columns}
-              dataSource={data.t_pns_diajukan}
-              scroll={{ x: 700 }}
-            />
-            {/* <Space size='middle'>
-            <Button type='primary' htmlType='submit' onClick={onSbmitCandidate} disabled={submited}>
-              {t('button:submit')}
-            </Button>
-            <Button type='default' onClick={onBack} disabled={submited}>
-              {t('button:cancel')}
-            </Button>
-          </Space> */}
+            {!Edit
+              ? (
+                <Table
+                  loading={loading}
+                  columns={columns}
+                  dataSource={tableData.data}
+                  rowSelection={rowSelection}
+                  rowKey={(record) => record.id}
+                  scroll={{ x: 700 }}
+                  pagination={{
+                    total: tableData.total,
+                    showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
+                    current: params.page,
+                    pageSize: params.perPage,
+                    onChange: onPageChange,
+                  }}
+                />
+              )
+              : (
+                <Table
+                  loading={loading}
+                  columns={columns}
+                  dataSource={data.t_pns_diajukan}
+                  rowKey={(record) => record.id}
+                  scroll={{ x: 700 }}
+                  pagination={{
+                    total: tableData.total,
+                    showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
+                    current: params.page,
+                    pageSize: params.perPage,
+                    onChange: onPageChange,
+                  }}
+                />
+              )}
+            <Space size='middle'>
+              <Button type='primary' htmlType='submit' onClick={onSbmitCandidate} disabled={Edit}>
+                {t('button:submit')}
+              </Button>
+              <Button type='default' onClick={onBack} disabled={submited}>
+                {t('button:cancel')}
+              </Button>
+            </Space>
           </Card>
         ) : null}
       </Col>
@@ -201,6 +324,7 @@ MasterDataDiklatCreate.getLayout = function getLayout(page) {
 
 MasterDataDiklatCreate.propTypes = {
   data: PropTypes.object.isRequired,
+  diklats: PropTypes.object.isRequired,
 };
 
 export default MasterDataDiklatCreate;

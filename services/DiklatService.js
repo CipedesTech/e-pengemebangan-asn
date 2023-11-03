@@ -4,7 +4,7 @@ const createPelaksanaanDiklat = (payload) => { return ApiClient.post('/api/dikla
 
 const getAllPelaksanaanDiklat = (params) => { return ApiClient.get('/api/diklat/pelaksanaan', params); };
 
-const getPelaksanaanDiklatById = (id) => { console.log('THISIS ID....', id); return ApiClient.get(`/api/diklat/pelaksanaan/${id}`); };
+const getPelaksanaanDiklatById = (id) => { return ApiClient.get(`/api/diklat/pelaksanaan/${id}`); };
 
 // const getPnsById = (id) => { return ApiClient.get(`/api/pns/${id}`, {}); };
 
