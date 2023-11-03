@@ -95,7 +95,7 @@ function MasterDataDiklatCreate({ diklats }) {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
     },
     getCheckboxProps: (record) => ({
-      disabled: selectedCandidate.length === dataPelaksanaan.kuota && selectedCandidate.filter((el) => el.id === record.id) < 1,
+      disabled: selectedCandidate.length === parseInt(dataPelaksanaan?.data?.kuota, 10) && selectedCandidate.filter((el) => el.id === record.id) < 1,
       // Column configuration not to be checked
       name: record.name,
     }),

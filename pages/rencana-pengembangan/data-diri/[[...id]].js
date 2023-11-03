@@ -145,8 +145,7 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
     formRef.current.setFieldValue('pendidikan', pendidikan);
     formRef.current.setFieldValue('unit_kerja', unitKerja);
     formRef.current.setFieldValue('jabatan', jabatanType);
-    // eslint-disable-next-line no-use-before-define
-    onChangeJabatan2(jabatanType, { target: { checked: true } });
+    setJabatan2(jabatanType);
   };
   const onSearchNama = (value) => {
     console.log('search:', value);
