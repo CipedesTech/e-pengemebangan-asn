@@ -348,7 +348,7 @@ function ListPengembanganDiri() {
             className='ant-btn-geekblue'
             icon={<CheckOutlined />}
             disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'}
-            onClick={() => onDetail('submit', detailModal?.data)}
+            onClick={() => router.push(`/rencana-pengembangan/data-diri/${detailModal.data.id}`)}
           >Ajukan Kembali
           </Button>,
           // <Button
