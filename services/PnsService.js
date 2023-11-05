@@ -12,7 +12,11 @@ const createPengajuan = (payload) => { return ApiClient.post('/api/pns/pengajuan
 
 const updatePengajuan = (id, payload) => { return ApiClient.put(`/api/pns/pengajuan/${id}`, payload); };
 
+const getPengajuan = (id) => { return ApiClient.get(`/api/pns/pengajuan/${id}`, {}); };
+
 const updateCandidatePengajuan = (payload) => { return ApiClient.put('api/pns/pengajuan/update-candidate', payload); };
+
+const updateCandidatePengajuanFromEdit = (payload) => { return ApiClient.put('api/pns/pengajuan/update-candidate-edit', payload); };
 
 // const getBorrowerPinjaman = (params) => {
 //   return ApiClient.get('/pinjaman/list_pinjaman_borrower', params).then((result) => result?.data);
@@ -46,6 +50,8 @@ export default {
   createPengajuan,
   updatePengajuan,
   updateCandidatePengajuan,
+  updateCandidatePengajuanFromEdit,
+  getPengajuan,
   // getCariPinjaman,
   // getPinjaman,
   // getDetailPinjaman,

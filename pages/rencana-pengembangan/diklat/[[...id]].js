@@ -28,9 +28,14 @@ import PropTypes from 'prop-types';
 
 const { Title, Paragraph, Text } = Typography;
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ query }) {
   let diklatList = [];
+  let dataPengusul = {};
   try {
+    if (query.id) {
+      dataPengusul = (await PnsService.getPengajuan(query.id)).data.data;
+      console.log('QUERY', dataPengusul);
+    }
     const diklat = await MasterDiklatService.getAll({
       params: { perPage: 2000 },
     });
@@ -50,10 +55,10 @@ export async function getServerSideProps() {
   } catch (err) {
     console.log(err);
   }
-  return { props: { diklatList } };
+  return { props: { diklatList, dataPengusul } };
 }
 
-function RencanaPengembangan2({ diklatList }) {
+function RencanaPengembangan2({ diklatList, dataPengusul }) {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -90,6 +95,11 @@ function RencanaPengembangan2({ diklatList }) {
     const { id } = router.query;
     if (!id) setIsNoId(true);
     console.log('LIST-PNS', diklatList);
+    if (Object.keys(dataPengusul).length !== 0) {
+      form.setFieldValue('kompetensi_diklat', dataPengusul.diklat);
+      form.setFieldValue('subDiklat', [dataPengusul.subdiklat, dataPengusul.subdiklatChild]);
+      setSubKompetensi([dataPengusul.subdiklat, dataPengusul.subdiklatChild]);
+    }
   }, []);
 
   const onDetail = (record) => {
@@ -129,6 +139,18 @@ function RencanaPengembangan2({ diklatList }) {
   };
 
   const onFinishForm = async (e) => {
+    if (Object.keys(dataPengusul).length !== 0) {
+      const pengajuan = await PnsService.updatePengajuan(dataPengusul.id, {
+        status: 'submit',
+        diklat: e.kompetensi_diklat[0],
+        subdiklat: subKompetensi[0],
+        subdiklatChild: subKompetensi[1] || '',
+      });
+      if (pengajuan.status !== 200) {
+        return message.error('terjadi kesalahan');
+      }
+      return router.push('/rencana-pengembangan');
+    }
     console.log(e);
     const { id } = router.query;
     const pengajuan = await PnsService.updatePengajuan(id, {
@@ -247,11 +269,16 @@ function RencanaPengembangan2({ diklatList }) {
                               {el.nama}
                             </Checkbox>
                             {kompetensi.diklatId !== undefined && kompetensi.diklatId === el.id && (
-                            <Cascader
-                              onChange={handleChangeSubKompetensi}
-                              placeholder='Pilih Sub'
-                              options={el.diklat}
-                            />
+                              <Form.Item
+                                name='subDiklat'
+                                noStyle
+                              >
+                                <Cascader
+                                  onChange={handleChangeSubKompetensi}
+                                  placeholder='Pilih Sub'
+                                  options={el.diklat}
+                                />
+                              </Form.Item>
                             )}
                           </Row>
                         );
@@ -589,6 +616,11 @@ RencanaPengembangan2.getLayout = function getLayout(page) {
 
 RencanaPengembangan2.propTypes = {
   diklatList: PropTypes.array.isRequired,
+  dataPengusul: PropTypes.object,
+};
+
+RencanaPengembangan2.defaultProps = {
+  dataPengusul: {},
 };
 
 export default RencanaPengembangan2;

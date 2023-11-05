@@ -21,6 +21,8 @@ import {
   Tooltip,
   message,
   Modal,
+  List,
+  Divider,
 } from 'antd';
 import AppLayout from 'layouts/app-layout';
 import dayjs from 'dayjs';
@@ -32,7 +34,7 @@ import QueryString from 'qs';
 import MasterSubDiklatService from 'services/MasterSubDiklatService';
 
 const { confirm } = Modal;
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 export async function getServerSideProps({ query }) {
   const { id } = query;
@@ -40,7 +42,6 @@ export async function getServerSideProps({ query }) {
   try {
     const res = await MasterDiklatService.getById(id);
     if (res.status === 200) data = res.data.data;
-    console.log(res.data);
   } catch (err) {
     console.log(err);
   }
@@ -68,13 +69,14 @@ function MasterSubDiklat({ data }) {
     data: [],
     total: null,
   });
+  const [childeInp, setChildeInp] = useState('');
 
   const fetchData = async () => {
     setLoading(true);
     const res = await MasterSubDiklatService.getAll({ params });
     setTableData((prevParam) => ({
       ...prevParam,
-      data: res.data.data.data,
+      data: res.data.data.data.map(({ children, ...keepAttrs }) => ({ child: children, ...keepAttrs })),
       total: res.data.data.meta.total,
     }));
     setLoading(false);
@@ -100,6 +102,28 @@ function MasterSubDiklat({ data }) {
       ...prevParam,
       page,
       perPage: pageSize,
+    }));
+  };
+
+  const onChildInpAdd = () => {
+    const tempData = detailModal.data;
+    const inputVal = {
+      label: childeInp,
+      value: childeInp,
+    };
+    tempData.child = [...tempData.child, inputVal];
+    setDetailModal((prev) => ({
+      ...prev,
+      data: tempData,
+    }));
+  };
+
+  const onChildeDelete = (evt) => {
+    const tempData = detailModal.data;
+    tempData.child = detailModal.data.child.filter((el) => el.label !== evt);
+    setDetailModal((prev) => ({
+      ...prev,
+      data: tempData,
     }));
   };
 
@@ -141,13 +165,14 @@ function MasterSubDiklat({ data }) {
 
   const onFinishForm = async (e) => {
     setLoading(true);
+    const body = { ...e, children: detailModal?.data?.child };
     try {
       if (detailModal.type === 'Tambah') {
-        const role = await MasterSubDiklatService.create({ ...e, m_diklatId: data.id });
+        const role = await MasterSubDiklatService.create({ ...body, m_diklatId: data.id });
         if (role.status === 201) message.success(role.data.message);
       }
       if (detailModal.type === 'Perbarui') {
-        const role = await MasterSubDiklatService.update(detailModal.data.id, { ...e, m_diklatId: data.id });
+        const role = await MasterSubDiklatService.update(detailModal.data.id, { ...body, m_diklatId: data.id });
         if (role.status === 202) message.success(role.data.message);
       }
       fetchData();
@@ -199,8 +224,7 @@ function MasterSubDiklat({ data }) {
       ),
     },
   ];
-  console.log(form.getFieldValue());
-  console.log(form2.getFieldValue());
+
   return (
     <>
       <Row gutter={ROW_GUTTER}>
@@ -266,31 +290,49 @@ function MasterSubDiklat({ data }) {
         onCancel={() => resetModal()}
         footer={null}
       >
-        <Form
-          form={form}
-          layout='vertical'
-          name='basic'
-          onFinish={onFinishForm}
-          autoComplete='off'
-        >
-          <Form.Item
-            label='nama'
-            name='nama'
-            rules={[
-              { required: true },
-            ]}
-          >
-            <Input placeholder='Nama Diklat' type='text' />
-          </Form.Item>
-          <Form.Item>
-            <Button type='primary' htmlType='submit'>
-              {`${detailModal.type} Diklat`}
-            </Button>
-            <Button type='danger' style={{ marginLeft: '4px' }} onClick={() => resetModal()}>
-              Batal
-            </Button>
-          </Form.Item>
-        </Form>
+        <Row gutter={ROW_GUTTER}>
+          <Col span={24}>
+            <Form
+              form={form}
+              layout='vertical'
+              name='basic'
+              onFinish={onFinishForm}
+              autoComplete='off'
+            >
+              <Form.Item
+                label='nama'
+                name='nama'
+                rules={[
+                  { required: true },
+                ]}
+              >
+                <Input placeholder='Nama Diklat' type='text' />
+              </Form.Item>
+              <Title level={4}>Child</Title>
+              <Input.Group compact>
+                <Input style={{ width: 'calc(100% - 200px)' }} value={childeInp} onChange={(e) => setChildeInp(e.target.value)} />
+                <Button onClick={onChildInpAdd} type='primary'>Tambah</Button>
+              </Input.Group>
+              <List
+                dataSource={detailModal?.data?.child}
+                renderItem={(item) => (
+                  <List.Item actions={[<Button key='delete' onClick={() => onChildeDelete(item.value)}><DeleteOutlined /></Button>]}>
+                    <Text>{item.value}</Text>
+                  </List.Item>
+                )}
+              />
+              <Form.Item>
+                <Button type='primary' htmlType='submit'>
+                  {`${detailModal.type} Diklat`}
+                </Button>
+                <Button type='danger' style={{ marginLeft: '4px' }} onClick={() => resetModal()}>
+                  Batal
+                </Button>
+              </Form.Item>
+            </Form>
+          </Col>
+          <Col span={24} />
+        </Row>
       </Modal>
     </>
   );

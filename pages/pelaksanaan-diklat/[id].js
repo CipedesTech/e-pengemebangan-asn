@@ -18,6 +18,7 @@ import {
   Tag,
   Row,
   Col,
+  DatePicker,
 } from 'antd';
 import AppLayout from 'layouts/app-layout';
 import DiklatService from 'services/DiklatService';
@@ -76,8 +77,8 @@ function MasterDataDiklatCreate({ data, diklats }) {
   };
 
   useEffect(() => {
-    formRef.current.setFieldsValue(data);
-    // form.setFieldValue('diklat', data.Diklat.nama);
+    const day = dayjs(`${data.tahun}-${data.bulan}`, 'YYYY-MM');
+    formRef.current.setFieldsValue({ ...data, jadwalPelaksana: day });
   }, []);
 
   useEffect(() => {
@@ -141,8 +142,13 @@ function MasterDataDiklatCreate({ data, diklats }) {
   ];
 
   const onSubmit = async (e) => {
-    console.log('SUBMIT', e);
-    setDataPelaksanaan({ submited: true, data: e });
+    const { jadwalPelaksanaan, ...rest } = e;
+    const body = {
+      ...rest,
+      bulan: dayjs(jadwalPelaksanaan).month(),
+      tahun: dayjs(jadwalPelaksanaan).year(),
+    };
+    setDataPelaksanaan({ submited: true, data: body });
     setLoading(true);
     setParams((prevParam) => ({
       ...prevParam,
@@ -150,7 +156,7 @@ function MasterDataDiklatCreate({ data, diklats }) {
     }));
     setLoading(false);
   };
-
+  console.log(dataPelaksanaan);
   const onPageChange = (page, pageSize) => {
     router.push('', `?page=${page}&perPage=${pageSize}`, { scroll: false });
     setParams((prevParam) => ({
@@ -167,25 +173,22 @@ function MasterDataDiklatCreate({ data, diklats }) {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
     },
     getCheckboxProps: (record) => {
-      console.log(selectedCandidate);
-      console.log(dataPelaksanaan);
-      console.log(record);
       return {
         disabled: selectedCandidate.length === parseInt(dataPelaksanaan?.data?.kuota, 10) && selectedCandidate.filter((el) => el.id === record.id) < 1,
         // Column configuration not to be checked
         name: record.name,
       };
     },
-    // selectedRowKeys: data.t_pns_diajukan.map((el) => el.id),
   };
 
   const onSbmitCandidate = async (e) => {
-    setLoading(true);
-    const pelaksanaanDiklat = await DiklatService.createDiklat(dataPelaksanaan.data);
-    if (pelaksanaanDiklat.status !== 201) return message.error('terjadi masalah pada server');
-    const updateCandidate = await PnsService.updateCandidatePengajuan({ datas: selectedCandidate, id: pelaksanaanDiklat.data.data.id });
-    if (updateCandidate.status !== 200) return message.error('Terjadi kesalahan pada server');
-    setSubmited(true);
+    // setLoading(true);
+    delete dataPelaksanaan.data.jadwalPelaksana;
+    const pelaksanaanDiklat = await DiklatService.updatePelaksanaanDiklat(router.query.id, dataPelaksanaan.data);
+    if (pelaksanaanDiklat.status !== 200) return message.error('terjadi masalah pada server2');
+    const updateCandidate = await PnsService.updateCandidatePengajuanFromEdit({ datas: selectedCandidate, id: pelaksanaanDiklat.data.data.id });
+    if (updateCandidate.status !== 200) return message.error('Terjadi kesalahan pada server1');
+    // setSubmited(true);
     setLoading(false);
     return router.push('/pelaksanaan-diklat');
   };
@@ -250,6 +253,13 @@ function MasterDataDiklatCreate({ data, diklats }) {
               >
                 <Input style={{ color: 'black' }} disabled={Edit} type='number' placeholder='10' />
               </Form.Item>
+              <Form.Item
+                name='jadwalPelaksana'
+                label='Jadwal Pelaksanaan'
+                rules={[{ required: true }]}
+              >
+                <DatePicker disabled={Edit} picker='month' />
+              </Form.Item>
               <Form.Item className='mb-0'>
                 <Space size='middle'>
                   <Button type='primary' htmlType='submit' disabled={Edit}>
@@ -265,7 +275,7 @@ function MasterDataDiklatCreate({ data, diklats }) {
         </Card>
         {data?.id ? (
           <Card title='List Kandidat'>
-            {!Edit
+            {!Edit && dataPelaksanaan.submited
               ? (
                 <Table
                   loading={loading}
@@ -300,7 +310,7 @@ function MasterDataDiklatCreate({ data, diklats }) {
                 />
               )}
             <Space size='middle'>
-              <Button type='primary' htmlType='submit' onClick={onSbmitCandidate} disabled={Edit}>
+              <Button type='primary' htmlType='submit' onClick={onSbmitCandidate} disabled={submited || selectedCandidate.length === 0}>
                 {t('button:submit')}
               </Button>
               <Button type='default' onClick={onBack} disabled={submited}>

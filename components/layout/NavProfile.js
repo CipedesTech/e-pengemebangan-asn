@@ -94,9 +94,7 @@ function NavProfile() {
         </div>
       </Dropdown>
       <Modal title='Basic Modal' open={isModalOpen} onOk={() => setIsModalOpen(false)} onCancel={() => setIsModalOpen(false)}>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        
       </Modal>
     </>
   );

@@ -18,6 +18,7 @@ import {
   Table,
   Tag,
   Empty,
+  DatePicker,
 } from 'antd';
 import AppLayout from 'layouts/app-layout';
 import DiklatService from 'services/DiklatService';
@@ -106,7 +107,15 @@ function MasterDataDiklatCreate({ diklats }) {
   };
 
   const onSubmit = async (e) => {
-    setDataPelaksanaan({ submited: true, data: e });
+    console.log('event', e);
+    const { jadwalPelaksanaan, ...rest } = e;
+    const data = {
+      ...rest,
+      bulan: dayjs(jadwalPelaksanaan).month(),
+      tahun: dayjs(jadwalPelaksanaan).year(),
+    };
+    console.log(data);
+    setDataPelaksanaan({ submited: true, data });
     setLoading(true);
     setParams((prevParam) => ({
       ...prevParam,
@@ -115,6 +124,7 @@ function MasterDataDiklatCreate({ diklats }) {
     }));
     setLoading(false);
   };
+  console.log(dataPelaksanaan);
 
   const onSbmitCandidate = async (e) => {
     setLoading(true);
@@ -215,6 +225,13 @@ function MasterDataDiklatCreate({ diklats }) {
               rules={[{ required: true }]}
             >
               <Input type='number' placeholder='10' />
+            </Form.Item>
+            <Form.Item
+              name='jadwalPelaksana'
+              label='Jadwal Pelaksanaan'
+              rules={[{ required: true }]}
+            >
+              <DatePicker picker='month' />
             </Form.Item>
             <Form.Item className='mb-0'>
               <Space size='middle'>

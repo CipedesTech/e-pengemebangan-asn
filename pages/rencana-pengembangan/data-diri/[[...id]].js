@@ -42,10 +42,14 @@ import prisma from 'lib/prisma';
 
 const { Title, Paragraph, Text } = Typography;
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ query }) {
   let opds = [];
   let nomenklaturJabatan = [];
+  let dataPengusul = {};
   try {
+    if (query.id) {
+      dataPengusul = (await PnsService.getPengajuan(query.id)).data.data;
+    }
     const opd = await OpdService.getAll({ params: { perPage: 2000 } });
     if (opd.status === 200) opds = opd.data.data.data.map((el) => ({ value: el.nomenklatur_pada, label: el.nomenklatur_pada }));
     const jabatan = await prisma.$queryRaw`SELECT DISTINCT nomenklatur_jabatan  FROM r_pegawai_aktual rpa WHERE nomenklatur_jabatan IS NOT NULL AND nomenklatur_jabatan != '-'`;
@@ -55,10 +59,10 @@ export async function getServerSideProps() {
   } catch (err) {
     console.log(err);
   }
-  return { props: { opds, nomenklaturJabatan } };
+  return { props: { opds, nomenklaturJabatan, dataPengusul } };
 }
 
-function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
+function RencanaPengembangan1({ opds, nomenklaturJabatan, dataPengusul }) {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -112,6 +116,15 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
         'where[nomenklatur_pada]': user.opd.nama,
       }));
     }
+    if (Object.keys(dataPengusul).length !== 0) {
+      formRef.current.setFieldValue('nip', dataPengusul?.pegawai_id?.nip_baru || '');
+      formRef.current.setFieldValue('nama', dataPengusul?.pegawai_id?.nama_pegawai || '');
+      formRef.current.setFieldValue('golongan', dataPengusul?.pegawai_id?.nama_golongan || '');
+      formRef.current.setFieldValue('pendidikan', dataPengusul?.pegawai_id?.nama_jenjang_rumpun || '');
+      formRef.current.setFieldValue('unit_kerja', dataPengusul?.pegawai_id?.nomenklatur_pada || '');
+      formRef.current.setFieldValue('jabatan', dataPengusul?.pegawai_id?.jab_type || '');
+      formRef.current.setFieldValue('sub_jabatan', dataPengusul?.pegawai_id?.subjabatanType || '');
+    }
   }, []);
 
   const onDetail = (record) => {
@@ -140,11 +153,13 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
     const pendidikan = data.nama_jenjang_rumpun || '';
     const unitKerja = data.nomenklatur_pada || '';
     const jabatanType = data.jab_type || '';
+    const subjabatanType = data.nomenklatur_jabatan || '';
     formRef.current.setFieldValue('nama', selectednama);
     formRef.current.setFieldValue('golongan', golongan);
     formRef.current.setFieldValue('pendidikan', pendidikan);
     formRef.current.setFieldValue('unit_kerja', unitKerja);
     formRef.current.setFieldValue('jabatan', jabatanType);
+    formRef.current.setFieldValue('sub_jabatan', subjabatanType);
     setJabatan2(jabatanType);
   };
   const onSearchNama = (value) => {
@@ -168,48 +183,13 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
   };
 
   const onFinishForm = async (e) => {
+    if (Object.keys(dataPengusul).length !== 0) {
+      return router.push(`/rencana-pengembangan/diklat/${dataPengusul.id}`);
+    }
     console.log(e);
     const pengajuan = await PnsService.createPengajuan({ pegawaiId: e.nip });
     console.log(pengajuan);
-    router.push(`/rencana-pengembangan/diklat/${pengajuan.data.data.id}`);
-  };
-
-  const onChangeJabatan = (label, value) => {
-    if (label === 'JPT') {
-      setJabatan({
-        ...jabatan,
-        JPT: value.target.checked,
-      });
-      setJabatanCheck(value.target.checked);
-    } else if (label === 'Administrator') {
-      setJabatan({
-        ...jabatan,
-        Administrator: value.target.checked,
-      });
-      setJabatanCheck(value.target.checked);
-    } else if (label === 'Pengawas') {
-      setJabatan({
-        ...jabatan,
-        Pengawas: value.target.checked,
-      });
-      setJabatanCheck(value.target.checked);
-    } else if (label === 'Fungsional') {
-      setJabatan({
-        ...jabatan,
-        Fungsional: value.target.checked,
-      });
-      setJabatanCheck(value.target.checked);
-    } else if (label === 'Pelaksana') {
-      setJabatan({
-        ...jabatan,
-        Pelaksana: value.target.checked,
-      });
-      setJabatanCheck(value.target.checked);
-    } else {
-      setJabatan({
-        ...jabatan,
-      });
-    }
+    return router.push(`/rencana-pengembangan/diklat/${pengajuan.data.data.id}`);
   };
 
   const onChangeJabatan2 = (el, evt) => {
@@ -466,11 +446,20 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan }) {
                               {el.label}
                             </Checkbox>
                             {jabatan2 !== undefined && jabatan2 === el.value && (
-                              <Select
-                                onChange={handleChangeUnitKerja}
-                                placeholder='Pilih Bidang'
-                                options={nomenklaturJabatan}
-                              />
+                              <Form.Item
+                                name='sub_jabatan'
+                                rules={[
+                                  { required: true },
+                                ]}
+                                noStyle
+                              >
+
+                                <Select
+                                  onChange={handleChangeUnitKerja}
+                                  placeholder='Pilih Bidang'
+                                  options={nomenklaturJabatan}
+                                />
+                              </Form.Item>
                             )}
                           </Row>
                         );
@@ -512,6 +501,11 @@ RencanaPengembangan1.getLayout = function getLayout(page) {
 RencanaPengembangan1.propTypes = {
   opds: PropTypes.array.isRequired,
   nomenklaturJabatan: PropTypes.array.isRequired,
+  dataPengusul: PropTypes.object,
+};
+
+RencanaPengembangan1.defaultProps = {
+  dataPengusul: {},
 };
 
 export default RencanaPengembangan1;

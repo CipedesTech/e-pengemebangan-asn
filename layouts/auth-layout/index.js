@@ -2,7 +2,7 @@ import Head from 'next/head';
 import PropTypes from 'prop-types';
 import getConfig from 'next/config';
 
-import { Row, Col } from 'antd';
+import { Row, Col, Typography } from 'antd';
 
 const { publicRuntimeConfig: Config } = getConfig();
 
@@ -22,7 +22,11 @@ function AuthLayout({ title, children }) {
       <div className='h-100 bg-white'>
         <Row justify='center' className='align-items-stretch h-100'>
           <Col xs={0} sm={0} md={0} lg={12}>
-            <div className='d-flex flex-column justify-content-between h-100 px-4' style={backgroundStyle} />
+            <div className='d-flex flex-column justify-content-center h-100 px-4 text-center' style={backgroundStyle}>
+              <Typography.Title style={{ fontSize: '5em' }} type='danger'>e_PastiASN</Typography.Title>
+              <Typography.Text style={{ fontSize: '1.2em' }} type='danger'>Elektronik Pengembangan Kompetensi ASN</Typography.Text>
+              <Typography.Text style={{ fontSize: '1.3em' }} strong>BPKPSDM Kabupaten Cianjur</Typography.Text>
+            </div>
           </Col>
           <Col xs={20} sm={20} md={24} lg={12}>
             <div className='container d-flex flex-column justify-content-center form-auth'>

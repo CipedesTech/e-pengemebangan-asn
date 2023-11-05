@@ -42,14 +42,15 @@ model m_diklat {
 }
 
 model m_sub_diklat {
-  id             String           @id @default(uuid())
-  nama           String
-  children       Json?
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  m_diklatId     String
-  m_diklat       m_diklat         @relation(fields: [m_diklatId], references: [id])
-  t_pns_diajukan t_pns_diajukan[]
+  id                   String                 @id @default(uuid())
+  nama                 String
+  children             Json?
+  createdAt            DateTime               @default(now()) @map("created_at")
+  updatedAt            DateTime               @updatedAt @map("updated_at")
+  m_diklatId           String
+  m_diklat             m_diklat               @relation(fields: [m_diklatId], references: [id])
+  t_pns_diajukan       t_pns_diajukan[]
+  t_pelaksanaan_diklat t_pelaksanaan_diklat[]
 
   @@index([m_diklatId], map: "m_sub_diklat_m_diklatId_fkey")
 }
@@ -102,6 +103,11 @@ model t_pelaksanaan_diklat {
   diklat         String
   pagu           Int
   kuota          Int
+  bulan          Int
+  tahun          Int
+  subKompetensi  m_sub_diklat?    @relation(fields: [subdiklat], references: [id])
+  subdiklat      String?
+  subdiklatChild String?
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
   t_pns_diajukan t_pns_diajukan[]

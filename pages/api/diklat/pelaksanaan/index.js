@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   switch (req.method) {
     case 'POST':
       try {
-        const { pagu, nama, diklat, kuota } = req.body;
+        const { pagu, nama, diklat, kuota, bulan, tahun } = req.body;
         if (!pagu || !nama || !diklat || !kuota) return res.status(403).json({ message: 'Validation error', data: '' });
         const agendaDiklat = await prisma.t_pelaksanaan_diklat.create({
           data: {
@@ -13,6 +13,8 @@ export default async function handler(req, res) {
             diklat,
             pagu: parseInt(pagu, 10),
             kuota: parseInt(kuota, 10),
+            bulan: parseInt(bulan, 10),
+            tahun: parseInt(tahun, 10),
           },
         });
         return res.status(201).json({ message: 'Agenda diklat berhasil ditambahkan', data: agendaDiklat });

@@ -6,6 +6,8 @@ const getAllPelaksanaanDiklat = (params) => { return ApiClient.get('/api/diklat/
 
 const getPelaksanaanDiklatById = (id) => { return ApiClient.get(`/api/diklat/pelaksanaan/${id}`); };
 
+const updatePelaksanaanDiklat = (id, payload) => { return ApiClient.put(`/api/diklat/pelaksanaan/${id}`, payload); };
+
 // const getPnsById = (id) => { return ApiClient.get(`/api/pns/${id}`, {}); };
 
 // const getAllPengajuan = (params) => { return ApiClient.get('/api/pns/pengajuan', params); };
@@ -40,6 +42,7 @@ export default {
   createDiklat: createPelaksanaanDiklat,
   getAllPelaksanaanDiklat,
   getPelaksanaanDiklatById,
+  updatePelaksanaanDiklat,
   // getPnsById,
   // getAllPengajuan,
   // updatePengajuan,
