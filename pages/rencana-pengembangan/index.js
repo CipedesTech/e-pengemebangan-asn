@@ -401,14 +401,14 @@ function ListPengembanganDiri() {
                 </Text>
               </Col>
             </Row>
-            <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>
+            {/* <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>
               <Col span={12}>
                 <Text>Keterangan</Text>
               </Col>
               <Col span={12}>
                 <TextArea disabled={detailModal?.data?.status === 'verified' || detailModal?.data?.status === 'submit'} value={modalKeterangan} onChange={(e) => updateKeterangan(e)} rows={4} />
               </Col>
-            </Row>
+            </Row> */}
           </Col>
         </Row>
         <Row gutter={[12, 12]} style={{ marginTop: '12px' }}>

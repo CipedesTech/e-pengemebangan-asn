@@ -376,7 +376,7 @@ function ListASN() {
                 <Text>Diklat</Text>
               </Col>
               <Col span={12}>
-                <Text strong>{detailModal?.data?.diklat}
+                <Text strong>{detailModal?.data?.kompetensi?.nama}
                 </Text>
               </Col>
             </Row>
