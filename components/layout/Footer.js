@@ -8,7 +8,7 @@ function Footer() {
       <Text type='secondary'>
         Copyright &copy;
         {`${new Date().getFullYear()} `}
-        PT. Sumapala Integrasi Solusi. All rights reserved.
+        BKPSDM Kab. Cianjur.
       </Text>
     </footer>
   );

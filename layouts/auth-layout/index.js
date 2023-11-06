@@ -25,7 +25,7 @@ function AuthLayout({ title, children }) {
             <div className='d-flex flex-column justify-content-center h-100 px-4 text-center' style={backgroundStyle}>
               <Typography.Title style={{ fontSize: '5em' }} type='danger'>e_PastiASN</Typography.Title>
               <Typography.Text style={{ fontSize: '1.2em' }} type='danger'>Elektronik Pengembangan Kompetensi ASN</Typography.Text>
-              <Typography.Text style={{ fontSize: '1.3em' }} strong>BPKPSDM Kabupaten Cianjur</Typography.Text>
+              <Typography.Text style={{ fontSize: '1.3em' }} strong>BKPSDM Kabupaten Cianjur</Typography.Text>
             </div>
           </Col>
           <Col xs={20} sm={20} md={24} lg={12}>
