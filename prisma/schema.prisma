@@ -179,7 +179,7 @@ model r_pegawai_aktual {
   @@index([nomenklatur_jabatan], map: "nomenklatur_jabatan")
   @@index([status_kepegawaian], map: "status_kepegawaian")
   @@index([status_perkawinan], map: "status_perkawinan")
-  @@index([tmt_pns], map: "tmt_pns")
+  // @@index([tmt_pns], map: "tmt_pns")
 }
 
 model r_nomenklatur_pada {
