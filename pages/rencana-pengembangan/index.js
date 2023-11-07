@@ -375,7 +375,7 @@ function ListPengembanganDiri() {
                 <Text>NIP</Text>
               </Col>
               <Col span={12}>
-                <Text strong>{detailModal?.data?.pegawai_id?.nip}</Text>
+                <Text strong>{detailModal?.data?.pegawai_id?.nip_baru}</Text>
               </Col>
             </Row>
             <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>
@@ -403,6 +403,15 @@ function ListPengembanganDiri() {
               </Col>
               <Col span={12}>
                 <Text strong>{detailModal?.data?.kompetensi?.nama}
+                </Text>
+              </Col>
+            </Row>
+            <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>
+              <Col span={12}>
+                <Text>Instansi</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>{detailModal?.data?.pegawai_id?.nomenklatur_pada}
                 </Text>
               </Col>
             </Row>
