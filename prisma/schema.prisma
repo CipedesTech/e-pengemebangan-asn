@@ -133,15 +133,15 @@ model r_pegawai_aktual {
   gelar_belakang       String?          @db.VarChar(25)
   gender               String?          @db.VarChar(2)
   tempat_lahir         String?          @db.VarChar(50)
-  tanggal_lahir        DateTime?        @db.Date
+  // tanggal_lahir        DateTime?        @db.Date @ignore
   status_perkawinan    String?          @db.VarChar(20)
   status_kepegawaian   String?          @db.VarChar(100)
-  tmt_cpns             DateTime?        @db.Date
-  tmt_pns              DateTime?        @db.Date
+  // tmt_cpns             DateTime?        @db.Date
+  // tmt_pns              DateTime?        @db.Date @ignore
   kode_golongan        Int?
   nama_golongan        String?          @db.VarChar(100)
   nama_pangkat         String?          @db.VarChar(100)
-  tmt_pangkat          DateTime?        @db.Date
+  // tmt_pangkat          DateTime?        @db.Date @ignore
   mk_gol_tahun         Int?
   mk_gol_bulan         Int?
   id_unor              Int?
@@ -162,7 +162,7 @@ model r_pegawai_aktual {
   nilai_jabatan        String?          @db.VarChar(4)
   nama_jenjang         String?          @db.VarChar(100)
   nama_jenjang_rumpun  String?          @db.VarChar(100)
-  tanggal_lulus        DateTime?        @db.Date
+  // tanggal_lulus        DateTime?        @db.Date
   last_updated         DateTime?        @default(now()) @db.Timestamp(0)
   t_pns_diajukan       t_pns_diajukan[]
 
@@ -198,7 +198,7 @@ model r_pegawai_bulanan {
   gelar_belakang       String   @db.VarChar(25)
   status_perkawinan    String   @db.VarChar(20)
   kode_golongan        Int
-  tmt_pangkat          DateTime @db.Date
+  // tmt_pangkat          DateTime @db.Date
   id_unor              Int
   kode_unor            String   @db.VarChar(100)
   nomenklatur_jabatan  String   @db.VarChar(255)
