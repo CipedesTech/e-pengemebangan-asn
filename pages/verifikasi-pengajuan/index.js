@@ -387,6 +387,15 @@ function ListASN() {
             </Row>
             <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>
               <Col span={12}>
+                <Text>Instansi</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>{detailModal?.data?.pegawai_id?.nomenklatur_pada}
+                </Text>
+              </Col>
+            </Row>
+            <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>
+              <Col span={12}>
                 <Text>Keterangan</Text>
               </Col>
               <Col span={12}>
