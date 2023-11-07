@@ -88,7 +88,7 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan, dataPengusul }) {
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
-    'where[nama_pegawai][contains]': '',
+    'where[nip_baru][contains]': '',
   });
   const debouncedSearchValue = useDebounce(params, 1000);
   const fetchPnsData = async () => {
@@ -166,7 +166,7 @@ function RencanaPengembangan1({ opds, nomenklaturJabatan, dataPengusul }) {
     console.log('search:', value);
     setParams((prevParam) => ({
       ...prevParam,
-      'where[nama_pegawai][contains]': value,
+      'where[nip_baru][contains]': value,
     }));
   };
   const filterOptionNama = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
