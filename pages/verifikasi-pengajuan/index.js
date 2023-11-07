@@ -135,7 +135,12 @@ function ListASN() {
         return record.kompetensi.nama;
       },
     },
-
+    {
+      title: 'Instansi',
+      render: (text, record, index) => {
+        return record.pegawai_id.nomenklatur_pada;
+      },
+    },
     {
       title: 'Status Pengajuan',
       dataIndex: 'status',

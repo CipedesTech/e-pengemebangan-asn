@@ -50,6 +50,7 @@ export default async function handler(req, res) {
               select: {
                 nama_pegawai: true,
                 nip_baru: true,
+                nomenklatur_pada: true,
               },
             },
             kompetensi: {
