@@ -52,7 +52,7 @@ function PelaksanaanDiklat({ diklats }) {
   const [params, setParams] = useState({
     page: parseInt(query.page, 10) || 1,
     perPage: parseInt(query.perPage, 10) || 10,
-    'where[diklat]': diklats[0],
+    'where[diklat]': diklats[0].key,
   });
 
   const [tableData, setTableData] = useState({
