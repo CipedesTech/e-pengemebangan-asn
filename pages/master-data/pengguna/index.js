@@ -29,19 +29,27 @@ import PropTypes from 'prop-types';
 import { ROW_GUTTER } from 'constants/ThemeConstant';
 import dayjs from 'dayjs';
 import QueryString from 'qs';
-import RoleService from 'services/RoleService';
 import UserService from 'services/UserService';
-import OpdService from 'services/OpdService';
+import axios from 'axios';
+import Cookies from 'utils/Cookies';
 
 const { confirm } = Modal;
 
-export async function getServerSideProps() {
+export async function getServerSideProps(ctx) {
   let roles = [];
   let opds = [];
   try {
-    const role = await RoleService.getAllRole({ params: { perPage: 1000 } });
+    const { API_URL } = process.env;
+    const token = Cookies.getData('token', ctx);
+    const role = await axios.get(`${API_URL}/api/master/role`, { params: { perPage: 1000 },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      } });
     if (role.status === 200) roles = role.data.data.data.map((el) => ({ value: el.id, label: el.name }));
-    const opd = await OpdService.getAll({ params: { perPage: 2000 } });
+    const opd = await axios.get(`${API_URL}/api/master/opd`, { params: { perPage: 2000 },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      } });
     if (role.status === 200) opds = opd.data.data.data.map((el) => ({ value: el.id, label: el.nomenklatur_pada }));
   } catch (err) {
     console.log(err);

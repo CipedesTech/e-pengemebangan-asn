@@ -23,22 +23,28 @@ import {
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import PnsService from 'services/PnsService';
-import MasterDiklatService from 'services/MasterDiklatService';
 import PropTypes from 'prop-types';
+import Cookies from 'utils/Cookies';
+import axios from 'axios';
 
 const { Title, Paragraph, Text } = Typography;
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query, ...ctx }) {
   let diklatList = [];
   let dataPengusul = {};
   try {
+    const { API_URL } = process.env;
+    const token = Cookies.getData('token', ctx);
     if (query.id) {
-      dataPengusul = (await PnsService.getPengajuan(query.id)).data.data;
-      console.log('QUERY', dataPengusul);
+      dataPengusul = (await axios.get(`${API_URL}/api/pns/pengajuan/${query.id}`, { params: { perPage: 2000 },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        } })).data.data;
     }
-    const diklat = await MasterDiklatService.getAll({
-      params: { perPage: 2000 },
-    });
+    const diklat = await axios.get(`${API_URL}/api/master/diklat`, { params: { perPage: 2000 },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      } });
     if (diklat.status === 200) {
       diklatList = diklat.data.data.data;
       // eslint-disable-next-line no-restricted-syntax

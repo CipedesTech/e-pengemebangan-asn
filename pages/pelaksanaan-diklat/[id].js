@@ -28,16 +28,25 @@ import PropTypes from 'prop-types';
 import PnsService from 'services/PnsService';
 import { ROW_GUTTER } from 'constants/ThemeConstant';
 import { ArrowLeftOutlined, EditOutlined } from '@ant-design/icons';
-import MasterDiklatService from 'services/MasterDiklatService';
+import Cookies from 'utils/Cookies';
+import axios from 'axios';
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query, ...ctx }) {
   const { id } = query;
   let data = {};
   let diklats = [];
   try {
-    const res = await DiklatService.getPelaksanaanDiklatById(id);
+    const { API_URL } = process.env;
+    const token = Cookies.getData('token', ctx);
+    const res = await axios.get(`${API_URL}/api/diklat/pelaksanaan/${id}`, { params: { perPage: 1000 },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      } });
     if (res.status === 200) data = res.data.data;
-    const diklat = await MasterDiklatService.getAll({ params: { perPage: 2000 } });
+    const diklat = await axios.get(`${API_URL}/api/master/diklat`, { params: { perPage: 1000 },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      } });
     if (diklat.status === 200) diklats = diklat.data.data.data.map((el) => ({ value: el.id, label: el.nama }));
   } catch (err) {
     // console.log(err.status);
@@ -156,7 +165,7 @@ function MasterDataDiklatCreate({ data, diklats }) {
     }));
     setLoading(false);
   };
-  console.log(dataPelaksanaan);
+
   const onPageChange = (page, pageSize) => {
     router.push('', `?page=${page}&perPage=${pageSize}`, { scroll: false });
     setParams((prevParam) => ({

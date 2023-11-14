@@ -29,18 +29,23 @@ import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { ROW_GUTTER } from 'constants/ThemeConstant';
 import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
-import MasterDiklatService from 'services/MasterDiklatService';
 import QueryString from 'qs';
 import MasterSubDiklatService from 'services/MasterSubDiklatService';
+import axios from 'axios';
+import Cookies from 'utils/Cookies';
 
 const { confirm } = Modal;
 const { Text, Title } = Typography;
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query, ...ctx }) {
   const { id } = query;
   let data = {};
   try {
-    const res = await MasterDiklatService.getById(id);
+    const { API_URL } = process.env;
+    const token = Cookies.getData('token', ctx);
+    const res = await axios.get(`${API_URL}/api/master/diklat/${id}`, { headers: {
+      Authorization: `Bearer ${token}`,
+    } });
     if (res.status === 200) data = res.data.data;
   } catch (err) {
     console.log(err);

@@ -116,14 +116,6 @@ function ListASN() {
       dataIndex: 'nomenklatur_pada',
       key: 'nomenklatur_pada',
     },
-    // {
-    //   title: 'Status Kepegawaian',
-    //   dataIndex: 'status_kepegawaian',
-    //   key: 'status_kepegawaian',
-    //   render: (text) => {
-    //     return text === 'pns' ? <Tag color='geekblue'>{text}</Tag> : <Tag color='orange'>{text}</Tag>;
-    //   },
-    // },
     {
       title: t('Action'),
       dataIndex: 'action',

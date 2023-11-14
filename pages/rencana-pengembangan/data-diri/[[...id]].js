@@ -39,18 +39,28 @@ import PnsService from 'services/PnsService';
 import useDebounce from 'hooks/useDebounce';
 import OpdService from 'services/OpdService';
 import prisma from 'lib/prisma';
+import Cookies from 'utils/Cookies';
+import axios from 'axios';
 
 const { Title, Paragraph, Text } = Typography;
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query, ...ctx }) {
   let opds = [];
   let nomenklaturJabatan = [];
   let dataPengusul = {};
   try {
+    const { API_URL } = process.env;
+    const token = Cookies.getData('token', ctx);
     if (query.id) {
-      dataPengusul = (await PnsService.getPengajuan(query.id)).data.data;
+      dataPengusul = (await axios.get(`${API_URL}/api/pns/pengajuan/${query.id}`, { params: { perPage: 2000 },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        } })).data.data;
     }
-    const opd = await OpdService.getAll({ params: { perPage: 2000 } });
+    const opd = await axios.get(`${API_URL}/api/master/opd`, { params: { perPage: 2000 },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      } });
     if (opd.status === 200) opds = opd.data.data.data.map((el) => ({ value: el.nomenklatur_pada, label: el.nomenklatur_pada }));
     const jabatan = await prisma.$queryRaw`SELECT DISTINCT nomenklatur_jabatan  FROM r_pegawai_aktual rpa WHERE nomenklatur_jabatan IS NOT NULL AND nomenklatur_jabatan != '-'`;
     if (jabatan.length > 0) {

@@ -1,17 +1,22 @@
 import { ArrowLeftOutlined, DownloadOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Row, Typography } from 'antd';
 import AppLayout from 'layouts/app-layout';
-import PnsService from 'services/PnsService';
 import PropTypes from 'prop-types';
 import { ROW_GUTTER } from 'constants/ThemeConstant';
 import { useRouter } from 'next/router';
+import Cookies from 'utils/Cookies';
+import axios from 'axios';
 
 const { Text } = Typography;
 const { Meta } = Card;
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query, ...ctx }) {
   const { id } = query;
-  const res = await PnsService.getPnsById(id);
+  const { API_URL } = process.env;
+  const token = Cookies.getData('token', ctx);
+  const res = await axios.get(`${API_URL}/api/pns/${id}`, { headers: {
+    Authorization: `Bearer ${token}`,
+  } });
   const { data } = res;
   return { props: { data: data.data } };
 }
@@ -58,14 +63,6 @@ function DetailASN({ data }) {
                 </Col>
                 <Col span={8}>
                   <Text strong>{data.nama_pegawai}</Text>
-                </Col>
-              </Row>
-              <Row gutter={[12, 12]}>
-                <Col span={16}>
-                  <Text>Status</Text>
-                </Col>
-                <Col span={8}>
-                  <Text strong>{data.status_kepegawaian}</Text>
                 </Col>
               </Row>
             </Col>

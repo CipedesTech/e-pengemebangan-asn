@@ -25,13 +25,19 @@ import DiklatService from 'services/DiklatService';
 import dayjs from 'dayjs';
 import QueryString from 'qs';
 import PnsService from 'services/PnsService';
-import MasterDiklatService from 'services/MasterDiklatService';
 import PropTypes from 'prop-types';
+import Cookies from 'utils/Cookies';
+import axios from 'axios';
 
-export async function getServerSideProps() {
+export async function getServerSideProps(ctx) {
   let diklats = [];
   try {
-    const diklat = await MasterDiklatService.getAll({ params: { perPage: 2000 } });
+    const { API_URL } = process.env;
+    const token = Cookies.getData('token', ctx);
+    const diklat = await axios.get(`${API_URL}/api/master/diklat`, { params: { perPage: 2000 },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      } });
     if (diklat.status === 200) diklats = diklat.data.data.data.map((el) => ({ value: el.id, label: el.nama }));
   } catch (err) {
     console.log(err);
