@@ -54,7 +54,7 @@ function DetailASN({ data }) {
                   <Text>NIP</Text>
                 </Col>
                 <Col span={8}>
-                  <Text strong>{data.nip}</Text>
+                  <Text strong>{data.nip_baru}</Text>
                 </Col>
               </Row>
               <Row gutter={[12, 12]} style={{ paddingBottom: '8px' }}>

@@ -38,7 +38,6 @@ export default async function handler(req, res) {
       }
     case 'PUT':
       try {
-        console.log('DOWNLOAD', req.body);
         const {
           nama,
           diklat,
@@ -46,6 +45,10 @@ export default async function handler(req, res) {
           kuota,
           bulan,
           tahun,
+          realisasiPagu,
+          realisasiKuota,
+          realisasiBulan,
+          realisasiTahun,
         } = req.body;
         const pns = await prisma.t_pelaksanaan_diklat.update({
           where: { id },
@@ -53,9 +56,13 @@ export default async function handler(req, res) {
             nama,
             diklat,
             pagu: parseInt(pagu, 10),
+            realisasiPagu: parseInt(realisasiPagu, 10),
             kuota: parseInt(kuota, 10),
+            realisasiKuota: parseInt(realisasiKuota, 10),
             bulan: parseInt(bulan, 10),
+            realisasiBulan: parseInt(realisasiBulan, 10),
             tahun: parseInt(tahun, 10),
+            realisasiTahun: parseInt(realisasiTahun, 10),
           },
         });
         return res.status(200).json({ message: 'Data found', data: pns });

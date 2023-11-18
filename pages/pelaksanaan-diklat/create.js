@@ -19,6 +19,7 @@ import {
   Tag,
   Empty,
   DatePicker,
+  Cascader,
 } from 'antd';
 import AppLayout from 'layouts/app-layout';
 import DiklatService from 'services/DiklatService';
@@ -30,6 +31,7 @@ import Cookies from 'utils/Cookies';
 import axios from 'axios';
 
 export async function getServerSideProps(ctx) {
+  let diklatList = [];
   let diklats = [];
   try {
     const { API_URL } = process.env;
@@ -38,21 +40,35 @@ export async function getServerSideProps(ctx) {
       headers: {
         Authorization: `Bearer ${token}`,
       } });
-    if (diklat.status === 200) diklats = diklat.data.data.data.map((el) => ({ value: el.id, label: el.nama }));
+    if (diklat.status === 200) {
+      diklats = diklat.data.data.data.map((el) => ({ value: el.id, label: el.nama }));
+      diklatList = diklat.data.data.data;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const el of diklatList) {
+        if (el.diklat.length > 0) {
+          el.diklat = el.diklat.map((val) => ({
+            value: val.id,
+            label: val.nama,
+            children: val.children,
+          }));
+        }
+      }
+    }
   } catch (err) {
     console.log(err);
   }
-  return { props: { diklats } };
+  return { props: { diklats, diklatList } };
 }
 
-function MasterDataDiklatCreate({ diklats }) {
+function MasterDataDiklatCreate({ diklats, diklatList }) {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [dataPelaksanaan, setDataPelaksanaan] = useState({ submited: false, data: {} });
   const [loading, setLoading] = useState(false);
   const query = QueryString.parse(window.location.search.split('?')[1]);
-
+  const [cascaderOpt, setCascaderOpt] = useState([]);
+  const [subKompetensi, setSubKompetensi] = useState([]);
   const [params, setParams] = useState({
     page: parseInt(query.page, 10) || 1,
     perPage: parseInt(query.perPage, 10) || 10,
@@ -130,17 +146,33 @@ function MasterDataDiklatCreate({ diklats }) {
     }));
     setLoading(false);
   };
-  console.log(dataPelaksanaan);
+
+  const handleChangeSubKompetensi = (value) => {
+    setSubKompetensi(value);
+    console.log('selected', value);
+  };
 
   const onSbmitCandidate = async (e) => {
     setLoading(true);
-    const pelaksanaanDiklat = await DiklatService.createDiklat(dataPelaksanaan.data);
+    const body = {
+      ...dataPelaksanaan.data,
+      subdiklat: subKompetensi[0],
+      subdiklatChild: subKompetensi[1] || '',
+    };
+    const pelaksanaanDiklat = await DiklatService.createDiklat(body);
     if (pelaksanaanDiklat.status !== 201) return message.error('terjadi masalah pada server');
     const updateCandidate = await PnsService.updateCandidatePengajuan({ datas: selectedCandidate, id: pelaksanaanDiklat.data.data.id });
     if (updateCandidate.status !== 200) return message.error('Terjadi kesalahan pada server');
     setSubmited(true);
     setLoading(false);
     return router.push('/pelaksanaan-diklat');
+  };
+
+  const onChangeDiklat = (value) => {
+    setSubKompetensi([]);
+    form.setFieldValue('subDiklat', []);
+    const diklat = diklatList.filter((el) => el.id === value)[0];
+    setCascaderOpt(diklat.diklat);
   };
 
   const columns = [
@@ -203,7 +235,6 @@ function MasterDataDiklatCreate({ diklats }) {
             <Form.Item
               name='nama'
               label={t('Nama Diklat')}
-              rules={[{ required: true }]}
             >
               <Input placeholder={t('placeholder:enter', { field: t('Nama Diklat') })} />
             </Form.Item>
@@ -216,6 +247,18 @@ function MasterDataDiklatCreate({ diklats }) {
             >
               <Select
                 options={diklats}
+                onChange={onChangeDiklat}
+              />
+            </Form.Item>
+            <Form.Item
+              name='subDiklat'
+            >
+              <Cascader
+                onChange={handleChangeSubKompetensi}
+                disabled={cascaderOpt.length === 0}
+                style={{ width: '100%' }}
+                placeholder='Pilih Sub'
+                options={cascaderOpt}
               />
             </Form.Item>
             <Form.Item
@@ -237,7 +280,10 @@ function MasterDataDiklatCreate({ diklats }) {
               label='Jadwal Pelaksanaan'
               rules={[{ required: true }]}
             >
-              <DatePicker picker='month' />
+              <DatePicker
+                picker='month'
+                style={{ width: '100%' }}
+              />
             </Form.Item>
             <Form.Item className='mb-0'>
               <Space size='middle'>
@@ -299,6 +345,7 @@ MasterDataDiklatCreate.getLayout = function getLayout(page) {
 
 MasterDataDiklatCreate.propTypes = {
   diklats: PropTypes.array.isRequired,
+  diklatList: PropTypes.array.isRequired,
 };
 
 export default MasterDataDiklatCreate;

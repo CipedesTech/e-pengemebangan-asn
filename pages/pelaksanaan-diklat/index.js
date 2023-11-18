@@ -112,12 +112,17 @@ function PelaksanaanDiklat({ diklats }) {
       title: 'Nama diklat',
       dataIndex: 'nama',
       key: 'nama',
+      render: (text, record) => {
+        return record?.nama ?? '-';
+      },
     },
     {
       title: 'Kompetensi',
-      // eslint-disable-next-line no-unused-vars
-      render: (text, record, index) => {
-        return record.Diklat.nama;
+      render: (text, record) => {
+        let kompetensi = record.Diklat.nama;
+        if (record?.subKompetensi?.nama) kompetensi = `${kompetensi} / ${record?.subKompetensi?.nama}`;
+        if (record?.subdiklatChild)kompetensi = `${kompetensi} / ${record?.subdiklatChild}`;
+        return kompetensi;
       },
     },
     {

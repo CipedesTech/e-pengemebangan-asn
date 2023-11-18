@@ -5,8 +5,8 @@ export default async function handler(req, res) {
   switch (req.method) {
     case 'POST':
       try {
-        const { pagu, nama, diklat, kuota, bulan, tahun } = req.body;
-        if (!pagu || !nama || !diklat || !kuota) return res.status(403).json({ message: 'Validation error', data: '' });
+        const { pagu, nama, diklat, kuota, bulan, tahun, subdiklat, subdiklatChild } = req.body;
+        if (!pagu || !diklat || !kuota) return res.status(403).json({ message: 'Validation error', data: '' });
         const agendaDiklat = await prisma.t_pelaksanaan_diklat.create({
           data: {
             nama,
@@ -15,6 +15,8 @@ export default async function handler(req, res) {
             kuota: parseInt(kuota, 10),
             bulan: parseInt(bulan, 10),
             tahun: parseInt(tahun, 10),
+            subdiklat,
+            subdiklatChild,
           },
         });
         return res.status(201).json({ message: 'Agenda diklat berhasil ditambahkan', data: agendaDiklat });
@@ -36,6 +38,7 @@ export default async function handler(req, res) {
           include: {
             t_pns_diajukan: true,
             Diklat: true,
+            subKompetensi: true,
           },
           orderBy,
         }),

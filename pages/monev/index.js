@@ -1,76 +1,87 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-else-return */
-import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import AppLayout from 'layouts/app-layout';
-
-import {
-  Button,
-  Card,
-  Col,
-  Form,
-  Row,
-  Space,
-  Table,
-  Tag,
-  Tooltip,
-  Typography,
-} from 'antd';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import { EyeOutlined } from '@ant-design/icons';
-import qs from 'qs';
-import PnsService from 'services/PnsService';
 
-const { Title, Paragraph, Text } = Typography;
+import {
+  Row,
+  Col,
+  Button,
+  Card,
+  Table,
+  Tooltip,
+  Space,
+  Tabs,
+} from 'antd';
+import AppLayout from 'layouts/app-layout';
+import {
+  PlusOutlined,
+  EyeOutlined,
+} from '@ant-design/icons';
 
-function ListASN() {
+import { ROW_GUTTER } from 'constants/ThemeConstant';
+import dayjs from 'dayjs';
+import QueryString from 'qs';
+import DiklatService from 'services/DiklatService';
+import PropTypes from 'prop-types';
+import Cookies from 'utils/Cookies';
+import axios from 'axios';
+
+export async function getServerSideProps(ctx) {
+  let diklats = [];
+  try {
+    const { API_URL } = process.env;
+    const token = Cookies.getData('token', ctx);
+    const diklat = await axios.get(`${API_URL}/api/master/diklat`, { params: { perPage: 2000 },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      } });
+    if (diklat.status === 200) diklats = diklat.data.data.data.map((el) => ({ key: el.id, label: el.nama }));
+  } catch (err) {
+    console.log(err);
+  }
+  return { props: { diklats } };
+}
+
+function Monev({ diklats }) {
   const router = useRouter();
   const { t } = useTranslation();
-  const { user } = useSelector((state) => state.auth);
-  console.log('USER', user);
-  const query = qs.parse(window.location.search.split('?')[1]);
+  const query = QueryString.parse(window.location.search.split('?')[1]);
+
   const [loading, setLoading] = useState(false);
+
   const [params, setParams] = useState({
     page: parseInt(query.page, 10) || 1,
     perPage: parseInt(query.perPage, 10) || 10,
+    'where[diklat]': diklats[0].key,
   });
+
   const [tableData, setTableData] = useState({
     data: [],
     total: null,
   });
   const fetchData = async () => {
-    const res = await PnsService.getAllPns({ params });
+    setLoading(true);
+    const res = await DiklatService.getAllPelaksanaanDiklat({ params });
     setTableData((prevParam) => ({
       ...prevParam,
       data: res.data.data.data,
       total: res.data.data.meta.total,
     }));
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (user.role === 'UMPEG' && user.opd.nama !== 'master') {
-      setParams((prevParam) => ({
-        ...prevParam,
-        'where[nomenklatur_pada]': user.opd.nama,
-      }));
-    }
-    fetchData();
+    fetchData({ params });
   }, []);
 
   useEffect(() => {
     console.log('REFECTH');
-    fetchData();
+    fetchData(params);
   }, [params]);
 
   useEffect(() => {
     console.log(query);
   }, [query]);
-
-  const onDetail = (record) => {
-    router.push(`list-pns/${record.id}`);
-  };
 
   const onPageChange = (page, pageSize) => {
     router.push('', `?page=${page}&perPage=${pageSize}`, { scroll: false });
@@ -81,40 +92,50 @@ function ListASN() {
     }));
   };
 
+  const onTabChange = (key) => {
+    setParams((prevParam) => ({
+      ...prevParam,
+      'where[diklat]': key,
+    }));
+  };
+
+  const onDetail = (e) => {
+    router.push(`/monev/${e.id}`);
+  };
+
   const columns = [
     {
-      title: 'No',
-      dataIndex: 'no',
-      key: 'no',
-      render: (text, record, index) => {
-        return (params.page - 1) * params.perPage + 1 + index;
-        // return params.page > 1 ? index + (params.perPage * params.page) + 1 : index + 1;
+      title: 'Nama diklat',
+      dataIndex: 'nama',
+      key: 'nama',
+      render: (text, record) => {
+        return record?.nama ?? '-';
       },
     },
     {
-      title: 'NIP',
-      dataIndex: 'nip_baru',
-      key: 'nip_baru',
+      title: 'Kompetensi',
+      render: (text, record) => {
+        let kompetensi = record.Diklat.nama;
+        if (record?.subKompetensi?.nama) kompetensi = `${kompetensi} / ${record?.subKompetensi?.nama}`;
+        if (record?.subdiklatChild)kompetensi = `${kompetensi} / ${record?.subdiklatChild}`;
+        return kompetensi;
+      },
     },
     {
-      title: 'Nama',
-      dataIndex: 'nama_pegawai',
-      key: 'nama_pegawai',
+      title: 'Pagu',
+      dataIndex: 'pagu',
+      key: 'pagu',
     },
     {
-      title: 'Jabatan',
-      dataIndex: 'nomenklatur_jabatan',
-      key: 'nomenklatur_jabatan',
+      title: 'Kuota',
+      dataIndex: 'kuota',
+      key: 'kuota',
     },
     {
-      title: 'Golongan',
-      dataIndex: 'nama_golongan',
-      key: 'nama_golongan',
-    },
-    {
-      title: 'Instansi',
-      dataIndex: 'nomenklatur_pada',
-      key: 'nomenklatur_pada',
+      title: 'Tanggal direncanakan',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (text) => dayjs(text).format('DD MMMM YYYY HH:mm'),
     },
     {
       title: t('Action'),
@@ -136,24 +157,49 @@ function ListASN() {
       ),
     },
   ];
-
+  console.log('DIKLATS', diklats);
   return (
-    <div className='cards-container' style={{ backgroundColor: 'whitesmoke' }}>
-      <Row>
-        <Col span={24} className='px-4 py-2' style={{ backgroundColor: '#DE0000', color: 'white' }}>
-          <span style={{ fontSize: 18, fontWeight: 'bold' }}>MONEV</span>
-        </Col>
-      </Row>
-    </div>
+    <Row gutter={ROW_GUTTER}>
+      <Col span={24} />
+      <Col span={24}>
+        <Tabs
+          defaultActiveKey='1'
+          onChange={onTabChange}
+          items={diklats}
+        />
+      </Col>
+      <Col span={24}>
+        <Card className='card-table'>
+          <Table
+            loading={loading}
+            columns={columns}
+            dataSource={tableData.data}
+            rowKey={(record) => record.id}
+            scroll={{ x: 700 }}
+            pagination={{
+              total: tableData.total,
+              showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
+              current: params.page,
+              pageSize: params.perPage,
+              onChange: onPageChange,
+            }}
+          />
+        </Card>
+      </Col>
+    </Row>
   );
 }
 
-ListASN.getLayout = function getLayout(page) {
+Monev.getLayout = function getLayout(page) {
   return (
-    <AppLayout title='PNS' onTab='list_pns' extra={false}>
+    <AppLayout title='Diklat' key={1} extra={false} onTab={0}>
       {page}
     </AppLayout>
   );
 };
 
-export default ListASN;
+Monev.propTypes = {
+  diklats: PropTypes.array.isRequired,
+};
+
+export default Monev;

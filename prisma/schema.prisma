@@ -80,6 +80,7 @@ model t_pns_diajukan {
   subKompetensi          m_sub_diklat?            @relation(fields: [subdiklat], references: [id])
   subdiklat              String?
   subdiklatChild         String?
+  hadir                  Boolean?
 
   @@index([r_pegawai_aktualId], map: "t_pns_diajukan_r_pegawai_aktualId_fkey")
   @@index([t_pelaksanaan_diklatId], map: "t_pns_diajukan_t_pelaksanaan_diklatId_fkey")
@@ -99,12 +100,16 @@ model t_keterangan_pengajuan {
 
 model t_pelaksanaan_diklat {
   id             String           @id @default(uuid())
-  nama           String
+  nama           String?
   diklat         String
   pagu           Int
+  realisasiPagu  Int?
   kuota          Int
+  realisasiKuota Int?
   bulan          Int
+  realisasiBulan Int?
   tahun          Int
+  realisasiTahun Int?
   subKompetensi  m_sub_diklat?    @relation(fields: [subdiklat], references: [id])
   subdiklat      String?
   subdiklatChild String?
@@ -123,96 +128,42 @@ model m_opd {
 }
 
 model r_pegawai_aktual {
-  id                   Int              @id @default(autoincrement())
-  id_pegawai           Int
-  nip                  String           @db.VarChar(20)
-  nip_baru             String           @db.VarChar(50)
-  nama_pegawai         String           @db.VarChar(50)
-  gelar_nonakademis    String?          @db.VarChar(25)
-  gelar_depan          String?          @db.VarChar(25)
-  gelar_belakang       String?          @db.VarChar(25)
-  gender               String?          @db.VarChar(2)
-  tempat_lahir         String?          @db.VarChar(50)
-  // tanggal_lahir        DateTime?        @db.Date @ignore
-  status_perkawinan    String?          @db.VarChar(20)
-  status_kepegawaian   String?          @db.VarChar(100)
-  // tmt_cpns             DateTime?        @db.Date
-  // tmt_pns              DateTime?        @db.Date @ignore
-  kode_golongan        Int?
-  nama_golongan        String?          @db.VarChar(100)
-  nama_pangkat         String?          @db.VarChar(100)
-  // tmt_pangkat          DateTime?        @db.Date @ignore
-  mk_gol_tahun         Int?
-  mk_gol_bulan         Int?
-  id_unor              Int?
-  kode_unor            String?          @db.VarChar(100)
-  nama_unor            String?          @db.VarChar(255)
-  jab_type             String?          @db.VarChar(100)
-  id_jenjang_jabatan   Int?
-  tingkat              String?          @db.VarChar(100)
-  nama_jenjang_jabatan String?          @db.VarChar(100)
-  nomenklatur_jabatan  String?          @db.VarChar(255)
-  nomenklatur_pada     String?          @db.VarChar(255)
-  tugas_tambahan       String?          @db.VarChar(255)
-  tmt_jabatan          DateTime?        @db.Date
-  kode_ese             Int?
-  nama_ese             String?          @db.VarChar(100)
-  // tmt_ese              DateTime?        @db.Date
-  kelas_jabatan        String?          @db.VarChar(2)
-  nilai_jabatan        String?          @db.VarChar(4)
-  nama_jenjang         String?          @db.VarChar(100)
-  nama_jenjang_rumpun  String?          @db.VarChar(100)
-  // tanggal_lulus        DateTime?        @db.Date
-  last_updated         DateTime?        @default(now()) @db.Timestamp(0)
-  t_pns_diajukan       t_pns_diajukan[]
+  id                    Int                    @id @default(autoincrement())
+  id_pegawai            Int                    @unique
+  nip_baru              String                 @db.VarChar(50)
+  nama_pegawai          String                 @db.VarChar(50)
+  tempat_lahir          String?                @db.VarChar(50)
+  tanggal_lahir         DateTime?              @db.Date
+  gelar_depan           String?                @db.VarChar(25)
+  gelar_belakang        String?                @db.VarChar(25)
+  nomenklatur_jabatan   String?                @db.VarChar(255)
+  nomenklatur_pada      String?                @db.VarChar(255)
+  jab_type              String?                @db.VarChar(100)
+  nama_golongan         String?                @db.VarChar(100)
+  nama_jenjang_rumpun   String?                @db.VarChar(100)
+  last_updated          DateTime?              @default(now()) @db.Timestamp(0)
+  nomenklaturJabatanId  String?
+  r_nomenklatur_jabatan r_nomenklatur_jabatan? @relation(fields: [nomenklaturJabatanId], references: [id])
+  nomenklaturPadaId     String?
+  r_nomenklatur_pada    r_nomenklatur_pada?    @relation(fields: [nomenklaturPadaId], references: [id])
+  t_pns_diajukan        t_pns_diajukan[]
 
-  @@index([gender], map: "gender")
   @@index([id_pegawai], map: "id_pegawai")
-  @@index([id_unor], map: "id_unor")
   @@index([jab_type], map: "jab_type")
-  @@index([kode_ese], map: "kode_ese")
-  @@index([kode_golongan], map: "kode_golongan")
-  @@index([kode_unor], map: "kode_unor")
-  @@index([nama_jenjang], map: "nama_jenjang")
   @@index([nama_jenjang_rumpun], map: "nama_jenjang_rumpun")
   @@index([nip_baru], map: "nip_baru")
   @@index([nomenklatur_jabatan], map: "nomenklatur_jabatan")
-  @@index([status_kepegawaian], map: "status_kepegawaian")
-  @@index([status_perkawinan], map: "status_perkawinan")
-  // @@index([tmt_pns], map: "tmt_pns")
 }
 
 model r_nomenklatur_pada {
-  id               String   @id @default(uuid())
-  nomenklatur_pada String?  @db.VarChar(255)
+  id               String             @id @default(uuid())
+  nomenklatur_pada String?            @db.VarChar(255)
   user             m_user[]
+  pegawaiAktual    r_pegawai_aktual[]
 }
 
-model r_pegawai_bulanan {
-  id                   Int      @id @default(autoincrement())
-  bulan                Int?     @db.TinyInt
-  tahun                Int      @db.Year
-  id_pegawai           Int
-  gelar_nonakademis    String?  @db.VarChar(25)
-  gelar_depan          String   @db.VarChar(25)
-  gelar_belakang       String   @db.VarChar(25)
-  status_perkawinan    String   @db.VarChar(20)
-  kode_golongan        Int
-  // tmt_pangkat          DateTime @db.Date
-  id_unor              Int
-  kode_unor            String   @db.VarChar(100)
-  nomenklatur_jabatan  String   @db.VarChar(255)
-  jab_type             String   @db.VarChar(100)
-  id_jenjang_jabatan   Int?
-  tingkat              String?  @db.VarChar(100)
-  nama_jenjang_jabatan String?  @db.VarChar(100)
-  tugas_tambahan       String   @db.VarChar(255)
-  tmt_jabatan          DateTime @db.Date
-  kode_ese             Int
-  tmt_ese              DateTime @db.Date
-  status_kepegawaian   String?  @db.VarChar(100)
-  kelas_jabatan        String?  @db.VarChar(2)
-  nilai_jabatan        String?  @db.VarChar(4)
-  nama_jenjang         String?  @db.VarChar(100)
-  reff_jabatan         Int?
+model r_nomenklatur_jabatan {
+  id                  String             @id @default(uuid())
+  nomenklatur_jabatan String?            @db.VarChar(255)
+  pegawaiAktual       r_pegawai_aktual[]
 }

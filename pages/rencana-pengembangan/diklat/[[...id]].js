@@ -280,6 +280,7 @@ function RencanaPengembangan2({ diklatList, dataPengusul }) {
                                 noStyle
                               >
                                 <Cascader
+                                  style={{ width: '100%' }}
                                   onChange={handleChangeSubKompetensi}
                                   placeholder='Pilih Sub'
                                   options={el.diklat}

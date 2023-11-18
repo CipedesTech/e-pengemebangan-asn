@@ -1,6 +1,6 @@
 {
   "name": "e-pasti-asn",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "author": "cheat (Cipedes House of Edge and Technology)",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@next/bundle-analyzer": "^12.1.0",
-    "@prisma/client": "^5.5.2",
+    "@prisma/client": "^5.6.0",
     "antd": "4.24.0",
     "axios": "^0.24.0",
     "bcrypt": "^5.1.1",
@@ -62,7 +62,7 @@
     "gulp-less": "^4.0.1",
     "gulp-postcss": "^8.0.0",
     "less-plugin-npm-import": "^2.1.0",
-    "prisma": "^5.5.2",
+    "prisma": "^5.6.0",
     "serve": "^13.0.2"
   },
   "browser": {
