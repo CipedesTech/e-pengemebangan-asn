@@ -1,11 +1,12 @@
 import prisma from 'lib/prisma';
+import parseObject from 'lib/query-types';
 import QueryString from 'qs';
 
 export default async function handler(req, res) {
   switch (req.method) {
     case 'GET':
-      const { where, orderBy, page: pages, perPage: perPages } = QueryString.parse(req.query);
-      console.log(where);
+      const query = parseObject(req.query, { ignoreNull: false });
+      const { where, orderBy, page: pages, perPage: perPages } = QueryString.parse(query);
       const page = Number(pages || pages) || 1;
       const perPage = Number(perPages || perPages) || 10;
       const skip = page > 0 ? perPage * (page - 1) : 0;

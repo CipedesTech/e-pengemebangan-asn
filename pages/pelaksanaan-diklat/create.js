@@ -74,6 +74,7 @@ function MasterDataDiklatCreate({ diklats, diklatList }) {
     perPage: parseInt(query.perPage, 10) || 10,
     'where[diklat]': '',
     'where[status]': 'verified',
+    'where[t_pelaksanaan_diklatId]': 'null',
   });
   const [tableData, setTableData] = useState({
     data: [],

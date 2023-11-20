@@ -19,6 +19,8 @@ import {
   Row,
   Col,
   DatePicker,
+  Modal,
+  Tooltip,
 } from 'antd';
 import AppLayout from 'layouts/app-layout';
 import DiklatService from 'services/DiklatService';
@@ -30,6 +32,8 @@ import { ROW_GUTTER } from 'constants/ThemeConstant';
 import { ArrowLeftOutlined, EditOutlined } from '@ant-design/icons';
 import Cookies from 'utils/Cookies';
 import axios from 'axios';
+
+const { TextArea } = Input;
 
 export async function getServerSideProps({ query, ...ctx }) {
   const { id } = query;
@@ -75,6 +79,11 @@ function MasterDataDiklatCreate({ data, diklats }) {
   });
   const [selectedCandidate, setSelectedCandidate] = useState([]);
   const [submited, setSubmited] = useState(false);
+  const [detailModal, setDetailModal] = useState({
+    isOpen: false,
+    type: null,
+    data: {},
+  });
 
   const fetchData = async () => {
     const res = await PnsService.getAllPengajuanVerif({ params });
@@ -87,8 +96,12 @@ function MasterDataDiklatCreate({ data, diklats }) {
 
   useEffect(() => {
     const day = dayjs(`${data.tahun}-${data.bulan}`, 'YYYY-MM');
-    const dayRealisasi = dayjs(`${data.realisasiTahun}-${data.realisasiBulan}`, 'YYYY-MM');
-    formRef.current.setFieldsValue({ ...data, jadwalPelaksana: day, RealisasiJadwalPelaksana: dayRealisasi });
+    const pelaksanaan = { jadwalPelaksana: day };
+    if (data?.realisasiBulan && data?.realisasiTahun) {
+      const dayRealisasi = dayjs(`${data.realisasiTahun}-${data.realisasiBulan}`, 'YYYY-MM');
+      pelaksanaan.RealisasiJadwalPelaksana = dayRealisasi;
+    }
+    formRef.current.setFieldsValue({ ...data, ...pelaksanaan });
   }, []);
 
   useEffect(() => {
@@ -98,6 +111,11 @@ function MasterDataDiklatCreate({ data, diklats }) {
 
   const onBack = () => {
     router.push('/monev');
+  };
+
+  const onDetail = (e) => {
+    console.log(e);
+    setDetailModal({ isOpen: true, type: 'Perbarui', data: e });
   };
 
   const columns = [
@@ -156,6 +174,25 @@ function MasterDataDiklatCreate({ data, diklats }) {
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (text) => dayjs(text).format('DD MMMM YYYY HH:mm'),
+    },
+    {
+      title: t('Action'),
+      dataIndex: 'action',
+      key: 'action',
+      width: 100,
+      render: (text, record) => (
+        <Space>
+          <Tooltip placement='top' title='Edit'>
+            <Button
+              type='primary'
+              size='small'
+              className='ant-btn-geekblue'
+              icon={<EditOutlined />}
+              onClick={() => onDetail(record)}
+            />
+          </Tooltip>
+        </Space>
+      ),
     },
   ];
 
@@ -219,6 +256,14 @@ function MasterDataDiklatCreate({ data, diklats }) {
     }
     setLoading(false);
     return router.push('/monev');
+  };
+
+  const onSubmitCandidateDetail = async () => {
+
+  };
+
+  const resetModal = () => {
+    setDetailModal({ isOpen: false, type: null, data: {} });
   };
 
   return (
@@ -324,6 +369,40 @@ function MasterDataDiklatCreate({ data, diklats }) {
           </Card>
         ) : null}
       </Col>
+      <Modal
+        title='Detail'
+        open={detailModal.isOpen}
+        onCancel={() => resetModal()}
+        footer={null}
+      >
+        <Form
+          layout='vertical'
+          name='basic'
+          onFinish={() => resetModal()}
+          autoComplete='off'
+        >
+          <Form.Item
+            label='Indeks Performa'
+            name='performanceIndeks'
+          >
+            <Input placeholder='Nama Pengguna' type='text' />
+          </Form.Item>
+          <Form.Item
+            label='Keterangan'
+            name='description'
+          >
+            <TextArea rows={4} />
+          </Form.Item>
+          <Form.Item>
+            <Button type='primary' htmlType='submit'>
+              Simpan
+            </Button>
+            <Button type='danger' style={{ marginLeft: '4px' }} onClick={() => resetModal()}>
+              Batal
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </Row>
   );
 }

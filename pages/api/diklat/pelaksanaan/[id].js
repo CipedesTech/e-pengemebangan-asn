@@ -49,6 +49,8 @@ export default async function handler(req, res) {
           realisasiKuota,
           realisasiBulan,
           realisasiTahun,
+          subdiklat,
+          subdiklatChild,
         } = req.body;
         const pns = await prisma.t_pelaksanaan_diklat.update({
           where: { id },
@@ -63,6 +65,8 @@ export default async function handler(req, res) {
             realisasiBulan: parseInt(realisasiBulan, 10),
             tahun: parseInt(tahun, 10),
             realisasiTahun: parseInt(realisasiTahun, 10),
+            subdiklat,
+            subdiklatChild,
           },
         });
         return res.status(200).json({ message: 'Data found', data: pns });

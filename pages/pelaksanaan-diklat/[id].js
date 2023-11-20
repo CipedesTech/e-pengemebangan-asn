@@ -19,6 +19,7 @@ import {
   Row,
   Col,
   DatePicker,
+  Cascader,
 } from 'antd';
 import AppLayout from 'layouts/app-layout';
 import DiklatService from 'services/DiklatService';
@@ -35,6 +36,7 @@ export async function getServerSideProps({ query, ...ctx }) {
   const { id } = query;
   let data = {};
   let diklats = [];
+  let diklatList = [];
   try {
     const { API_URL } = process.env;
     const token = Cookies.getData('token', ctx);
@@ -47,14 +49,27 @@ export async function getServerSideProps({ query, ...ctx }) {
       headers: {
         Authorization: `Bearer ${token}`,
       } });
-    if (diklat.status === 200) diklats = diklat.data.data.data.map((el) => ({ value: el.id, label: el.nama }));
+    if (diklat.status === 200) {
+      diklats = diklat.data.data.data.map((el) => ({ value: el.id, label: el.nama }));
+      diklatList = diklat.data.data.data;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const el of diklatList) {
+        if (el.diklat.length > 0) {
+          el.diklat = el.diklat.map((val) => ({
+            value: val.id,
+            label: val.nama,
+            children: val.children,
+          }));
+        }
+      }
+    }
   } catch (err) {
-    // console.log(err.status);
+    console.log(err);
   }
-  return { props: { data, diklats } };
+  return { props: { data, diklats, diklatList } };
 }
 
-function MasterDataDiklatCreate({ data, diklats }) {
+function MasterDataDiklatCreate({ data, diklats, diklatList }) {
   const router = useRouter();
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -68,6 +83,8 @@ function MasterDataDiklatCreate({ data, diklats }) {
     perPage: parseInt(query.perPage, 10) || 10,
     'where[diklat]': data.diklat,
     'where[status]': 'verified',
+    'where[OR][0][t_pelaksanaan_diklatId]': 'null',
+    'where[OR][1][t_pelaksanaan_diklatId]': router.query.id,
   });
   const [tableData, setTableData] = useState({
     data: [],
@@ -75,6 +92,8 @@ function MasterDataDiklatCreate({ data, diklats }) {
   });
   const [selectedCandidate, setSelectedCandidate] = useState([]);
   const [submited, setSubmited] = useState(false);
+  const [cascaderOpt, setCascaderOpt] = useState([]);
+  const [subKompetensi, setSubKompetensi] = useState([]);
 
   const fetchData = async () => {
     const res = await PnsService.getAllPengajuanVerif({ params });
@@ -88,6 +107,8 @@ function MasterDataDiklatCreate({ data, diklats }) {
   useEffect(() => {
     const day = dayjs(`${data.tahun}-${data.bulan}`, 'YYYY-MM');
     formRef.current.setFieldsValue({ ...data, jadwalPelaksana: day });
+    const diklat = diklatList.filter((el) => el.id === data.diklat)[0];
+    setCascaderOpt(diklat.diklat);
   }, []);
 
   useEffect(() => {
@@ -96,7 +117,7 @@ function MasterDataDiklatCreate({ data, diklats }) {
   }, [params]);
 
   const onBack = () => {
-    router.push('/master-data/diklat');
+    router.push('/pelaksanaan-diklat');
   };
 
   const columns = [
@@ -105,7 +126,8 @@ function MasterDataDiklatCreate({ data, diklats }) {
       dataIndex: 'no',
       key: 'no',
       render: (text, record, index) => {
-        return 1 + index;
+        return (params.page - 1) * params.perPage + 1 + index;
+        // return params.page > 1 ? index + (params.perPage * params.page) + 1 : index + 1;
       },
     },
     {
@@ -167,7 +189,11 @@ function MasterDataDiklatCreate({ data, diklats }) {
   };
 
   const onPageChange = (page, pageSize) => {
-    router.push('', `?page=${page}&perPage=${pageSize}`, { scroll: false });
+    // router.push('', `?page=${page}&perPage=${pageSize}`, { scroll: false });
+    router.push({ pathname: '',
+      query: {
+        id: router.query.id,
+      } }, `?page=${page}&perPage=${pageSize}`, { scroll: false });
     setParams((prevParam) => ({
       ...prevParam,
       page,
@@ -191,15 +217,32 @@ function MasterDataDiklatCreate({ data, diklats }) {
   };
 
   const onSbmitCandidate = async (e) => {
-    // setLoading(true);
-    delete dataPelaksanaan.data.jadwalPelaksana;
-    const pelaksanaanDiklat = await DiklatService.updatePelaksanaanDiklat(router.query.id, dataPelaksanaan.data);
+    setLoading(true);
+    const body = {
+      ...dataPelaksanaan.data,
+      subdiklat: subKompetensi[0],
+      subdiklatChild: subKompetensi[1] || '',
+    };
+    delete body.jadwalPelaksana;
+    const pelaksanaanDiklat = await DiklatService.updatePelaksanaanDiklat(router.query.id, body);
     if (pelaksanaanDiklat.status !== 200) return message.error('terjadi masalah pada server2');
     const updateCandidate = await PnsService.updateCandidatePengajuanFromEdit({ datas: selectedCandidate, id: pelaksanaanDiklat.data.data.id });
     if (updateCandidate.status !== 200) return message.error('Terjadi kesalahan pada server1');
     // setSubmited(true);
     setLoading(false);
     return router.push('/pelaksanaan-diklat');
+  };
+
+  const handleChangeSubKompetensi = (value) => {
+    setSubKompetensi(value);
+    console.log('selected', value);
+  };
+
+  const onChangeDiklat = (value) => {
+    setSubKompetensi([]);
+    form.setFieldValue('subDiklat', []);
+    const diklat = diklatList.filter((el) => el.id === value)[0];
+    setCascaderOpt(diklat.diklat);
   };
 
   return (
@@ -232,7 +275,6 @@ function MasterDataDiklatCreate({ data, diklats }) {
               <Form.Item
                 name='nama'
                 label={t('Nama Diklat')}
-                rules={[{ required: true }]}
               >
                 <Input style={{ color: 'black' }} disabled={Edit} placeholder={t('placeholder:enter', { field: t('Nama Diklat') })} />
               </Form.Item>
@@ -245,7 +287,19 @@ function MasterDataDiklatCreate({ data, diklats }) {
               >
                 <Select
                   options={diklats}
+                  onChange={onChangeDiklat}
                   disabled={Edit}
+                />
+              </Form.Item>
+              <Form.Item
+                name='subDiklat'
+              >
+                <Cascader
+                  onChange={handleChangeSubKompetensi}
+                  disabled={cascaderOpt.length === 0 || Edit}
+                  style={{ width: '100%' }}
+                  placeholder='Pilih Sub'
+                  options={cascaderOpt}
                 />
               </Form.Item>
               <Form.Item
@@ -309,16 +363,10 @@ function MasterDataDiklatCreate({ data, diklats }) {
                   dataSource={data.t_pns_diajukan}
                   rowKey={(record) => record.id}
                   scroll={{ x: 700 }}
-                  pagination={{
-                    total: tableData.total,
-                    showTotal: (total, range) => t('placeholder:pagination', { start: range[0], end: range[1], total }),
-                    current: params.page,
-                    pageSize: params.perPage,
-                    onChange: onPageChange,
-                  }}
+                  pagination={false}
                 />
               )}
-            <Space size='middle'>
+            <Space size='middle' className='mt-4'>
               <Button type='primary' htmlType='submit' onClick={onSbmitCandidate} disabled={submited || selectedCandidate.length === 0}>
                 {t('button:submit')}
               </Button>
@@ -344,6 +392,7 @@ MasterDataDiklatCreate.getLayout = function getLayout(page) {
 MasterDataDiklatCreate.propTypes = {
   data: PropTypes.object.isRequired,
   diklats: PropTypes.object.isRequired,
+  diklatList: PropTypes.array.isRequired,
 };
 
 export default MasterDataDiklatCreate;
